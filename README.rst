@@ -48,6 +48,8 @@ we estimate :math:`g` and :math:`h` by solving:
 
    + \max_{f \in \mathcal{F}} \mathbb{E}_n \left[ 2 \left\{ h(B) - g(A) \right\} f(C) - f(C)^2 \right] + \mu \mathbb{E}_n \{ h(B)^2 \}
 
+and similarly when using norm-regularization.
+
 Implementation
 --------------
 
