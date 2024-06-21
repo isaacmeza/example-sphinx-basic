@@ -1,34 +1,115 @@
-Example: Basic Sphinx project for Read the Docs
-===============================================
 
-.. image:: https://readthedocs.org/projects/example-sphinx-basic/badge/?version=latest
-    :target: https://example-sphinx-basic.readthedocs.io/en/latest/?badge=latest
+Nested Nonparametric Instrumental Variable Regression
+=====================================================
+
+.. image:: https://readthedocs.org/projects/testingnn/badge/?version=latest
+    :target: https://testingnn.readthedocs.io/en/latest/?badge=latest
     :alt: Documentation Status
 
-.. This README.rst should work on Github and is also included in the Sphinx documentation project in docs/ - therefore, README.rst uses absolute links for most things so it renders properly on GitHub
+Overview
+--------
 
-This example shows a basic Sphinx project with Read the Docs. You're encouraged to view it to get inspiration and copy & paste from the files in the source code. If you are using Read the Docs for the first time, have a look at the official `Read the Docs Tutorial <https://docs.readthedocs.io/en/stable/tutorial/index.html>`__.
+This package aims to solve or estimate nonparametrically nested moment conditions. We analyze the closed form or approximate solutions under different function classes for the following estimators:
 
-📚 `docs/ <https://github.com/readthedocs-examples/example-sphinx-basic/blob/main/docs/>`_
-    A basic Sphinx project lives in ``docs/``. All the ``*.rst`` make up sections in the documentation.
-⚙️ `.readthedocs.yaml <https://github.com/readthedocs-examples/example-sphinx-basic/blob/main/.readthedocs.yaml>`_
-    Read the Docs Build configuration is stored in ``.readthedocs.yaml``.
-⚙️ `docs/conf.py <https://github.com/readthedocs-examples/example-sphinx-basic/blob/main/docs/conf.py>`_
-    Both the configuration and the folder layout follow Sphinx default conventions. You can change the `Sphinx configuration values <https://www.sphinx-doc.org/en/master/usage/configuration.html>`_ in this file
-📍 `docs/requirements.txt <https://github.com/readthedocs-examples/example-sphinx-basic/blob/main/docs/requirements.txt>`_ and `docs/requirements.in <https://github.com/readthedocs-examples/example-sphinx-basic/blob/main/docs/requirements.in>`_
-    Python dependencies are `pinned <https://docs.readthedocs.io/en/latest/guides/reproducible-builds.html>`_ (uses `pip-tools <https://pip-tools.readthedocs.io/en/latest/>`_). Make sure to add your Python dependencies to ``requirements.txt`` or if you choose `pip-tools <https://pip-tools.readthedocs.io/en/latest/>`_, edit ``docs/requirements.in`` and remember to run ``pip-compile docs/requirements.in``.
-💡 `docs/api.rst <https://github.com/readthedocs-examples/example-sphinx-basic/blob/main/docs/api.rst>`_
-    By adding our example Python module ``lumache`` in the reStructuredText directive ``:autosummary:``, Sphinx will automatically scan this module and generate API docs.
-💡 `docs/usage.rst <https://github.com/readthedocs-examples/example-sphinx-basic/blob/main/docs/usage.rst>`_
-    Sphinx can automatically extract API documentation directly from Python modules, using for instance the ``:autofunction:`` directive.
-💡 `lumache.py <https://github.com/readthedocs-examples/example-sphinx-basic/blob/main/lumache.py>`_
-    API docs are generated for this example Python module - they use *docstrings* directly in the documentation, notice how this shows up in the rendered documentation.
-🔢 Git tags versioning
-    We use a basic versioning mechanism by adding a git tag for every release of the example project. All releases and their version numbers are visible on `example-sphinx-basic.readthedocs.io <https://example-sphinx-basic.readthedocs.io/en/latest/>`__.
-📜 `README.rst <https://github.com/readthedocs-examples/example-sphinx-basic/blob/main/README.rst>`_
-    Contents of this ``README.rst`` are visible on Github and included on `the documentation index page <https://example-sphinx-basic.readthedocs.io/en/latest/>`_ (Don't Repeat Yourself).
-⁉️ Questions / comments
-    If you have questions related to this example, feel free to can ask them as a Github issue `here <https://github.com/readthedocs-examples/example-sphinx-basic/issues>`_.
+Estimators
+----------
+
+Sequential Nested NPIV
+~~~~~~~~~~~~~~~~~~~~~~
+
+Given observations :math:`(A_i,B_i,C_i)` in \tr, an initial estimator :math:`\hat{g}` which may be estimated in \tr, and hyperparameter values :math:`(\lambda,\mu)`, estimate
+
+.. math::
+
+   \hat{h} = \argmin_{h \in \mathcal{H}} \left[ \sup_{f \in \mathcal{F}} \left\{ 2 \cdot \textsc{loss}(f,\hat{g},h) - \textsc{penalty}(f,\lambda) \right\} + \textsc{penalty}(h,\mu) \right]
+
+where 
+
+.. math::
+
+   \textsc{penalty}(f,\lambda) = \mathbb{E}_m\{f(C)^2\} + \lambda \cdot \|f\|^2_{\mathcal{F}}, \quad \textsc{penalty}(h,\mu) = \mu \cdot \|h\|^2_{\mathcal{H}}.
+
+
+Sequential Nested NPIV: Ridge
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Given observations :math:`(A_i,B_i,C_i)` in \tr, an initial estimator :math:`\hat{g}` which may be estimated in \tr, and a hyperparameter :math:`\mu`, estimate
+
+.. math::
+
+   \hat{h} = \argmin_{h \in \mathcal{H}} \left[ \sup_{f \in \mathcal{F}} \left\{ 2 \cdot \textsc{loss}(f,\hat{g},h) - \textsc{penalty}(f) \right\} + \textsc{penalty}(h,\mu) \right]
+
+where 
+
+.. math::
+
+   \textsc{penalty}(f) = \mathbb{E}_m\{f(C)^2\}, \quad \textsc{penalty}(h,\mu) = \mu \cdot \mathbb{E}_m\{h(B)^2\}.
+
+
+Closed Form Solutions for Sequential Estimators
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Estimator 1
+^^^^^^^^^^^
+
+We study the estimator:
+
+.. math::
+
+   \hat{g} = \argmin_{g \in \mathcal{G}} \max_{f' \in \mathcal{F'}} \mathbb{E}_n \left[ 2 \left\{ g(A) - Y \right\} f'(C') - f'(C')^2 \right] - \lambda \|f\|_{\mathcal{F}}^2 + \mu' \|g\|_{\mathcal{G}}^2
+
+where A is the set of endogenous variables, C' the set of instruments.
+
+Estimator 2
+^^^^^^^^^^^
+
+We study the estimator:
+
+.. math::
+
+   \hat{g} = \argmin_{g \in \mathcal{G}} \max_{f' \in \mathcal{F'}} \mathbb{E}_n \left[ 2 \left\{ g(A) - Y \right\} f'(C') - f'(C')^2 \right] + \mu' \mathbb{E}_n \{ g(A)^2 \}
+
+
+Joint Estimator
+---------------
+
+Simultaneous Nested NPIV
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+Given observations :math:`(A_i,B_i,C_i,C_i')` in \tr, and hyperparameter values :math:`(\mu',\mu)`, estimate
+
+.. math::
+
+   (\hat{g},\hat{h}) = \argmin_{g \in \mathcal{G}, h \in \mathcal{H}} \bigg[ \sup_{f' \in \mathcal{F}} \left\{ 2 \cdot \textsc{loss}(f',Y,g) - \textsc{penalty}(f') \right\} + \textsc{penalty}(g,\mu') 
+   + \sup_{f \in \mathcal{F}} \left\{ 2 \cdot \textsc{loss}(f,g,h) - \textsc{penalty}(f) \right\} + \textsc{penalty}(h,\mu) \bigg]
+
+using analogous \textsc{penalty} notation to Estimator :ref:`estimator:npiv_ridge`.
+
+Closed Form Solution for Joint Estimator
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The joint estimator solves:
+
+.. math::
+
+   (\hat{g},\hat{h}) = \argmin_{g \in \mathcal{G}, h \in \mathcal{H}} \max_{f' \in \mathcal{F}} \mathbb{E}_n \left[ 2 \left\{ g(A) - Y \right\} f'(C') - f'(C')^2 \right] + \mu' \mathbb{E}_n \{ g(A)^2 \}
+   + \max_{f \in \mathcal{F}} \mathbb{E}_n \left[ 2 \left\{ h(B) - g(A) \right\} f(C) - f(C)^2 \right] + \mu \mathbb{E}_n \{ h(B)^2 \}
+
+
+Implementation
+--------------
+
+This documentation implements longitudinal estimation of functions :math:`g` and :math:`h` for several function classes:
+
+- RKHS
+- Random Forest
+- Neural Networks
+- Sparse Linear
+- Linear
+
+This documentation will provide details on how each class is implemented and how to use the commands.
+
+Moreover, for the estimation of a semiparametric model, we have implemented double machine learning based on the estimation of the nuisance :math:`g` and :math:`h`.
 
 
 Example Project usage
@@ -62,26 +143,3 @@ You can also build the documentation locally with ``make``:
     
     # Open with your preferred browser, pointing it to the documentation index page
     firefox _build/html/index.html
-
-
-Using the example in your own project
--------------------------------------
-
-If you are new to Read the Docs, you may want to refer to the `Read the Docs User documentation <https://docs.readthedocs.io/>`_.
-
-If you are copying this code in order to get started with your documentation, you need to:
-
-#. place your ``docs/`` folder alongside your Python project. If you are starting a new project, you can adapt the `pyproject.toml` example configuration.
-#. use your existing project repository or create a new repository on Github, GitLab, Bitbucket or another host supported by Read the Docs
-#. copy ``.readthedocs.yaml`` and the ``docs/`` folder into your project.
-#. customize all the files, replacing example contents.
-#. add your own Python project, replacing the ``pyproject.toml`` configuration and ``lumache.py`` module.
-#. rebuild the documenation locally to see that it works.
-#. *finally*, register your project on Read the Docs, see `Importing Your Documentation <https://docs.readthedocs.io/en/stable/intro/import-guide.html>`_.
-
-
-Read the Docs tutorial
-----------------------
-
-To get started with Read the Docs, you may also refer to the `Read the Docs tutorial <https://docs.readthedocs.io/en/stable/tutorial/>`__.
-It provides a full walk-through of building an example project similar to the one in this repository.
