@@ -77,34 +77,8 @@ based on constructing orthogonal moments for:
 - Mediation analysis
 - Long term effect
 
-Example Project usage
----------------------
 
-This project has a standard Sphinx layout which is built by Read the Docs almost the same way that you would build it locally (on your own laptop!).
+References
+----------
 
-You can build and view this documentation project locally - we recommend that you activate `a local Python virtual environment first <https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/#creating-a-virtual-environment>`_:
-
-.. code-block:: console
-
-    # Install required Python dependencies (Sphinx etc.)
-    pip install -r docs/requirements.txt
-
-    # Enter the Sphinx project
-    cd docs/
-    
-    # Run the raw sphinx-build command
-    sphinx-build -M html . _build/
-
-
-You can also build the documentation locally with ``make``:
-
-.. code-block:: console
-
-    # Enter the Sphinx project
-    cd docs/
-    
-    # Build with make
-    make html
-    
-    # Open with your preferred browser, pointing it to the documentation index page
-    firefox _build/html/index.html
+.. [meza2024nested] Meza, I., & Singh, R. (2024). Nested Nonparametric Instrumental Variable Regression: Long Term, Mediated, and Time Varying Treatment Effects. arXiv preprint arXiv:2112.14249. https://doi.org/10.48550/arXiv.2112.14249
