@@ -38,24 +38,7 @@ Whenever we have the set of observations :math:`(Y, A, B, C, C')_i`; and want to
 .. math::
     \mathbb{E}\left[g(A) | C\right]= \mathbb{E}\left[h(B) | C\right]
 
-we then solve
-
-Simultaneous Nested NPIV
-~~~~~~~~~~~~~~~~~~~~~~~~
-
-Given observations :math:`(A_i,B_i,C_i,C_i')` in \tr, and hyperparameter values :math:`(\mu',\mu)`, estimate
-
-.. math::
-
-   (\hat{g},\hat{h}) = \arg \min_{g \in \mathcal{G}, h \in \mathcal{H}} \bigg[ \sup_{f' \in \mathcal{F}} \left\{ 2 \cdot \text{loss}(f',Y,g) - \text{penalty}(f') \right\} + \text{penalty}(g,\mu') 
-   + \sup_{f \in \mathcal{F}} \left\{ 2 \cdot \text{loss}(f,g,h) - \text{penalty}(f) \right\} + \text{penalty}(h,\mu) \bigg]
-
-using analogous \text{penalty} notation to Estimator.
-
-Closed Form Solution for Joint Estimator
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-The joint estimator solves:
+we estimate :math:`g` and :math:`h` by solving:
 
 .. math::
 
