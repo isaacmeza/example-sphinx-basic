@@ -10,16 +10,16 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-# import os
-# import sys
-# sys.path.insert(0, os.path.abspath('.'))
+import os
+import sys
+sys.path.insert(0, os.path.abspath('.'))
 
 
 # -- Project information -----------------------------------------------------
 
-project = "Basic Sphinx Example Project"
-copyright = "2022, Read the Docs core team"
-author = "Read the Docs core team"
+project = "Nested Nonparametric Instrumental Variable Regression"
+copyright = '2024, Meza, I. and Singh, R.'
+author = "Isaac Meza and Rahul Singh"
 
 
 # -- General configuration ---------------------------------------------------
