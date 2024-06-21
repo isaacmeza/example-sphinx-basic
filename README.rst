@@ -1,4 +1,3 @@
-
 Nested Nonparametric Instrumental Variable Regression
 =====================================================
 
@@ -14,10 +13,9 @@ This package aims to solve or estimate nonparametrically nested moment condition
 Estimators
 ----------
 
-
 NPIV
 ~~~~
-Given set of observations :math:`(Y, A, C')_i'; we want to estimate nonparametrically :math:`g' in :math:`\mathbb{E}\left[Y | C'\right]= \mathbb{E}\left[g(A) | C'\right]`, where A is the set of endogenous variables, and C' the set of instruments.
+Given set of observations :math:`(Y, A, C')_i`; we want to estimate nonparametrically :math:`g` in :math:`\mathbb{E}\left[Y | C'\right]= \mathbb{E}\left[g(A) | C'\right]`, where A is the set of endogenous variables, and C' the set of instruments.
 We solve the inverse problem adversarially:
 
 .. math::
@@ -25,21 +23,22 @@ We solve the inverse problem adversarially:
    \hat{g} = \arg \min_{g \in \mathcal{G}} \max_{f' \in \mathcal{F'}} \mathbb{E}_n \left[ 2 \left\{ g(A) - Y \right\} f'(C') - f'(C')^2 \right] + \mu' \mathbb{E}_n \{ g(A)^2 \}
 
 and we also consider norm regularization instead of ridge regularization:
+
 .. math::
 
    \hat{g} = \arg \min_{g \in \mathcal{G}} \max_{f' \in \mathcal{F'}} \mathbb{E}_n \left[ 2 \left\{ g(A) - Y \right\} f'(C') - f'(C')^2 \right] - \lambda \|f\|_{\mathcal{F}}^2 + \mu' \|g\|_{\mathcal{G}}^2
 
 Nested NPIV
 ~~~~~~~~~~~
-Whenever we have the set of observations :math:`(Y, A, B, C, C')_i'; and want to solve the system 
+Whenever we have the set of observations :math:`(Y, A, B, C, C')_i`; and want to solve the system:
+
 .. math::
     \mathbb{E}\left[Y | C'\right]= \mathbb{E}\left[g(A) | C'\right]
+
 .. math::
     \mathbb{E}\left[g(A) | C\right]= \mathbb{E}\left[h(B) | C\right]
 
 we then solve
-
-
 
 Simultaneous Nested NPIV
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -48,10 +47,10 @@ Given observations :math:`(A_i,B_i,C_i,C_i')` in \tr, and hyperparameter values 
 
 .. math::
 
-   (\hat{g},\hat{h}) = \argmin_{g \in \mathcal{G}, h \in \mathcal{H}} \bigg[ \sup_{f' \in \mathcal{F}} \left\{ 2 \cdot \textsc{loss}(f',Y,g) - \textsc{penalty}(f') \right\} + \textsc{penalty}(g,\mu') 
-   + \sup_{f \in \mathcal{F}} \left\{ 2 \cdot \textsc{loss}(f,g,h) - \textsc{penalty}(f) \right\} + \textsc{penalty}(h,\mu) \bigg]
+   (\hat{g},\hat{h}) = \arg \min_{g \in \mathcal{G}, h \in \mathcal{H}} \bigg[ \sup_{f' \in \mathcal{F}} \left\{ 2 \cdot \text{loss}(f',Y,g) - \text{penalty}(f') \right\} + \text{penalty}(g,\mu') 
+   + \sup_{f \in \mathcal{F}} \left\{ 2 \cdot \text{loss}(f,g,h) - \text{penalty}(f) \right\} + \text{penalty}(h,\mu) \bigg]
 
-using analogous \textsc{penalty} notation to Estimator :ref:`estimator:npiv_ridge`.
+using analogous \text{penalty} notation to Estimator.
 
 Closed Form Solution for Joint Estimator
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -65,7 +64,6 @@ The joint estimator solves:
 .. math::
 
    + \max_{f \in \mathcal{F}} \mathbb{E}_n \left[ 2 \left\{ h(B) - g(A) \right\} f(C) - f(C)^2 \right] + \mu \mathbb{E}_n \{ h(B)^2 \}
-
 
 Implementation
 --------------
@@ -84,14 +82,14 @@ This package implements longitudinal estimation of functions :math:`g` and :math
 Semiparametric Estimation
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The package also implements double machine learning for estimation of a functional of the nuisiance longitudinal parameter :math:`g` or :math:`h`:
+The package also implements double machine learning for estimation of a functional of the nuisance longitudinal parameter :math:`g` or :math:`h`:
+
 .. math::
     \theta = \mathbb{E}\left[h(B)\right]
 
 based on constructing orthogonal moments for:
 - Mediation analysis
 - Long term effect
-
 
 Example Project usage
 ---------------------
