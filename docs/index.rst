@@ -9,6 +9,7 @@ Contents
    Installation
    Longitudinal
    Semiparametrics
+   API
 
 
 .. note::
