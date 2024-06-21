@@ -73,6 +73,7 @@ The package also implements double machine learning for estimation of a function
     \theta = \mathbb{E}\left[h(B)\right]
 
 based on constructing orthogonal moments for:
+
 - Mediation analysis
 - Long term effect
 
