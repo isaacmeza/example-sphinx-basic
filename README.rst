@@ -14,64 +14,32 @@ This package aims to solve or estimate nonparametrically nested moment condition
 Estimators
 ----------
 
-Sequential Nested NPIV
-~~~~~~~~~~~~~~~~~~~~~~
 
-Given observations :math:`(A_i,B_i,C_i)` in \tr, an initial estimator :math:`\hat{g}` which may be estimated in \tr, and hyperparameter values :math:`(\lambda,\mu)`, estimate
-
-.. math::
-
-   \hat{h} = \argmin_{h \in \mathcal{H}} \left[ \sup_{f \in \mathcal{F}} \left\{ 2 \cdot \textsc{loss}(f,\hat{g},h) - \textsc{penalty}(f,\lambda) \right\} + \textsc{penalty}(h,\mu) \right]
-
-where 
+NPIV
+~~~~
+Given set of observations :math:`(Y, A, C')_i'; we want to estimate nonparametrically :math:`g' in :math:`\mathbb{E}\left[Y | C'\right]= \mathbb{E}\left[g(A) | C'\right]`, where A is the set of endogenous variables, and C' the set of instruments.
+We solve the inverse problem adversarially:
 
 .. math::
 
-   \textsc{penalty}(f,\lambda) = \mathbb{E}_m\{f(C)^2\} + \lambda \cdot \|f\|^2_{\mathcal{F}}, \quad \textsc{penalty}(h,\mu) = \mu \cdot \|h\|^2_{\mathcal{H}}.
+   \hat{g} = \arg \min_{g \in \mathcal{G}} \max_{f' \in \mathcal{F'}} \mathbb{E}_n \left[ 2 \left\{ g(A) - Y \right\} f'(C') - f'(C')^2 \right] + \mu' \mathbb{E}_n \{ g(A)^2 \}
 
-
-Sequential Nested NPIV: Ridge
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Given observations :math:`(A_i,B_i,C_i)` in \tr, an initial estimator :math:`\hat{g}` which may be estimated in \tr, and a hyperparameter :math:`\mu`, estimate
-
+and we also consider norm regularization instead of ridge regularization:
 .. math::
 
-   \hat{h} = \argmin_{h \in \mathcal{H}} \left[ \sup_{f \in \mathcal{F}} \left\{ 2 \cdot \textsc{loss}(f,\hat{g},h) - \textsc{penalty}(f) \right\} + \textsc{penalty}(h,\mu) \right]
+   \hat{g} = \arg \min_{g \in \mathcal{G}} \max_{f' \in \mathcal{F'}} \mathbb{E}_n \left[ 2 \left\{ g(A) - Y \right\} f'(C') - f'(C')^2 \right] - \lambda \|f\|_{\mathcal{F}}^2 + \mu' \|g\|_{\mathcal{G}}^2
 
-where 
-
+Nested NPIV
+~~~~~~~~~~~
+Whenever we have the set of observations :math:`(Y, A, B, C, C')_i'; and want to solve the system 
 .. math::
-
-   \textsc{penalty}(f) = \mathbb{E}_m\{f(C)^2\}, \quad \textsc{penalty}(h,\mu) = \mu \cdot \mathbb{E}_m\{h(B)^2\}.
-
-
-Closed Form Solutions for Sequential Estimators
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Estimator 1
-^^^^^^^^^^^
-
-We study the estimator:
-
+    \mathbb{E}\left[Y | C'\right]= \mathbb{E}\left[g(A) | C'\right]
 .. math::
+    \mathbb{E}\left[g(A) | C\right]= \mathbb{E}\left[h(B) | C\right]
 
-   \hat{g} = \argmin_{g \in \mathcal{G}} \max_{f' \in \mathcal{F'}} \mathbb{E}_n \left[ 2 \left\{ g(A) - Y \right\} f'(C') - f'(C')^2 \right] - \lambda \|f\|_{\mathcal{F}}^2 + \mu' \|g\|_{\mathcal{G}}^2
-
-where A is the set of endogenous variables, C' the set of instruments.
-
-Estimator 2
-^^^^^^^^^^^
-
-We study the estimator:
-
-.. math::
-
-   \hat{g} = \argmin_{g \in \mathcal{G}} \max_{f' \in \mathcal{F'}} \mathbb{E}_n \left[ 2 \left\{ g(A) - Y \right\} f'(C') - f'(C')^2 \right] + \mu' \mathbb{E}_n \{ g(A)^2 \}
+we then solve
 
 
-Joint Estimator
----------------
 
 Simultaneous Nested NPIV
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -92,14 +60,20 @@ The joint estimator solves:
 
 .. math::
 
-   (\hat{g},\hat{h}) = \argmin_{g \in \mathcal{G}, h \in \mathcal{H}} \max_{f' \in \mathcal{F}} \mathbb{E}_n \left[ 2 \left\{ g(A) - Y \right\} f'(C') - f'(C')^2 \right] + \mu' \mathbb{E}_n \{ g(A)^2 \}
+   (\hat{g},\hat{h}) = \arg \min_{g \in \mathcal{G}, h \in \mathcal{H}} \max_{f' \in \mathcal{F}} \mathbb{E}_n \left[ 2 \left\{ g(A) - Y \right\} f'(C') - f'(C')^2 \right] + \mu' \mathbb{E}_n \{ g(A)^2 \}
+
+.. math::
+
    + \max_{f \in \mathcal{F}} \mathbb{E}_n \left[ 2 \left\{ h(B) - g(A) \right\} f(C) - f(C)^2 \right] + \mu \mathbb{E}_n \{ h(B)^2 \}
 
 
 Implementation
 --------------
 
-This documentation implements longitudinal estimation of functions :math:`g` and :math:`h` for several function classes:
+Longitudinal Estimation
+~~~~~~~~~~~~~~~~~~~~~~~
+
+This package implements longitudinal estimation of functions :math:`g` and :math:`h` for several function classes:
 
 - RKHS
 - Random Forest
@@ -107,9 +81,16 @@ This documentation implements longitudinal estimation of functions :math:`g` and
 - Sparse Linear
 - Linear
 
-This documentation will provide details on how each class is implemented and how to use the commands.
+Semiparametric Estimation
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Moreover, for the estimation of a semiparametric model, we have implemented double machine learning based on the estimation of the nuisance :math:`g` and :math:`h`.
+The package also implements double machine learning for estimation of a functional of the nuisiance longitudinal parameter :math:`g` or :math:`h`:
+.. math::
+    \theta = \mathbb{E}\left[h(B)\right]
+
+based on constructing orthogonal moments for:
+- Mediation analysis
+- Long term effect
 
 
 Example Project usage
