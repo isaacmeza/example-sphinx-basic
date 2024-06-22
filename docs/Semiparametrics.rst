@@ -16,8 +16,8 @@ The target estimator :math:`\hat{\theta}` as well as its confidence interval wil
 As we will see in subsequent analysis, the general theory only requires that each nuisance estimator converges to the corresponding 
 nuisance parameter in mean square error. The general meta algorithm is as follows.
 
-**Algorithm 5.1 (Debiased machine learning).** Given a sample :math:`(Y_i, W_i)` 
-(:math:`i = 1, \ldots, n`), partition the sample into folds (:math:`I_\ell`) (:math`\ell = 1, \ldots, L`). 
+**Algorithm (Debiased machine learning).** Given a sample :math:`(Y_i, W_i)` 
+(:math:`i = 1, \ldots, n`), partition the sample into folds (:math:`I_\ell`) (:math:`\ell = 1, \ldots, L`). 
 Denote by :math:`I^c_\ell` the complement of :math:`I_\ell`.
 
 1. For each fold :math:`\ell`, estimate :math:`(\hat{\nu}_\ell, \hat{\delta}_\ell, \hat{\alpha}_\ell, \hat{\eta}_\ell)` 
