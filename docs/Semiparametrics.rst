@@ -1,12 +1,6 @@
 Semiparametric Estimation
 =========================
 
-.. toctree::
-   :maxdepth: 2
-
-   semiparametrics/Mediation Analysis
-   semiparametrics/Long Term Effect
-
 
 
 The goal is general purpose learning and inference for the longitudinal causal parameter :math:`\theta_0 \in \mathbb{R}`. 
@@ -45,6 +39,12 @@ Denote by :math:`I^c_\ell` the complement of :math:`I_\ell`.
       \left[ \hat{\nu}_\ell(W_i) + \hat{\alpha}_\ell(W_i)\{Y_i - \hat{\delta}_\ell(W_i)\} + \hat{\eta}_\ell(W_i)\{\hat{\delta}_\ell(W_i) - \hat{\nu}_\ell(W_i)\} - \hat{\theta} \right]^2.
 
 
+
+.. toctree::
+   :maxdepth: 2
+
+   semiparametrics/Mediation Analysis
+   semiparametrics/Long Term Effect
 
 
 
