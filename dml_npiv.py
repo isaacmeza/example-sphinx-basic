@@ -1,3 +1,18 @@
+"""
+DMLCLASS - DMLDMLDML
+
+.. code-block:: python
+
+    # Import dml
+    import dml
+
+    # Call its only function
+   dml function__
+"""
+
+__version__ = "0.1.0"
+
+
 import numpy as np
 from scipy.stats import norm 
 from sklearn.model_selection import KFold
