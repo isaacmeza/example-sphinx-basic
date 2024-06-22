@@ -1,7 +1,21 @@
-API
-===
+.. _python_api:
+
+API reference
+=============
+
+
+Double machine learning models
+------------------------------
+
+.. currentmodule:: semiparametrics
 
 .. autosummary::
-   :toctree: generated
+    :toctree: generated/
+    :template: class.rst
 
-   lumache
+    dml_npiv
+    dml_mediated
+    dml_joint_mediated
+    dml_longterm
+
+
