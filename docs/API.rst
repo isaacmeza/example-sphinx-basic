@@ -13,9 +13,9 @@ Double machine learning models
     :toctree: generated/
     :template: class.rst
 
-    dml_npiv
-    dml_mediated
-    dml_joint_mediated
-    dml_longterm
+    semiparametrics.dml_npiv
+    semiparametrics.dml_mediated
+    semiparametrics.dml_joint_mediated
+    semiparametrics.dml_longterm
 
 
