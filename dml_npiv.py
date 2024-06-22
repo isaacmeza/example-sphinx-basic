@@ -35,7 +35,9 @@ def _fun_threshold_alpha(alpha, g):
     result = (2 * sum(num) / den - lambda_val) ** 2
     return result
 
-
+"""
+dmlclass - Python library for dml
+"""
 class DML_npiv:
 
     def __init__(self, Y, D, Z, W, X1=None,
