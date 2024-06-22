@@ -3,7 +3,6 @@
 API reference
 =============
 
-
 Double machine learning models
 ------------------------------
 
@@ -17,5 +16,3 @@ Double machine learning models
     semiparametrics.dml_mediated
     semiparametrics.dml_joint_mediated
     semiparametrics.dml_longterm
-
-
