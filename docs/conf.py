@@ -13,6 +13,8 @@
 import os
 import sys
 sys.path.insert(0, os.path.abspath('.'))
+sys.path.insert(0, os.path.abspath('../..'))  # Adjust the path to include the project root
+sys.path.insert(0, os.path.abspath('../../semiparametrics'))  # Include the semiparametrics directory
 
 
 # -- Project information -----------------------------------------------------
