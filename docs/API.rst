@@ -12,6 +12,7 @@ Double machine learning models
     :toctree: generated/
     :template: class.rst
 
+    lumache
     dml_npiv
     dml_mediated
     dml_joint_mediated
