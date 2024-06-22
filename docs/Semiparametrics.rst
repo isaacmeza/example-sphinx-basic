@@ -4,6 +4,11 @@ Semiparametric Estimation
 .. toctree::
    :maxdepth: 2
 
+   semiparametric/Mediation Analysis
+   semiparametric/Long Term Effect
+
+
+
 The goal is general purpose learning and inference for the longitudinal causal parameter :math:`\theta_0 \in \mathbb{R}`. 
 Section 3 demonstrates that many such parameters :math:`\theta_0` have multiply robust moment functions with nuisance parameters 
 :math:`(\nu_0, \delta_0, \alpha_0, \eta_0)`. In this section, I describe a meta algorithm to turn estimators 
@@ -40,8 +45,7 @@ Denote by :math:`I^c_\ell` the complement of :math:`I_\ell`.
       \left[ \hat{\nu}_\ell(W_i) + \hat{\alpha}_\ell(W_i)\{Y_i - \hat{\delta}_\ell(W_i)\} + \hat{\eta}_\ell(W_i)\{\hat{\delta}_\ell(W_i) - \hat{\nu}_\ell(W_i)\} - \hat{\theta} \right]^2.
 
 
-   semiparametric/Mediation Analysis
-   semiparametric/Long Term Effect
+
 
 
 
