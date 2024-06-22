@@ -67,7 +67,7 @@ This package implements longitudinal estimation of functions :math:`g` and :math
 Semiparametric Estimation
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The package also implements double machine learning for estimation of a functional of the nuisance longitudinal parameter :math:`g` or :math:`h`:
+The package also implements debiased machine learning for estimation of a functional of the nuisance longitudinal parameter :math:`g` or :math:`h`:
 
 .. math::
     \theta = \mathbb{E}\left[h(B)\right]
