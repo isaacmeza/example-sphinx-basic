@@ -6,11 +6,8 @@ API reference
 Double machine learning models
 ------------------------------
 
-.. currentmodule:: semiparametrics
-
 .. autosummary::
-    :toctree: generated/
-    :template: class.rst
+   :toctree: generated
 
     lumache
     dml_npiv
