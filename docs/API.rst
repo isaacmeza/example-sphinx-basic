@@ -13,6 +13,7 @@ Double machine learning models
     :template: class.rst
 
     lumache
+    dml_npiv
     semiparametrics.dml_npiv
     semiparametrics.dml_mediated
     semiparametrics.dml_joint_mediated
