@@ -52,9 +52,9 @@ def _fun_threshold_alpha(alpha, g):
 
 
 class DML_npiv:
-"""
-dmlclass - Python library for dml
-"""
+    """
+    dmlclass - Python library for dml
+    """
     def __init__(self, Y, D, Z, W, X1=None,
                  V=None, 
                  v_values=None,
@@ -140,6 +140,15 @@ dmlclass - Python library for dml
                 self.v_values = np.mean(self.V, axis=0)    
             
     def _calculate_confidence_interval(self, theta, theta_var):
+        """
+        Return a list of random ingredients as strings.
+    
+        :param kind: Optional "kind" of ingredients.
+        :type kind: list[str] or None
+        :raise lumache.InvalidKindError: If the kind is invalid.
+        :return: The ingredients list.
+        :rtype: list[str]
+        """
         z_alpha_half = norm.ppf(1 - self.alpha / 2)
         n = self.Y.shape[0]
         margin_of_error = z_alpha_half * np.sqrt(theta_var) * np.sqrt(1 / n)
