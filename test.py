@@ -1,25 +1,27 @@
 """
-DMLCLASS - DMLDMLDML
+Lumache - Python library for cooks and food lovers.
+
+This is a Python docstring, we can use reStructuredText syntax here!
 
 .. code-block:: python
 
-    # Import dml
-    import dml
+    # Import lumache
+    import lumache
 
     # Call its only function
-   dml function__
+    get_random_ingredientsss(kind=["cheeses"])
 """
 
 __version__ = "0.1.0"
 
 
-class InvalidKindError(Exception):
+class InvalidKindErrors(Exception):
     """Raised if the kind is invalid."""
 
     pass
 
 
-def get_random_ingredients(kind=None):
+def get_random_ingredientsss(kind=None):
     """
     Return a list of random ingredients as strings.
 
