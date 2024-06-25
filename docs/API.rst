@@ -9,7 +9,6 @@ Double machine learning models
 .. autosummary::
    :toctree: generated
 
-    lumache
     dml_npiv
     test
     semiparametrics.dml_npiv
