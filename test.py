@@ -9,7 +9,7 @@ This is a Python docstring, we can use reStructuredText syntax here!
     import lumache
 
     # Call its only function
-    get_random_ingredients(kind=["cheeses"])
+    get_random(kind=["cheeses"])
 """
 
 __version__ = "0.1.0"
