@@ -1,19 +1,16 @@
 """
-Lumache - Python library for cooks and food lovers.
-
-This is a Python docstring, we can use reStructuredText syntax here!
+DMLCLASS - DMLDMLDML
 
 .. code-block:: python
 
-    # Import lumache
-    import lumache
+    # Import dml
+    import dml
 
     # Call its only function
-    get_random(kind=["cheeses"])
+   dml function__
 """
 
 __version__ = "0.1.0"
-
 
 
 
