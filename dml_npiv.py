@@ -1,3 +1,8 @@
+"""
+This is a module for demonstrating Sphinx documentation.
+"""
+
+
 import numpy as np
 from scipy.stats import norm
 from sklearn.model_selection import KFold
