@@ -1,8 +1,3 @@
-"""
-This is a module for demonstrating Sphinx documentation.
-"""
-
-
 import numpy as np
 from scipy.stats import norm
 from sklearn.model_selection import KFold
@@ -19,6 +14,13 @@ from joblib import Parallel, delayed
 from scipy.optimize import minimize_scalar
 
 device = torch.cuda.current_device() if torch.cuda.is_available() else None
+
+"""
+This is a module for demonstrating Sphinx documentation.
+"""
+
+
+
 
 def _get(opts, key, default):
     """
