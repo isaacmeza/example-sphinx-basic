@@ -67,12 +67,12 @@ For the joint estimator with ridge regularization
 
 .. math::
 
-    (\hat{g},\hat{h}) = \arg \min _{g\in\mathcal{G}, h \in \mathcal{H}} 
-    \max_{f' \in \mathcal{F}} \mathbb{E}_n\left[2\left\{g(A)-Y\right\} f'(C')-f'(C')^2\right]
-     +\mu'\E_n\{g(A)^2\} \\
-    &\quad +
-    \max_{f \in \mathcal{F}} \mathbb{E}_n\left[2\left\{h(B)-g(A)\right\} f(C)-f(C)^2\right]   
-    +\mu\E_n\{h(B)^2\}
+    (\hat{g},\hat{h}) = \arg \min_{g\in\mathcal{G}, h \in \mathcal{H}} 
+    \max_{f' \in \mathcal{F}} \mathbb{E}_n \left[ 2 \left\{ g(A) - Y \right\} f'(C') - f'(C')^2 \right]
+     + \mu' \mathbb{E}_n \left\{ g(A)^2 \right\} \\
+    + \max_{f \in \mathcal{F}} \mathbb{E}_n \left[ 2 \left\{ h(B) - g(A) \right\} f(C) - f(C)^2 \right] 
+     + \mu \mathbb{E}_n \left\{ h(B)^2 \right\}
+
 
 .. admonition:: Ensemble solution
 
