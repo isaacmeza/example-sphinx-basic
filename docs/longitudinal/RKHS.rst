@@ -346,8 +346,11 @@ We study the RKHS-norm regularized *joint* estimator:
 
 .. math::
 
-    (\hat{g},\hat{h}) = \arg \min_{g \in \mathcal{G}, h \in \mathcal{H}} \max_{f' \in \mathcal{F}} \mathbb{E}_n \left[ 2 \left\{ g(A) - Y \right\} f'(C') - f'(C')^2 \right] - \lambda' \| f' \|_{\mathcal{F}'}^2 + \mu' \| g \|_{\mathcal{G}}^2 \\
-    &\quad + \max_{f \in \mathcal{F}} \mathbb{E}_n \left[ 2 \left\{ h(B) - g(A) \right\} f(C) - f(C)^2 \right] - \lambda \| f \|_{\mathcal{F}}^2 + \mu \| h \|_{\mathcal{H}}^2
+    (\hat{g}, \hat{h}) = \arg \min_{g \in \mathcal{G}, h \in \mathcal{H}} 
+    \max_{f' \in \mathcal{F}} \mathbb{E}_n \left[ 2 \left\{ g(A) - Y \right\} f'(C') - f'(C')^2 \right]
+    + \mu'  \| g \|_{\mathcal{G}}^2 \\
+    \quad + \max_{f \in \mathcal{F}} \mathbb{E}_n \left[ 2 \left\{ h(B) - g(A) \right\} f(C) - f(C)^2 \right]
+    + \mu \| h \|_{\mathcal{H}}^2
 
 
 .. admonition:: Formula of minimizers 
