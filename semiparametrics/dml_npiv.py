@@ -11,13 +11,21 @@ Classes:
 
 DML_npiv Methods:
     __init__: Initialize the DML_npiv instance with data and model configurations.
+    
     _calculate_confidence_interval: Calculate confidence intervals for the estimates.
+    
     _localization: Perform localization using kernel density estimation.
+    
     _npivfit_outcome: Fit the outcome model using nonparametric instrumental variables.
+    
     _propensity_score: Estimate the propensity score.
+    
     _npivfit_action: Fit the action model using nonparametric instrumental variables.
+    
     _process_fold: Process a single fold for cross-validation.
+    
     _split_and_estimate: Split the data and estimate the model using cross-validation.
+    
     dml: Perform Double Machine Learning for Nonparametric Instrumental Variables.
 """
 
