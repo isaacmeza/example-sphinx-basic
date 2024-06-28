@@ -90,9 +90,11 @@ For the joint estimator with ridge regularization
 
     Suppose that the sets :math:`\mathcal{F'}_{C'}`, :math:`\mathcal{F}_{C}`, :math:`\mathcal{G}_{A}`, :math:`\mathcal{H}_{B}` are all convex sets. Then the ensembles: :math:`\bar{g}=\frac{1}{T} \sum_{t=1}^T g_t`, :math:`\bar{h}=\frac{1}{T} \sum_{t=1}^T h_t`, are a :math:`O\left(\frac{\log (T)+1}{T}\right)`-approximate solution to the minimax problem.
 
+
 **Proof**
 
 We can write the minimax problem as a convex-concave zero-sum game:
+
 .. math::
 
     \min_{b\in \mathcal{H}_B, a\in \mathcal{G}_A}\max_{c\in \mathcal{F}_C, c'\in \mathcal{F'}_{C'}}
@@ -103,12 +105,14 @@ We can write the minimax problem as a convex-concave zero-sum game:
 where the loss :math:`\ell(\{c,c'\},\{a,b\})` is convex in :math:`\{c,c'\}` and concave in :math:`\{a,b\}`.
 
 The adversary chooses vector :math:`(c_i,c_i')` based on *follow-the-leader* (FTL):
+
 .. math::
 
     \{c_t,c_t'\} = \operatorname{argmin}_{c\in \mathcal{F}_C, c'\in \mathcal{F'}_{C'}}
     \frac{1}{t-1}\sum_{\tau=1}^{t-1}\ell(\{c,c'\},\{a_\tau,b_\tau\})
 
 by separating the minimization and completing the square, we have that
+
 .. math::
 
     c_t = \operatorname{argmin}_{c\in \mathcal{F}_C} \frac{1}{n}\sum_{i=1}^{n} \bigg(c_i-\frac{1}{t-1}\sum_{\tau=1}^{t-1}\left\{a_{i\tau}-b_{i\tau}\right\}\bigg)^2
@@ -119,13 +123,15 @@ by separating the minimization and completing the square, we have that
     =\operatorname{argmin}_{c'\in \mathcal{F'}_{C'}}\frac{1}{n}\sum_{i=1}^{n} \bigg(c_i'-u_i'^{t}\bigg)^2 
     =\operatorname{Oracle}_{\mathcal{F'}, \text{reg}}\left(\{c_i'\}, \{u_i'^t\}\right)
 
-Now, the learner plays *be-the-leader* (BTL) which involves choosing :math:`(a_t,b_t)` that best responds
+Now, the learner plays *be-the-leader* (BTL) which involves choosing :math:`(a_t,b_t)` that best responds:
+
 .. math::
 
     \{a_t,b_t\} = \operatorname{argmax}_{a\in \mathcal{G}_A, b\in \mathcal{H}_{B}}
     \frac{1}{t}\sum_{\tau=1}^{t}\ell(\{c_\tau,c'_\tau\},\{a,b\})
 
 which after separating the minimization problem and completing the square we get:
+
 .. math::
 
     a_t = \operatorname{argmin}_{a\in \mathcal{G}_A} \frac{1}{n}\sum_{i=1}^{n} \bigg(a_i-\frac{1}{\mu't}\sum_{\tau=1}^{t}\left\{c'_{i\tau}-c_{i\tau}\right\}\bigg)^2
@@ -136,59 +142,69 @@ which after separating the minimization problem and completing the square we get
     =\operatorname{argmin}_{b\in \mathcal{H}_{B}}\frac{1}{n}\sum_{i=1}^{n} \bigg(b_i-v_i^{t}\bigg)^2 
     =\operatorname{Oracle}_{\mathcal{H}, \text{reg}}\left(\{b_i\}, \{v_i^t\}\right)
 
-Thus it remains to show that the ensembles
+Thus it remains to show that the ensembles:
+
 .. math::
 
     \bar{a} = \frac{1}{T}\sum_{t=1}^{T}a_t\,,\qquad \bar{b} = \frac{1}{T}\sum_{t=1}^{T}b_t
 
-are also a solution to the empirical minimax problem.\\
+are also a solution to the empirical minimax problem.
 
 Observe that the learner has zero regret, since it is playing the BTL algorithm. Thus if we show that the FTL algorithm has :math:`\operatorname{Regret}(T)`-regret after :math:`T` periods, then :math:`(\bar{a},\bar{b})` is an :math:`\epsilon(T)` approximate solution to the minimax problem, invoking the results of `Freund and Schapire (1999) <https://www.sciencedirect.com/science/article/pii/S0899825699907388>`_.
 
 Hence, we now focus on the online learning problem that the adversary is facing and show that FTL is a no-regret algorithm with regret rate :math:`\operatorname{Regret}(T)=O\left(\frac{\log (T)}{T}\right)`. We can upper bound the regret of the FTL algorithm by:
+
 .. math::
 
     \operatorname{Regret}(T) \leq \frac{1}{T} \sum_{t=1}^T\bigg(\ell\left(\{c_t, c'_t\}, \{a_t, b_t\}\right)-\ell\left(\{c_{t+1}, c'_{t+1}\}, \{a_t, b_t\}\right)\bigg)
 
-The loss :math:`\ell\left(\cdot, \{a,b\}\right)` is :math:`\frac{2}{n}`-strongly convex with respect to the :math:`\|\cdot\|_2`-norm on :math:`C\times C'`. Moreover the loss is :math:`O\left(\frac{1}{\sqrt{n}}\right)`-Lipschitz, since
+The loss :math:`\ell\left(\cdot, \{a,b\}\right)` is :math:`\frac{2}{n}`-strongly convex with respect to the :math:`\|\cdot\|_2`-norm on :math:`C\times C'`. Moreover the loss is :math:`O\left(\frac{1}{\sqrt{n}}\right)`-Lipschitz, since:
+
 .. math::
 
     \nabla_{\{c,c'\}}\ell\left(\{c,c'\}, \{a,b\}\right) = \frac{2}{n}\left(\{c,c'\} - \{y-a,a-b\}\right)
 
-so 
+so:
+
 .. math::
 
     \|\nabla_{\{c,c'\}}\ell\left(\{c,c'\}, \{a,b\}\right)\|_2 = \frac{2}{n}\sqrt{\sum_{i=1}^{n}\left(c_i-(y_i-a_i)+c_i'-(a_i-b_i)\right)^2}   
     \leq \frac{2}{n}\left(\|c\|_2+\|y\|_2+\|a\|_2+\|c'\|_2+\|a\|_2+\|b\|_2\right)
     \leq O\left(\frac{1}{\sqrt{n}}\right)
 
-Then :math:`L_t = \sum_{\tau=1}^t \ell(\cdot, \{a_\tau, b_\tau\})` is :math:`\frac{2t}{n}`-strongly convex. Since :math:`\{c_{t+1}, c'_{t+1}\}` is a minimizer of :math:`L_t` and the set :math:`C\times C'` is convex, we have by the strong convexity and the first order condition that 
+Then :math:`L_t = \sum_{\tau=1}^t \ell(\cdot, \{a_\tau, b_\tau\})` is :math:`\frac{2t}{n}`-strongly convex. Since :math:`\{c_{t+1}, c'_{t+1}\}` is a minimizer of :math:`L_t` and the set :math:`C\times C'` is convex, we have by the strong convexity and the first order condition that:
+
 .. math::
 
     L_t(\{c_t,c'_t\}) \geq L_t(\{c_{t+1},c'_{t+1}\}) + \left\langle \{c_{t},c'_{t}\}-\{c_{t+1},c'_{t+1}\}, \nabla_{\{c,c'\}}L_t(\{c_{t+1},c'_{t+1}\})\right\rangle + \frac{t}{n}\left\|\{c_{t},c'_{t}\},\{c_{t+1},c'_{t+1}\}\right\|_2^2 
     \geq  L_t(\{c_{t+1},c'_{t+1}\})+ \frac{t}{n}\left\|\{c_{t},c'_{t}\},\{c_{t+1},c'_{t+1}\}\right\|_2^2
 
-and
+and:
+
 .. math::
 
     L_{t-1}(\{c_{t+1},c'_{t+1}\}) \geq L_{t-1}(\{c_{t},c'_{t}\})+ \frac{t}{n}\left\|\{c_{t},c'_{t}\},\{c_{t+1},c'_{t+1}\}\right\|_2^2
 
 Adding the two previous equations and re-arranging gives:
+
 .. math::
 
     \ell(\{c_t, c'_t\}, \{a_t, b_t\})-\ell(\{c_{t+1}, c'_{t+1}\}, \{a_{t}, b_{t}\})\geq \frac{2t}{n}\left\|\{c_{t},c'_{t}\},\{c_{t+1},c'_{t+1}\}\right\|_2^2
 
 Invoking the Lipschitzness of :math:`\ell_t`:
+
 .. math::
 
     \frac{K}{\sqrt{n}}\left\|\{c_{t},c'_{t}\},\{c_{t+1},c'_{t+1}\}\right\|_2\geq \frac{2t}{n}\left\|\{c_{t},c'_{t}\},\{c_{t+1},c'_{t+1}\}\right\|_2^2
 
-so that
+so that:
+
 .. math::
 
     \left\|\{c_{t},c'_{t}\},\{c_{t+1},c'_{t+1}\}\right\|_2\leq \frac{K}{2}\frac{\sqrt{n}}{t}
 
-Finally,
+Finally:
+
 .. math::
 
     \operatorname{Regret}(T) \leq \frac{1}{T} \sum_{t=1}^T\bigg(\ell\left(\{c_t, c'_t\}, \{a_t, b_t\}\right)-\ell\left(\{c_{t+1}, c'_{t+1}\}, \{a_t, b_t\}\right)\bigg)
