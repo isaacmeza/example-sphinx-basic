@@ -4,15 +4,22 @@ It provides tools for estimating causal effects using a combination of machine l
 instrumental variables techniques. The module supports cross-validation, kernel density estimation 
 for localization, and confidence interval computation.
 
+Module Overview:
+----------------
 Classes:
     DML_npiv: Main class for performing DML-npiv with various configuration options.
 
-Functions:
-    _get: Utility function to retrieve options from a dictionary.
-    _transform_poly: Utility function to apply polynomial feature transformation.
-    _fun_threshold_alpha: Function to compute the threshold alpha for propensity score trimming.
+DML_npiv Methods:
+    __init__: Initialize the DML_npiv instance with data and model configurations.
+    _calculate_confidence_interval: Calculate confidence intervals for the estimates.
+    _localization: Perform localization using kernel density estimation.
+    _npivfit_outcome: Fit the outcome model using nonparametric instrumental variables.
+    _propensity_score: Estimate the propensity score.
+    _npivfit_action: Fit the action model using nonparametric instrumental variables.
+    _process_fold: Process a single fold for cross-validation.
+    _split_and_estimate: Split the data and estimate the model using cross-validation.
+    dml: Perform Double Machine Learning for Nonparametric Instrumental Variables.
 """
-
 
 import numpy as np
 from scipy.stats import norm
@@ -177,6 +184,60 @@ class DML_npiv:
                  fitargsq1=None,
                  opts=None
                  ):
+        """
+        Initialize the DML_npiv instance with data and model configurations.
+
+        Parameters
+        ----------
+        Y : array-like
+            Outcome variable.
+        D : array-like
+            Treatment variable.
+        Z : array-like
+            Instrumental variable.
+        W : array-like
+            Control variable.
+        X1 : array-like, optional
+            Additional covariates.
+        V : array-like, optional
+            Localization covariates.
+        v_values : array-like, optional
+            Values for localization.
+        loc_kernel : str, optional
+            Kernel for localization.
+        bw_loc : str, optional
+            Bandwidth for localization.
+        estimator : str, optional
+            Estimator type ('MR', 'OR', 'IPW').
+        model1 : estimator, optional
+            Model for the first stage.
+        nn_1 : bool, optional
+            Use neural network for the first stage.
+        modelq1 : estimator, optional
+            Model for the second stage.
+        nn_q1 : bool, optional
+            Use neural network for the second stage.
+        alpha : float, optional
+            Significance level for confidence intervals.
+        n_folds : int, optional
+            Number of folds for cross-validation.
+        n_rep : int, optional
+            Number of repetitions for cross-validation.
+        random_seed : int, optional
+            Seed for random number generator.
+        prop_score : estimator, optional
+            Model for propensity score.
+        CHIM : bool, optional
+            Use CHIM method.
+        verbose : bool, optional
+            Print progress information.
+        fitargs1 : dict, optional
+            Arguments for fitting the first stage model.
+        fitargsq1 : dict, optional
+            Arguments for fitting the second stage model.
+        opts : dict, optional
+            Additional options.
+        """
         self.Y = Y
         self.D = D
         self.Z = Z
@@ -443,7 +504,7 @@ class DML_npiv:
             else:
                 bridge_[0] = copy.deepcopy(model_q1).fit(A2, A1, 1/ps_hat_0)
                 bridge_[1] = copy.deepcopy(model_q1).fit(A2, A1, 1/ps_hat_1)
-        
+           
         return bridge_[1], bridge_[0]
 
 
@@ -537,7 +598,7 @@ class DML_npiv:
         # Print progress bar using tqdm
         if self.verbose==True:
             self.progress_bar.update(1)
-
+   
         return psi_hat
 
 
