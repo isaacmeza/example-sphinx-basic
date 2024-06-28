@@ -1,10 +1,6 @@
-
-
 """
 This is a module for demonstrating Sphinx documentation.
 """
-
-
 
 
 def _get(opts, key, default):
