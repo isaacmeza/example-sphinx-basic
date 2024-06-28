@@ -117,15 +117,16 @@ by separating the minimization and completing the square, we have that
 
 .. math::
 
-    c_t = \operatorname{argmin}_{c\in \mathcal{F}_C} \frac{1}{n}\sum_{i=1}^{n} \left(c_i-\frac{1}{t-1}\sum_{\tau=1}^{t-1}\left\{a_{i\tau}-b_{i\tau}\right\}\right)^2 
-        = \operatorname{argmin}_{c\in \mathcal{F}_C} \frac{1}{n}\sum_{i=1}^{n} \left(c_i-u_i^{t}\right)^2 
-        = \operatorname{Oracle}_{\mathcal{F}, \text{reg}}\left(\{c_i\}, \{u_i^t\}\right)
+    c_t = \operatorname{argmin}_{c \in \mathcal{F}_C} \frac{1}{n} \sum_{i=1}^{n} \left( c_i - \frac{1}{t-1} \sum_{\tau=1}^{t-1} \left\{ a_{i\tau} - b_{i\tau} \right\} \right)^2 \\
+        = \operatorname{argmin}_{c \in \mathcal{F}_C} \frac{1}{n} \sum_{i=1}^{n} \left( c_i - u_i^{t} \right)^2 \\
+        = \operatorname{Oracle}_{\mathcal{F}, \text{reg}} \left( \{c_i\}, \{u_i^t\} \right)
 
 .. math::
 
-    c'_t = \operatorname{argmin}_{c'\in \mathcal{F'}_{C'}}\frac{1}{n}\sum_{i=1}^{n} \left(c_i'-\frac{1}{t-1}\sum_{\tau=1}^{t-1}\left\{y_i-a_{i\tau}\right\}\right)^2 
-         = \operatorname{argmin}_{c'\in \mathcal{F'}_{C'}}\frac{1}{n}\sum_{i=1}^{n} \left(c_i'-u_i'^{t}\right)^2 
-         = \operatorname{Oracle}_{\mathcal{F'}, \text{reg}}\left(\{c_i'\}, \{u_i'^t\}\right)
+    c'_t = \operatorname{argmin}_{c' \in \mathcal{F'}_{C'}} \frac{1}{n} \sum_{i=1}^{n} \left( c_i' - \frac{1}{t-1} \sum_{\tau=1}^{t-1} \left\{ y_i - a_{i\tau} \right\} \right)^2 \\
+         = \operatorname{argmin}_{c' \in \mathcal{F'}_{C'}} \frac{1}{n} \sum_{i=1}^{n} \left( c_i' - u_i'^{t} \right)^2 \\
+         = \operatorname{Oracle}_{\mathcal{F'}, \text{reg}} \left( \{c_i'\}, \{u_i'^t\} \right)
+
 
 Now, the learner plays *be-the-leader* (BTL) which involves choosing :math:`(a_t,b_t)` that best responds
 
