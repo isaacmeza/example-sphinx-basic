@@ -6,7 +6,8 @@ Module Overview
    :undoc-members:
    :show-inheritance:
 
-   .. autoclass:: dml_npiv.DML_npiv
-      :members:
-      :undoc-members:
-      :show-inheritance:
+.. automodule:: mymodule
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
