@@ -16,8 +16,7 @@ We study the estimator
     \max_{f' \in \mathcal{F'}} \mathbb{E}_n \left[ 2 \left\{ g(A) - Y \right\} f'(C') - f'(C')^2 \right] - \lambda \| f \|_{\mathcal{F}}^2
      + \mu' \| g \|_{\mathcal{G}}^2
 
-.. lemma:: Formula of minimizers
-   :name: lemma:min_1
+.. admonition:: Formula of minimizers
 
     The minimizer takes the form :math:`\hat{g} = \Phi_A^* \hat{\alpha}` where,
 
