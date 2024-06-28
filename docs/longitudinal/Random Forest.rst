@@ -179,15 +179,15 @@ so
 .. math::
 
     \|\nabla_{\{c,c'\}}\ell\left(\{c,c'\}, \{a,b\}\right)\|_2 
-    = \frac{2}{n}\sqrt{\sum_{i=1}^{n}\left(c_i-(y_i-a_i)+c_i'-(a_i-b_i)\right)^2}   
-    \leq \frac{2}{n}\left(\|c\|_2+\|y\|_2+\|a\|_2+\|c'\|_2+\|a\|_2+\|b\|_2\right)
+    = \frac{2}{n}\sqrt{\sum_{i=1}^{n}\left(c_i-(y_i-a_i)+c_i'-(a_i-b_i)\right)^2}  \\ 
+    \leq \frac{2}{n}\left(\|c\|_2+\|y\|_2+\|a\|_2+\|c'\|_2+\|a\|_2+\|b\|_2\right) \\
     \leq O\left(\frac{1}{\sqrt{n}}\right)
 
 Then :math:`L_t = \sum_{\tau=1}^t \ell(\cdot, \{a_\tau, b_\tau\})` is :math:`\frac{2t}{n}`-strongly convex. Since :math:`\{c_{t+1}, c'_{t+1}\}` is a minimizer of :math:`L_t` and the set :math:`C\times C'` is convex, we have by the strong convexity and the first order condition that 
 
 .. math::
 
-    L_t(\{c_t,c'_t\}) \geq L_t(\{c_{t+1},c'_{t+1}\}) + \left\langle \{c_{t},c'_{t}\}-\{c_{t+1},c'_{t+1}\}, \nabla_{\{c,c'\}}L_t(\{c_{t+1},c'_{t+1}\})\right\rangle + \frac{t}{n}\left\|\{c_{t},c'_{t}\},\{c_{t+1},c'_{t+1}\}\right\|_2^2 
+    L_t(\{c_t,c'_t\}) \geq L_t(\{c_{t+1},c'_{t+1}\}) + \left\langle \{c_{t},c'_{t}\}-\{c_{t+1},c'_{t+1}\}, \nabla_{\{c,c'\}}L_t(\{c_{t+1},c'_{t+1}\})\right\rangle + \frac{t}{n}\left\|\{c_{t},c'_{t}\},\{c_{t+1},c'_{t+1}\}\right\|_2^2 \\
     \geq  L_t(\{c_{t+1},c'_{t+1}\})+ \frac{t}{n}\left\|\{c_{t},c'_{t}\},\{c_{t+1},c'_{t+1}\}\right\|_2^2
 
 and
@@ -269,16 +269,12 @@ For the joint estimator:
     .. math::
 
         \begin{aligned}
-        & u_i'^{t} = \left( y_i - \frac{1}{t-1} \sum_{\tau=1}^{t-1} g_\tau \left( a_i \right) \right), \\
-        & u_i^t = \frac{1}{t-1} \sum_{\tau=1}^{t-1} \left( g_\tau \left( a_i \right) - h_\tau \left( b_i \right) \right) \\
-        & f'_t = \operatorname{Oracle}_{\mathcal{F'}, \text{reg}} \left( \{c_i'\}, \{u_i'^t\} \right), \\
-        & f_t = \operatorname{Oracle}_{\mathcal{F}, \text{reg}} \left( \{c_i\}, \{u_i^t\} \right) \\
-        & v_i'^t = 1 \left( f'_t(c'_i) - f_t(c_i) > 0 \right), \\
-        & v_i^t = 1 \left( f_t(c_i) > 0 \right) \\
-        & w_i'^t = \left| f'_t(c'_i) - f_t(c_i) \right|, \\
-        & w_i^t = \left| f_t(c_i) \right| \\
-        & g_t = \operatorname{Oracle}_{\mathcal{G}, \text{class}} \left( \{a_i\}, \{v_i'^t\}, \{w_i'^t\} \right), \\
-        & h_t = \operatorname{Oracle}_{\mathcal{H}, \text{class}} \left( \{b_i\}, \{v_i^t\}, \{w_i^t\} \right)
+        & u_i'^{t}=\left(y_i-\frac{1}{t-1} \sum_{\tau=1}^{t-1} g_\tau\left(a_i\right)\right), \quad u_i^t=\frac{1}{t-1} \sum_{\tau=1}^{t-1} \bigg(g_\tau\left(a_i\right)-h_\tau\left(b_i\right)\bigg)\\
+        & f'_t=\operatorname{Oracle}_{\mathcal{F'}, \text{reg}}\left(\{c_i'\}, \{u_i'^t\}\right),\quad f_t=\operatorname{Oracle}_{\mathcal{F}, \text{reg}}\left(\{c_i\}, \{u_i^t\}\right) \\
+        & v_i'^t=1\big(f'_t(c'_i)-f_t(c_i)>0\big),   \qquad  v_i^t=1\big(f_t(c_i)>0\big)\\
+        & w_i'^t=\big|f'_t(c'_i)-f_t(c_i)\big|, \qquad  \qquad  w_i^t=|f_t(c_i)|\\
+        &g_t=\operatorname{Oracle}_{\mathcal{G}, \text{class}}\left(\{a_i\}, \{v_i'^t\}, \{w_i'^t\}\right),  \quad   h_t=\operatorname{Oracle}_{\mathcal{H}, \text{class}}\left(\{b_i\}, \{v_i^t\}, \{w_i^t\}\right) \\
+        &
         \end{aligned}
 
     Suppose that the sets \(\mathcal{F'}_{C'}\), \(\mathcal{F}_{C}\), are convex sets. Then the ensembles: \(\bar{g} = \frac{1}{T} \sum_{t=1}^T g_t\), \(\bar{h} = \frac{1}{T} \sum_{t=1}^T h_t\), are a \(O \left( \frac{\log (T) + 1}{T} \right)\)-approximate solution to the minimax problem.
@@ -299,16 +295,16 @@ which gives:
 .. math::
 
     \begin{aligned}
-    a_t &= \argmax_{a \in \mathcal{G}_{A}} \sum_{i=1}^{n} a_i (c'_{it} - c_{it}) \\
-    &= \argmax_{a \in \mathcal{G}_{A}} \frac{1}{n} \sum_i a_i \left| c'_{it} - c_{it} \right| \operatorname{sign} \left( c'_{it} - c_{it} \right) \\
-    &= \argmax_{a \in \mathcal{G}_{A}} \frac{1}{n} \sum_i \left| c'_{it} - c_{it} \right| \mathbb{E}_{z \sim \operatorname{Bernoulli} \left( \frac{a_i + 1}{2} \right)} \left[ \left( 2 z_i - 1 \right) \operatorname{sign} \left( c'_{it} - c_{it} \right) \right] \\
-    &= \argmax_{a \in \mathcal{G}_{A}} \frac{1}{n} \sum_i \left| c'_{it} - c_{it} \right| \left( \operatorname{Pr}_{z \sim \operatorname{Bernoulli} \left( \frac{a_i + 1}{2} \right)} \left[ \left( 2 z_i - 1 \right) = \operatorname{sign} \left( c'_{it} - c_{it} \right) \right] \right. \\
+    a_t &= \operatorname{argmax}_{a \in \mathcal{G}_{A}} \sum_{i=1}^{n} a_i (c'_{it} - c_{it}) \\
+    &= \operatorname{argmax}_{a \in \mathcal{G}_{A}} \frac{1}{n} \sum_i a_i \left| c'_{it} - c_{it} \right| \operatorname{sign} \left( c'_{it} - c_{it} \right) \\
+    &= \operatorname{argmax}_{a \in \mathcal{G}_{A}} \frac{1}{n} \sum_i \left| c'_{it} - c_{it} \right| \mathbb{E}_{z \sim \operatorname{Bernoulli} \left( \frac{a_i + 1}{2} \right)} \left[ \left( 2 z_i - 1 \right) \operatorname{sign} \left( c'_{it} - c_{it} \right) \right] \\
+    &= \operatorname{argmax}_{a \in \mathcal{G}_{A}} \frac{1}{n} \sum_i \left| c'_{it} - c_{it} \right| \left( \operatorname{Pr}_{z \sim \operatorname{Bernoulli} \left( \frac{a_i + 1}{2} \right)} \left[ \left( 2 z_i - 1 \right) = \operatorname{sign} \left( c'_{it} - c_{it} \right) \right] \right. \\
     & \qquad \qquad \qquad \left. - \operatorname{Pr}_{z \sim \operatorname{Bernoulli} \left( \frac{a_i + 1}{2} \right)} \left[ \left( 2 z_i - 1 \right) \neq \operatorname{sign} \left( c'_{it} - c_{it} \right) \right] \right) \\
-    &= \argmax_{a \in \mathcal{G}_{A}} \frac{1}{n} \sum_i \left| c'_{it} - c_{it} \right| \left( 2 \operatorname{Pr}_{z \sim \operatorname{Bernoulli} \left( \frac{a_i + 1}{2} \right)} \left[ \left( 2 z_i - 1 \right) = \operatorname{sign} \left( c'_{it} - c_{it} \right) \right] - 1 \right) \\
-    &= \argmax_{a \in \mathcal{G}_{A}} \frac{1}{n} \sum_i \left| c'_{it} - c_{it} \right| \operatorname{Pr}_{z \sim \operatorname{Bernoulli} \left( \frac{a_i + 1}{2} \right)} \left[ \left( 2 z_i - 1 \right) = \operatorname{sign} \left( c'_{it} - c_{it} \right) \right] \\
-    &= \argmax_{a \in \mathcal{G}_{A}} \frac{1}{n} \sum_i \left| c'_{it} - c_{it} \right| \operatorname{Pr}_{z \sim \operatorname{Bernoulli} \left( \frac{a_i + 1}{2} \right)} \left[ z_i = \frac{\operatorname{sign} \left( c'_{it} - c_{it} \right) + 1}{2} \right] \\
-    &= \argmax_{a \in \mathcal{G}_{A}} \frac{1}{n} \sum_i \left| c'_{it} - c_{it} \right| \operatorname{Pr}_{z \sim \operatorname{Bernoulli} \left( \frac{a_i + 1}{2} \right)} \left[ z_i = 1 \left\{ c'_{it} - c_{it} > 0 \right\} \right] \\
-    &= \argmax_{a \in \mathcal{G}_{A}} \frac{1}{n} \sum_i w_{it} \operatorname{Pr}_{z \sim \operatorname{Bernoulli} \left( \frac{a_i + 1}{2} \right)} \left[ z_i = v_{it} \right] \\
+    &= \operatorname{argmax}_{a \in \mathcal{G}_{A}} \frac{1}{n} \sum_i \left| c'_{it} - c_{it} \right| \left( 2 \operatorname{Pr}_{z \sim \operatorname{Bernoulli} \left( \frac{a_i + 1}{2} \right)} \left[ \left( 2 z_i - 1 \right) = \operatorname{sign} \left( c'_{it} - c_{it} \right) \right] - 1 \right) \\
+    &= \operatorname{argmax}_{a \in \mathcal{G}_{A}} \frac{1}{n} \sum_i \left| c'_{it} - c_{it} \right| \operatorname{Pr}_{z \sim \operatorname{Bernoulli} \left( \frac{a_i + 1}{2} \right)} \left[ \left( 2 z_i - 1 \right) = \operatorname{sign} \left( c'_{it} - c_{it} \right) \right] \\
+    &= \operatorname{argmax}_{a \in \mathcal{G}_{A}} \frac{1}{n} \sum_i \left| c'_{it} - c_{it} \right| \operatorname{Pr}_{z \sim \operatorname{Bernoulli} \left( \frac{a_i + 1}{2} \right)} \left[ z_i = \frac{\operatorname{sign} \left( c'_{it} - c_{it} \right) + 1}{2} \right] \\
+    &= \operatorname{argmax}_{a \in \mathcal{G}_{A}} \frac{1}{n} \sum_i \left| c'_{it} - c_{it} \right| \operatorname{Pr}_{z \sim \operatorname{Bernoulli} \left( \frac{a_i + 1}{2} \right)} \left[ z_i = 1 \left\{ c'_{it} - c_{it} > 0 \right\} \right] \\
+    &= \operatorname{argmax}_{a \in \mathcal{G}_{A}} \frac{1}{n} \sum_i w_{it} \operatorname{Pr}_{z \sim \operatorname{Bernoulli} \left( \frac{a_i + 1}{2} \right)} \left[ z_i = v_{it} \right] \\
     &= \operatorname{Oracle}_{\mathcal{G}, \text{class}} \left( \{a_i\}, \{v_i'^t\}, \{w_i'^t\} \right)
     \end{aligned}
 
@@ -317,16 +313,16 @@ and
 .. math::
 
     \begin{aligned}
-    b_t &= \argmax_{b \in \mathcal{H}_{B}} \sum_{i=1}^{n} b_i c_{it} \\
-    &= \argmax_{b \in \mathcal{H}_{B}} \frac{1}{n} \sum_i b_i \left| c_{it} \right| \operatorname{sign} \left( c_{it} \right) \\
-    &= \argmax_{b \in \mathcal{H}_{B}} \frac{1}{n} \sum_i \left| c_{it} \right| \mathbb{E}_{z \sim \operatorname{Bernoulli} \left( \frac{b_i + 1}{2} \right)} \left[ \left( 2 z_i - 1 \right) \operatorname{sign} \left( c_{it} \right) \right] \\
-    &= \argmax_{b \in \mathcal{H}_{B}} \frac{1}{n} \sum_i \left| c_{it} \right| \left( \operatorname{Pr}_{z \sim \operatorname{Bernoulli} \left( \frac{b_i + 1}{2} \right)} \left[ \left( 2 z_i - 1 \right) = \operatorname{sign} \left( c_{it} \right) \right] \right. \\
+    b_t &= \operatorname{argmax}_{b \in \mathcal{H}_{B}} \sum_{i=1}^{n} b_i c_{it} \\
+    &= \operatorname{argmax}_{b \in \mathcal{H}_{B}} \frac{1}{n} \sum_i b_i \left| c_{it} \right| \operatorname{sign} \left( c_{it} \right) \\
+    &= \operatorname{argmax}_{b \in \mathcal{H}_{B}} \frac{1}{n} \sum_i \left| c_{it} \right| \mathbb{E}_{z \sim \operatorname{Bernoulli} \left( \frac{b_i + 1}{2} \right)} \left[ \left( 2 z_i - 1 \right) \operatorname{sign} \left( c_{it} \right) \right] \\
+    &= \operatorname{argmax}_{b \in \mathcal{H}_{B}} \frac{1}{n} \sum_i \left| c_{it} \right| \left( \operatorname{Pr}_{z \sim \operatorname{Bernoulli} \left( \frac{b_i + 1}{2} \right)} \left[ \left( 2 z_i - 1 \right) = \operatorname{sign} \left( c_{it} \right) \right] \right. \\
     & \qquad \qquad \qquad \left. - \operatorname{Pr}_{z \sim \operatorname{Bernoulli} \left( \frac{b_i + 1}{2} \right)} \left[ \left( 2 z_i - 1 \right) \neq \operatorname{sign} \left( c_{it} \right) \right] \right) \\
-    &= \argmax_{b \in \mathcal{H}_{B}} \frac{1}{n} \sum_i \left| c_{it} \right| \left( 2 \operatorname{Pr}_{z \sim \operatorname{Bernoulli} \left( \frac{b_i + 1}{2} \right)} \left[ \left( 2 z_i - 1 \right) = \operatorname{sign} \left( c_{it} \right) \right] - 1 \right) \\
-    &= \argmax_{b \in \mathcal{H}_{B}} \frac{1}{n} \sum_i \left| c_{it} \right| \operatorname{Pr}_{z \sim \operatorname{Bernoulli} \left( \frac{b_i + 1}{2} \right)} \left[ \left( 2 z_i - 1 \right) = \operatorname{sign} \left( c_{it} \right) \right] \\
-    &= \argmax_{b \in \mathcal{H}_{B}} \frac{1}{n} \sum_i \left| c_{it} \right| \operatorname{Pr}_{z \sim \operatorname{Bernoulli} \left( \frac{b_i + 1}{2} \right)} \left[ z_i = \frac{\operatorname{sign} \left( c_{it} \right) + 1}{2} \right] \\
-    &= \argmax_{b \in \mathcal{H}_{B}} \frac{1}{n} \sum_i \left| c_{it} \right| \operatorname{Pr}_{z \sim \operatorname{Bernoulli} \left( \frac{b_i + 1}{2} \right)} \left[ z_i = 1 \left\{ c_{it} > 0 \right\} \right] \\
-    &= \argmax_{b \in \mathcal{H}_{B}} \frac{1}{n} \sum_i w_{it} \operatorname{Pr}_{z \sim \operatorname{Bernoulli} \left( \frac{b_i + 1}{2} \right)} \left[ z_i = v_{it} \right] \\
+    &= \operatorname{argmax}_{b \in \mathcal{H}_{B}} \frac{1}{n} \sum_i \left| c_{it} \right| \left( 2 \operatorname{Pr}_{z \sim \operatorname{Bernoulli} \left( \frac{b_i + 1}{2} \right)} \left[ \left( 2 z_i - 1 \right) = \operatorname{sign} \left( c_{it} \right) \right] - 1 \right) \\
+    &= \operatorname{argmax}_{b \in \mathcal{H}_{B}} \frac{1}{n} \sum_i \left| c_{it} \right| \operatorname{Pr}_{z \sim \operatorname{Bernoulli} \left( \frac{b_i + 1}{2} \right)} \left[ \left( 2 z_i - 1 \right) = \operatorname{sign} \left( c_{it} \right) \right] \\
+    &= \operatorname{argmax}_{b \in \mathcal{H}_{B}} \frac{1}{n} \sum_i \left| c_{it} \right| \operatorname{Pr}_{z \sim \operatorname{Bernoulli} \left( \frac{b_i + 1}{2} \right)} \left[ z_i = \frac{\operatorname{sign} \left( c_{it} \right) + 1}{2} \right] \\
+    &= \operatorname{argmax}_{b \in \mathcal{H}_{B}} \frac{1}{n} \sum_i \left| c_{it} \right| \operatorname{Pr}_{z \sim \operatorname{Bernoulli} \left( \frac{b_i + 1}{2} \right)} \left[ z_i = 1 \left\{ c_{it} > 0 \right\} \right] \\
+    &= \operatorname{argmax}_{b \in \mathcal{H}_{B}} \frac{1}{n} \sum_i w_{it} \operatorname{Pr}_{z \sim \operatorname{Bernoulli} \left( \frac{b_i + 1}{2} \right)} \left[ z_i = v_{it} \right] \\
     &= \operatorname{Oracle}_{\mathcal{H}, \text{class}} \left( \{b_i\}, \{v_i^t\}, \{w_i^t\} \right)
     \end{aligned}
 
