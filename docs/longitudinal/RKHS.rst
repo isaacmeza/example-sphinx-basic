@@ -3,7 +3,7 @@ Regularized Kernel Hilbert Space
 .. _rkhs_estimators:
 
 In this section we assume that the function classes 
-whenever :math:`\mathcal{G}`, :math:`\mathcal{H}`, :math:`\mathcal{F}`, :math:`\mathcal{F}^\prime` are RKHS.  Let :math:`\Phi_A:\mathcal{G}\rightarrow\mathbb{R}^n` be an operator with :math:`i`th row :math:`\langle \phi(A_i),\cdot \rangle_{\mathcal{G}}` with corresponding kernel matrix :math:`K_A`.  Define analogously :math:`\Phi_B, \ldots` for the rest of the function classes.
+whenever :math:`\mathcal{G}`, :math:`\mathcal{H}`, :math:`\mathcal{F}`, :math:`\mathcal{F}^\prime` are RKHS.  Let :math:`\Phi_A:\mathcal{G}\rightarrow\mathbb{R}^n` be an operator with :math:`i`th row :math:`\langle \phi(A_i), \cdot \rangle_{\mathcal{G}}` with corresponding kernel matrix :math:`K_A`.  Define analogously :math:`\Phi_B, \ldots` for the rest of the function classes.
 
 
 Closed form - Estimator 1
