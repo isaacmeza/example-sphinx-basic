@@ -47,6 +47,11 @@ We study the estimator
         \hat{\alpha} &= \left( K_A P_C' K_A + \mu K_A^2 \right)^{\dagger} K_A P_C' Y \\
         P_{C'} &= K_{C'}^{\dagger} K_{C'}
 
+
+
+Closed form - Estimator 3
+-------------------------
+
 We study the ridge regularized *joint* estimator:
 
 .. math::
