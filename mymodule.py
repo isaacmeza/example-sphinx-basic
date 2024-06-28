@@ -1,20 +1,7 @@
 """
 This is a module for demonstrating Sphinx documentation.
 """
-import numpy as np
-from scipy.stats import norm
-from sklearn.model_selection import KFold
-from sklearn.linear_model import LogisticRegression
-from sklearn.cluster import KMeans
-from sklearn.preprocessing import PolynomialFeatures
-from statsmodels.nonparametric.kde import kernel_switch
-import warnings
-from tqdm import tqdm  # Import tqdm
-import copy
-import torch
-from mliv.rkhs import ApproxRKHSIVCV
-from joblib import Parallel, delayed
-from scipy.optimize import minimize_scalar
+
 class MyClass:
     """
     A simple example class.
