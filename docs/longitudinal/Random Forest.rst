@@ -43,7 +43,7 @@ For the estimator
 .. math::
 
     \hat{g} = \arg \min_{g\in\mathcal{G}} 
-    \max_{f' \in \mathcal{F'}} \mathbb{E}_n\left[2\left\{g(A)-Y\right\} f'(C')-f'(C')^2\right]+\mu'\E_n\{g(A)^2\}
+    \max_{f' \in \mathcal{F'}} \mathbb{E}_n\left[2\left\{g(A)-Y\right\} f'(C')-f'(C')^2\right]+\mu'\mathbb{E}_n\{g(A)^2\}
 
 .. admonition:: Ensemble solution
 
@@ -118,15 +118,15 @@ by separating the minimization and completing the square, we have that
 
 .. math::
 
-    c_t = \operatorname{argmin}_{c\in \mathcal{F}_C} \frac{1}{n}\sum_{i=1}^{n} \bigg(c_i-\frac{1}{t-1}\sum_{\tau=1}^{t-1}\left\{a_{i\tau}-b_{i\tau}\right\}\bigg)^2
-    =\operatorname{argmin}_{c\in \mathcal{F}_C} \frac{1}{n}\sum_{i=1}^{n} \bigg(c_i-u_i^{t}\bigg)^2 
-    =\operatorname{Oracle}_{\mathcal{F}, \text{reg}}\left(\{c_i\}, \{u_i^t\}\right)
+    c_t = \operatorname{argmin}_{c\in \mathcal{F}_C} \frac{1}{n}\sum_{i=1}^{n} \left(c_i-\frac{1}{t-1}\sum_{\tau=1}^{t-1}\left\{a_{i\tau}-b_{i\tau}\right\}\right)^2
+        = \operatorname{argmin}_{c\in \mathcal{F}_C} \frac{1}{n}\sum_{i=1}^{n} \left(c_i-u_i^{t}\right)^2 
+        = \operatorname{Oracle}_{\mathcal{F}, \text{reg}}\left(\{c_i\}, \{u_i^t\}\right)
 
 .. math::
 
-    c'_t = \operatorname{argmin}_{c'\in \mathcal{F'}_{C'}}\frac{1}{n}\sum_{i=1}^{n} \bigg(c_i'-\frac{1}{t-1}\sum_{\tau=1}^{t-1}\left\{y_i-a_{i\tau}\right\}\bigg)^2 
-    =\operatorname{argmin}_{c'\in \mathcal{F'}_{C'}}\frac{1}{n}\sum_{i=1}^{n} \bigg(c_i'-u_i'^{t}\bigg)^2 
-    =\operatorname{Oracle}_{\mathcal{F'}, \text{reg}}\left(\{c_i'\}, \{u_i'^t\}\right)
+    c'_t = \operatorname{argmin}_{c'\in \mathcal{F'}_{C'}}\frac{1}{n}\sum_{i=1}^{n} \left(c_i'-\frac{1}{t-1}\sum_{\tau=1}^{t-1}\left\{y_i-a_{i\tau}\right\}\right)^2 
+         = \operatorname{argmin}_{c'\in \mathcal{F'}_{C'}}\frac{1}{n}\sum_{i=1}^{n} \left(c_i'-u_i'^{t}\right)^2 
+         = \operatorname{Oracle}_{\mathcal{F'}, \text{reg}}\left(\{c_i'\}, \{u_i'^t\}\right)
 
 Now, the learner plays *be-the-leader* (BTL) which involves choosing :math:`(a_t,b_t)` that best responds
 
@@ -136,18 +136,17 @@ Now, the learner plays *be-the-leader* (BTL) which involves choosing :math:`(a_t
     \frac{1}{t}\sum_{\tau=1}^{t}\ell(\{c_\tau,c'_\tau\},\{a,b\})
 
 which after separating the minimization problem and completing the square we get:
+.. math::
+
+    a_t = \operatorname{argmin}_{a\in \mathcal{G}_A} \frac{1}{n}\sum_{i=1}^{n} \left(a_i-\frac{1}{\mu't}\sum_{\tau=1}^{t}\left\{c'_{i\tau}-c_{i\tau}\right\}\right)^2
+        = \operatorname{argmin}_{a\in \mathcal{G}_A} \frac{1}{n}\sum_{i=1}^{n} \left(a_i-v_i'^{t}\right)^2 
+        = \operatorname{Oracle}_{\mathcal{G}, \text{reg}}\left(\{a_i\}, \{v_i'^t\}\right)
 
 .. math::
 
-    a_t = \operatorname{argmin}_{a\in \mathcal{G}_A} \frac{1}{n}\sum_{i=1}^{n} \bigg(a_i-\frac{1}{\mu't}\sum_{\tau=1}^{t}\left\{c'_{i\tau}-c_{i\tau}\right\}\bigg)^2
-    =\operatorname{argmin}_{a\in \mathcal{G}_A} \frac{1}{n}\sum_{i=1}^{n} \bigg(a_i-v_i'^{t}\bigg)^2 
-    =\operatorname{Oracle}_{\mathcal{G}, \text{reg}}\left(\{a_i\}, \{v_i'^t\}\right)
-
-.. math::
-
-    b_t = \operatorname{argmin}_{b\in \mathcal{H}_{B}}\frac{1}{n}\sum_{i=1}^{n} \bigg(b_i-\frac{1}{\mu t}\sum_{\tau=1}^{t}c_{i\tau}\bigg)^2 
-    =\operatorname{argmin}_{b\in \mathcal{H}_{B}}\frac{1}{n}\sum_{i=1}^{n} \bigg(b_i-v_i^{t}\bigg)^2 
-    =\operatorname{Oracle}_{\mathcal{H}, \text{reg}}\left(\{b_i\}, \{v_i^t\}\right)
+    b_t = \operatorname{argmin}_{b\in \mathcal{H}_{B}} \frac{1}{n}\sum_{i=1}^{n} \left(b_i-\frac{1}{\mu t}\sum_{\tau=1}^{t}c_{i\tau}\right)^2 
+        = \operatorname{argmin}_{b\in \mathcal{H}_{B}} \frac{1}{n}\sum_{i=1}^{n} \left(b_i-v_i^{t}\right)^2 
+        = \operatorname{Oracle}_{\mathcal{H}, \text{reg}}\left(\{b_i\}, \{v_i^t\}\right)
 
 Thus it remains to show that the ensembles
 
@@ -155,7 +154,7 @@ Thus it remains to show that the ensembles
 
     \bar{a} = \frac{1}{T}\sum_{t=1}^{T}a_t\,,\qquad \bar{b} = \frac{1}{T}\sum_{t=1}^{T}b_t
 
-are also a solution to the empirical minimax problem.\\
+are also a solution to the empirical minimax problem.
 
 Observe that the learner has zero regret, since it is playing the BTL algorithm. Thus if we show that the FTL algorithm has :math:`\operatorname{Regret}(T)`-regret after :math:`T` periods, then :math:`(\bar{a},\bar{b})` is an :math:`\epsilon(T)` approximate solution to the minimax problem, invoking the results of `Freund and Schapire (1999) <https://www.sciencedirect.com/science/article/pii/S0899825699907388>`_.
 
@@ -175,7 +174,8 @@ so
 
 .. math::
 
-    \|\nabla_{\{c,c'\}}\ell\left(\{c,c'\}, \{a,b\}\right)\|_2 = \frac{2}{n}\sqrt{\sum_{i=1}^{n}\left(c_i-(y_i-a_i)+c_i'-(a_i-b_i)\right)^2}   
+    \|\nabla_{\{c,c'\}}\ell\left(\{c,c'\}, \{a,b\}\right)\|_2 
+    = \frac{2}{n}\sqrt{\sum_{i=1}^{n}\left(c_i-(y_i-a_i)+c_i'-(a_i-b_i)\right)^2}   
     \leq \frac{2}{n}\left(\|c\|_2+\|y\|_2+\|a\|_2+\|c'\|_2+\|a\|_2+\|b\|_2\right)
     \leq O\left(\frac{1}{\sqrt{n}}\right)
 
@@ -214,10 +214,12 @@ Finally,
 
 .. math::
 
-    \operatorname{Regret}(T) \leq \frac{1}{T} \sum_{t=1}^T\bigg(\ell\left(\{c_t, c'_t\}, \{a_t, b_t\}\right)-\ell\left(\{c_{t+1}, c'_{t+1}\}, \{a_t, b_t\}\right)\bigg)
-    \leq \frac{1}{T} \sum_{t=1}^T \frac{K}{\sqrt{n}} \left\|\{c_{t},c'_{t}\},\{c_{t+1},c'_{t+1}\}\right\|_2 
-    \leq \frac{1}{T} \sum_{t=1}^T \frac{K^2}{2}\frac{1}{t} 
-    \leq K^2\frac{\log T + 1}{T}
+    \operatorname{Regret}(T) \leq \frac{1}{T} \sum_{t=1}^T \left( \ell\left(\{c_t, c'_t\}, \{a_t, b_t\}\right) 
+    - \ell\left(\{c_{t+1}, c'_{t+1}\}, \{a_t, b_t\}\right) \right) \\
+    \leq \frac{1}{T} \sum_{t=1}^T \frac{K}{\sqrt{n}} \left\|\{c_{t}, c'_{t}\}, \{c_{t+1}, c'_{t+1}\}\right\|_2 \\
+    \leq \frac{1}{T} \sum_{t=1}^T \frac{K^2}{2} \frac{1}{t} \\
+    \leq K^2 \frac{\log T + 1}{T}
+
 
 
 Subsetted estimator
@@ -229,9 +231,9 @@ For the subsetted estimator
 
     (\hat{g},\hat{h}) = \arg \min _{g\in\mathcal{G}, h \in \mathcal{H}} 
     \max_{f' \in \mathcal{F}} \mathbb{E}_p\left[2\left\{g(A)-Y\right\} f'(C')-f'(C')^2\right]
-    + \mu'\E_n\{g(A)^2\}
+    + \mu'\mathbb{E}_n\{g(A)^2\} \\
     + \max_{f \in \mathcal{F}} \mathbb{E}_q\left[2\left\{h(B)-g(A)\right\} f(C)-f(C)^2\right]   
-    + \mu\E_n\{h(B)^2\}
+    + \mu\mathbb{E}_n\{h(B)^2\}
 
 We simply modify the updates for :math:`v_t', v_t` as
 
@@ -241,68 +243,109 @@ We simply modify the updates for :math:`v_t', v_t` as
     v_i^t = \frac{1}{\mu t}\sum_{\tau=1}^{t}f_\tau(c_i)1\big(i\in[q]\big)
 
 
-Estimator 3 - (Function class bounded)
---------------------------------------
 
-For the joint estimator
+
+Estimator 3 - (Function class bounded)
+======================================
+
+For the joint estimator:
 
 .. math::
 
-    (\hat{g},\hat{h}) = \arg \min _{g\in\mathcal{G}, h \in \mathcal{H}} 
-    \max_{f' \in \mathcal{F}} \mathbb{E}_n\left[2\left\{g(A)-Y\right\} f'(C')-f'(C')^2\right] 
-    +\max_{f \in \mathcal{F}} \mathbb{E}_n\left[2\left\{h(B)-g(A)\right\} f(C)-f(C)^2\right]  
+    (\hat{g}, \hat{h}) = \arg \min _{g \in \mathcal{G}, h \in \mathcal{H}} 
+    \max_{f' \in \mathcal{F}} \mathbb{E}_n \left[ 2 \left\{ g(A) - Y \right\} f'(C') - f'(C')^2 \right] \\
+    + \max_{f \in \mathcal{F}} \mathbb{E}_n \left[ 2 \left\{ h(B) - g(A) \right\} f(C) - f(C)^2 \right]
 
 .. admonition:: Ensemble solution
+    :class: lemma
+    :name: lemma-ensemble-3-norm
 
-    Consider the algorithm where for :math:`t=1, \ldots, T` :
+    Consider the algorithm where for \( t = 1, \ldots, T \):
 
     .. math::
+
         \begin{aligned}
-        & u_i'^{t} = \left(y_i - \frac{1}{t-1} \sum_{\tau=1}^{t-1} g_\tau\left(a_i\right)\right), \quad u_i^t = \frac{1}{t-1} \sum_{\tau=1}^{t-1} \bigg(g_\tau\left(a_i\right) - h_\tau\left(b_i\right)\bigg)\\
-        & f'_t = \operatorname{Oracle}_{\mathcal{F'}, \text{reg}}\left(\{c_i'\}, \{u_i'^t\}\right), \quad f_t = \operatorname{Oracle}_{\mathcal{F}, \text{reg}}\left(\{c_i\}, \{u_i^t\}\right) \\
-        & v_i'^t = 1\big(f'_t(c'_i) - f_t(c_i) > 0\big), \quad  v_i^t = 1\big(f_t(c_i) > 0\big)\\
-        & w_i'^t = \big|f'_t(c'_i) - f_t(c_i)\big|, \quad w_i^t = |f_t(c_i)|\\
-        & g_t = \operatorname{Oracle}_{\mathcal{G}, \text{class}}\left(\{a_i\}, \{v_i'^t\}, \{w_i'^t\}\right), \quad h_t = \operatorname{Oracle}_{\mathcal{H}, \text{class}}\left(\{b_i\}, \{v_i^t\}, \{w_i^t\}\right) \\
-        &
+        & u_i'^{t} = \left( y_i - \frac{1}{t-1} \sum_{\tau=1}^{t-1} g_\tau \left( a_i \right) \right), \\
+        & u_i^t = \frac{1}{t-1} \sum_{\tau=1}^{t-1} \left( g_\tau \left( a_i \right) - h_\tau \left( b_i \right) \right) \\
+        & f'_t = \operatorname{Oracle}_{\mathcal{F'}, \text{reg}} \left( \{c_i'\}, \{u_i'^t\} \right), \\
+        & f_t = \operatorname{Oracle}_{\mathcal{F}, \text{reg}} \left( \{c_i\}, \{u_i^t\} \right) \\
+        & v_i'^t = 1 \left( f'_t(c'_i) - f_t(c_i) > 0 \right), \\
+        & v_i^t = 1 \left( f_t(c_i) > 0 \right) \\
+        & w_i'^t = \left| f'_t(c'_i) - f_t(c_i) \right|, \\
+        & w_i^t = \left| f_t(c_i) \right| \\
+        & g_t = \operatorname{Oracle}_{\mathcal{G}, \text{class}} \left( \{a_i\}, \{v_i'^t\}, \{w_i'^t\} \right), \\
+        & h_t = \operatorname{Oracle}_{\mathcal{H}, \text{class}} \left( \{b_i\}, \{v_i^t\}, \{w_i^t\} \right)
         \end{aligned}
 
-    Suppose that the sets $\mathcal{F'}_{C'}$, $\mathcal{F}_{C}$ are convex sets. Then the ensembles: $\bar{g} = \frac{1}{T} \sum_{t=1}^T g_t\;,\bar{h} = \frac{1}{T} \sum_{t=1}^T h_t$, are a $O\left(\frac{\log (T)+1}{T}\right)$-approximate solution to the minimax problem. 
+    Suppose that the sets \(\mathcal{F'}_{C'}\), \(\mathcal{F}_{C}\), are convex sets. Then the ensembles: \(\bar{g} = \frac{1}{T} \sum_{t=1}^T g_t\), \(\bar{h} = \frac{1}{T} \sum_{t=1}^T h_t\), are a \(O \left( \frac{\log (T) + 1}{T} \right)\)-approximate solution to the minimax problem.
 
 **Proof**
 
-The proof is analogous to Lemma \ref{lemma:ensemble_3}, except that the learner best-responds to the current test function
+The proof is analogous to Lemma :ref:`lemma-ensemble-3`, except that the learner best-responds to the current test function:
 
 .. math::
 
-    \{a_t,b_t\} &= \operatorname{argmax}_{a\in \mathcal{G}_A, b\in \mathcal{H}_{B}}\ell(\{c_t,c'_t\},\{a,b\})\\
-    &= \operatorname{argmax}_{a\in \mathcal{G}_A, b\in \mathcal{H}_{B}} \sum_{i=1}^{n}c_{it}'^2 - 2(Y_i - a_i)c'_{it} + c_{it}^2 - 2(a_i - b_i)c_{it}
+    \begin{aligned}
+    \{a_t, b_t\} &= \operatorname{argmax}_{a \in \mathcal{G}_A, b \in \mathcal{H}_{B}} \ell(\{c_t, c'_t\}, \{a, b\}) \\
+    &= \operatorname{argmax}_{a \in \mathcal{G}_A, b \in \mathcal{H}_{B}} \sum_{i=1}^{n} c_{it}'^2 - 2(Y_i - a_i) c'_{it} + c_{it}^2 - 2(a_i - b_i) c_{it}
+    \end{aligned}
 
-which gives
+which gives:
 
 .. math::
 
+    \begin{aligned}
     a_t &= \argmax_{a \in \mathcal{G}_{A}} \sum_{i=1}^{n} a_i (c'_{it} - c_{it}) \\
-    &= \argmax_{a \in \mathcal{G}_{A}} \frac{1}{n} \sum_i a_i \left| c'_{it} - c_{it} \right| \operatorname{sign}\left( c'_{it} - c_{it} \right) \\
-    &= \argmax_{a \in \mathcal{G}_{A}} \frac{1}{n} \sum_i \left| c'_{it} - c_{it} \right| \mathbb{E}_{z \sim \operatorname{Bernoulli}\left( \frac{a_i + 1}{2} \right)} \left[ \left( 2 z_i - 1 \right) \operatorname{sign}\left( c'_{it} - c_{it} \right) \right] \\
-    &= \argmax_{a \in \mathcal{G}_{A}} \frac{1}{n} \sum_i \left| c'_{it} - c_{it} \right| \left( \operatorname{Pr}_{z \sim \operatorname{Bernoulli}\left( \frac{a_i + 1}{2} \right)} \left[ \left( 2 z_i - 1 \right) = \operatorname{sign}\left( c'_{it} - c_{it} \right) \right] \right. \\
-    & \qquad \qquad \qquad \left. - \operatorname{Pr}_{z \sim \operatorname{Bernoulli}\left( \frac{a_i + 1}{2} \right)} \left[ \left( 2 z_i - 1 \right) \neq \operatorname{sign}\left( c'_{it} - c_{it} \right) \right] \right) \\
-    &= \argmax_{a \in \mathcal{G}_{A}} \frac{1}{n} \sum_i \left| c'_{it} - c_{it} \right| \left( 2 \operatorname{Pr}_{z \sim \operatorname{Bernoulli}\left( \frac{a_i + 1}{2} \right)} \left[ \left( 2 z_i - 1 \right) = \operatorname{sign}\left( c'_{it} - c_{it} \right) \right] - 1 \right) \\
-    &= \argmax_{a \in \mathcal{G}_{A}} \frac{1}{n} \sum_i \left| c'_{it} - c_{it} \right| \operatorname{Pr}_{z \sim \operatorname{Bernoulli}\left( \frac{a_i + 1}{2} \right)} \left[ z_i = \frac{\operatorname{sign}\left( c'_{it} - c_{it} \right) + 1}{2} \right] \\
-    &= \argmax_{a \in \mathcal{G}_{A}} \frac{1}{n} \sum_i \left| c'_{it} - c_{it} \right| \operatorname{Pr}_{z \sim \operatorname{Bernoulli}\left( \frac{a_i + 1}{2} \right)} \left[ z_i = 1\left\{ c'_{it} - c_{it} > 0 \right\} \right] \\
-    &= \argmax_{a \in \mathcal{G}_{A}} \frac{1}{n} \sum_i w_{it} \operatorname{Pr}_{z \sim \operatorname{Bernoulli}\left( \frac{a_i + 1}{2} \right)} \left[ z_i = v_{it} \right] \\
-    &= \operatorname{Oracle}_{\mathcal{G}, \text{class}}\left( \{a_i\}, \{v_i'^t\}, \{w_i'^t\} \right)
+    &= \argmax_{a \in \mathcal{G}_{A}} \frac{1}{n} \sum_i a_i \left| c'_{it} - c_{it} \right| \operatorname{sign} \left( c'_{it} - c_{it} \right) \\
+    &= \argmax_{a \in \mathcal{G}_{A}} \frac{1}{n} \sum_i \left| c'_{it} - c_{it} \right| \mathbb{E}_{z \sim \operatorname{Bernoulli} \left( \frac{a_i + 1}{2} \right)} \left[ \left( 2 z_i - 1 \right) \operatorname{sign} \left( c'_{it} - c_{it} \right) \right] \\
+    &= \argmax_{a \in \mathcal{G}_{A}} \frac{1}{n} \sum_i \left| c'_{it} - c_{it} \right| \left( \operatorname{Pr}_{z \sim \operatorname{Bernoulli} \left( \frac{a_i + 1}{2} \right)} \left[ \left( 2 z_i - 1 \right) = \operatorname{sign} \left( c'_{it} - c_{it} \right) \right] \right. \\
+    & \qquad \qquad \qquad \left. - \operatorname{Pr}_{z \sim \operatorname{Bernoulli} \left( \frac{a_i + 1}{2} \right)} \left[ \left( 2 z_i - 1 \right) \neq \operatorname{sign} \left( c'_{it} - c_{it} \right) \right] \right) \\
+    &= \argmax_{a \in \mathcal{G}_{A}} \frac{1}{n} \sum_i \left| c'_{it} - c_{it} \right| \left( 2 \operatorname{Pr}_{z \sim \operatorname{Bernoulli} \left( \frac{a_i + 1}{2} \right)} \left[ \left( 2 z_i - 1 \right) = \operatorname{sign} \left( c'_{it} - c_{it} \right) \right] - 1 \right) \\
+    &= \argmax_{a \in \mathcal{G}_{A}} \frac{1}{n} \sum_i \left| c'_{it} - c_{it} \right| \operatorname{Pr}_{z \sim \operatorname{Bernoulli} \left( \frac{a_i + 1}{2} \right)} \left[ \left( 2 z_i - 1 \right) = \operatorname{sign} \left( c'_{it} - c_{it} \right) \right] \\
+    &= \argmax_{a \in \mathcal{G}_{A}} \frac{1}{n} \sum_i \left| c'_{it} - c_{it} \right| \operatorname{Pr}_{z \sim \operatorname{Bernoulli} \left( \frac{a_i + 1}{2} \right)} \left[ z_i = \frac{\operatorname{sign} \left( c'_{it} - c_{it} \right) + 1}{2} \right] \\
+    &= \argmax_{a \in \mathcal{G}_{A}} \frac{1}{n} \sum_i \left| c'_{it} - c_{it} \right| \operatorname{Pr}_{z \sim \operatorname{Bernoulli} \left( \frac{a_i + 1}{2} \right)} \left[ z_i = 1 \left\{ c'_{it} - c_{it} > 0 \right\} \right] \\
+    &= \argmax_{a \in \mathcal{G}_{A}} \frac{1}{n} \sum_i w_{it} \operatorname{Pr}_{z \sim \operatorname{Bernoulli} \left( \frac{a_i + 1}{2} \right)} \left[ z_i = v_{it} \right] \\
+    &= \operatorname{Oracle}_{\mathcal{G}, \text{class}} \left( \{a_i\}, \{v_i'^t\}, \{w_i'^t\} \right)
+    \end{aligned}
+
+and
 
 .. math::
 
+    \begin{aligned}
     b_t &= \argmax_{b \in \mathcal{H}_{B}} \sum_{i=1}^{n} b_i c_{it} \\
-    &= \argmax_{b \in \mathcal{H}_{B}} \frac{1}{n} \sum_i b_i \left| c_{it} \right| \operatorname{sign}\left( c_{it} \right) \\
-    &= \argmax_{b \in \mathcal{H}_{B}} \frac{1}{n} \sum_i \left| c_{it} \right| \mathbb{E}_{z \sim \operatorname{Bernoulli}\left( \frac{b_i + 1}{2} \right)} \left[ \left( 2 z_i - 1 \right) \operatorname{sign}\left( c_{it} \right) \right] \\
-    &= \argmax_{b \in \mathcal{H}_{B}} \frac{1}{n} \sum_i \left| c_{it} \right| \left( \operatorname{Pr}_{z \sim \operatorname{Bernoulli}\left( \frac{b_i + 1}{2} \right)} \left[ \left( 2 z_i - 1 \right) = \operatorname{sign}\left( c_{it} \right) \right] \right. \\
-    & \qquad \qquad \qquad \left. - \operatorname{Pr}_{z \sim \operatorname{Bernoulli}\left( \frac{b_i + 1}{2} \right)} \left[ \left( 2 z_i - 1 \right) \neq \operatorname{sign}\left( c_{it} \right) \right] \right) \\
-    &= \argmax_{b \in \mathcal{H}_{B}} \frac{1}{n} \sum_i \left| c_{it} \right| \left( 2 \operatorname{Pr}_{z \sim \operatorname{Bernoulli}\left( \frac{b_i + 1}{2} \ right)} \left[ \left( 2 z_i - 1 \right) = \operatorname{sign}\left( c_{it} \right) \right] - 1 \right) \\
-    &= \argmax_{b \in \mathcal{H}_{B}} \frac{1}{n} \sum_i \left| c_{it} \right| \operatorname{Pr}_{z \sim \operatorname{Bernoulli}\left( \frac{b_i + 1}{2} \right)} \left[ \left( 2 z_i - 1 \right) = \operatorname{sign}\left( c_{it} \right) \right] \\
-    &= \argmax_{b \in \mathcal{H}_{B}} \frac{1}{n} \ sum_i \left| c_{it} \right| \operatorname{Pr}_{z \sim \operatorname{Bernoulli}\left( \frac{b_i + 1}{2} \ right)} \left[ z_i = \frac{\operatorname{sign}\left( c_{it} \right) + 1}{2} \ right] \\
-    &= \argmax_{b \in \mathcal{H}_{B}} \frac{1}{n} \ sum_i \left| c_{it} \ right| \operatorname{Pr}_{z \sim \operatorname{Bernoulli}\left( \frac{b_i + 1}{2} \ right)} \ left[ z_i = 1 \ left\{ c_{it} > 0 \ right\} \ right] \\
-    &= \argmax_{b \in \mathcal{H}_{B}} \frac{1}{n} \ sum_i w_{it} \operatorname{Pr}_{z \sim \operatorname{Bernoulli}\left( \frac{b_i + 1}{2} \ right)} \ left[ z_i = v_{it} \ right] \\
-    &= \operatorname{Oracle}_{\mathcal{H}, \text{class}}\left( \{b_i\}, \{v_i^t\}, \{w_i^t\} \right)
+    &= \argmax_{b \in \mathcal{H}_{B}} \frac{1}{n} \sum_i b_i \left| c_{it} \right| \operatorname{sign} \left( c_{it} \right) \\
+    &= \argmax_{b \in \mathcal{H}_{B}} \frac{1}{n} \sum_i \left| c_{it} \right| \mathbb{E}_{z \sim \operatorname{Bernoulli} \left( \frac{b_i + 1}{2} \right)} \left[ \left( 2 z_i - 1 \right) \operatorname{sign} \left( c_{it} \right) \right] \\
+    &= \argmax_{b \in \mathcal{H}_{B}} \frac{1}{n} \sum_i \left| c_{it} \right| \left( \operatorname{Pr}_{z \sim \operatorname{Bernoulli} \left( \frac{b_i + 1}{2} \right)} \left[ \left( 2 z_i - 1 \right) = \operatorname{sign} \left( c_{it} \right) \right] \right. \\
+    & \qquad \qquad \qquad \left. - \operatorname{Pr}_{z \sim \operatorname{Bernoulli} \left( \frac{b_i + 1}{2} \right)} \left[ \left( 2 z_i - 1 \right) \neq \operatorname{sign} \left( c_{it} \right) \right] \right) \\
+    &= \argmax_{b \in \mathcal{H}_{B}} \frac{1}{n} \sum_i \left| c_{it} \right| \left( 2 \operatorname{Pr}_{z \sim \operatorname{Bernoulli} \left( \frac{b_i + 1}{2} \right)} \left[ \left( 2 z_i - 1 \right) = \operatorname{sign} \left( c_{it} \right) \right] - 1 \right) \\
+    &= \argmax_{b \in \mathcal{H}_{B}} \frac{1}{n} \sum_i \left| c_{it} \right| \operatorname{Pr}_{z \sim \operatorname{Bernoulli} \left( \frac{b_i + 1}{2} \right)} \left[ \left( 2 z_i - 1 \right) = \operatorname{sign} \left( c_{it} \right) \right] \\
+    &= \argmax_{b \in \mathcal{H}_{B}} \frac{1}{n} \sum_i \left| c_{it} \right| \operatorname{Pr}_{z \sim \operatorname{Bernoulli} \left( \frac{b_i + 1}{2} \right)} \left[ z_i = \frac{\operatorname{sign} \left( c_{it} \right) + 1}{2} \right] \\
+    &= \argmax_{b \in \mathcal{H}_{B}} \frac{1}{n} \sum_i \left| c_{it} \right| \operatorname{Pr}_{z \sim \operatorname{Bernoulli} \left( \frac{b_i + 1}{2} \right)} \left[ z_i = 1 \left\{ c_{it} > 0 \right\} \right] \\
+    &= \argmax_{b \in \mathcal{H}_{B}} \frac{1}{n} \sum_i w_{it} \operatorname{Pr}_{z \sim \operatorname{Bernoulli} \left( \frac{b_i + 1}{2} \right)} \left[ z_i = v_{it} \right] \\
+    &= \operatorname{Oracle}_{\mathcal{H}, \text{class}} \left( \{b_i\}, \{v_i^t\}, \{w_i^t\} \right)
+    \end{aligned}
+
+Subsetted Estimator
+^^^^^^^^^^^^^^^^^^^
+
+For the subsetted estimator:
+
+.. math::
+
+    \begin{aligned}
+    (\hat{g}, \hat{h}) = \arg \min _{g \in \mathcal{G}, h \in \mathcal{H}} 
+    \max_{f' \in \mathcal{F}} \mathbb{E}_p \left[ 2 \left\{ g(A) - Y \right\} f'(C') - f'(C')^2 \right] \\
+    + \max_{f \in \mathcal{F}} \mathbb{E}_q \left[ 2 \left\{ h(B) - g(A) \right\} f(C) - f(C)^2 \right]
+    \end{aligned}
+
+We simply modify the updates for \(w_t', w_t\) as:
+
+.. math::
+
+    \begin{aligned}
+    w_i'^t &= \left| f'_t(c'_i) 1\left( i \in [p] \right) - f_t(c_i) 1\left( i \in [q] \right) \right|, \\
+    w_i^t &= \left| f_t(c_i) 1\left( i \in [q] \right) \right|
+    \end{aligned}
+
 
