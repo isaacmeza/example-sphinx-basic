@@ -12,19 +12,20 @@ We study the estimator
 
 .. math::
 
-    \hat{g}=\arg \min_{g\in\mathcal{G}} 
-    \max_{f' \in \mathcal{F'}} \mathbb{E}_n\left[2\left\{g(A)-Y\right\} f'(C')-f'(C')^2\right] -\lambda \|f\|_{\mathcal{F}}^2
-     +\mu'\|g\|_{\mathcal{G}}^2 
+    \hat{g} = \arg \min_{g \in \mathcal{G}} 
+    \max_{f' \in \mathcal{F'}} \mathbb{E}_n \left[ 2 \left\{ g(A) - Y \right\} f'(C') - f'(C')^2 \right] - \lambda \| f \|_{\mathcal{F}}^2
+     + \mu' \| g \|_{\mathcal{G}}^2
 
 .. lemma:: Formula of minimizers
    :name: lemma:min_1
 
-    The minimizer takes the form $\hat{g} = \Phi_A^*\hat\alpha$ where,
+    The minimizer takes the form :math:`\hat{g} = \Phi_A^* \hat{\alpha}` where,
 
     .. math::
 
-        \hat{\alpha} &= \left(K_A P_C' K_A + \mu K_A\right)^{\dagger}K_AP_C'Y\\
-        P_{C'}&=\left(K_{C'}+\lambda\right)^{\dagger}K_{C'}
+        \hat{\alpha} &= \left(K_A P_C' K_A + \mu K_A \right)^{\dagger} K_A P_C' Y \\
+        P_{C'} &= \left(K_{C'} + \lambda \right)^{\dagger} K_{C'}
+
 
 Closed form - Estimator 2
 -------------------------
