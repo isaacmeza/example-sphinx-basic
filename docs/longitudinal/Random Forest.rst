@@ -219,6 +219,26 @@ Finally,
     \leq \frac{1}{T} \sum_{t=1}^T \frac{K^2}{2}\frac{1}{t} 
     \leq K^2\frac{\log T + 1}{T}
 
+Subsetted estimator
+^^^^^^^^^^^^^^^^^^^
+
+For the subsetted estimator
+
+.. math::
+
+    (\hat{g},\hat{h}) = \arg \min _{g\in\mathcal{G}, h \in \mathcal{H}} 
+    \max_{f' \in \mathcal{F}} \mathbb{E}_p\left[2\left\{g(A)-Y\right\} f'(C')-f'(C')^2\right]
+    + \mu'\E_n\{g(A)^2\}
+    + \max_{f \in \mathcal{F}} \mathbb{E}_q\left[2\left\{h(B)-g(A)\right\} f(C)-f(C)^2\right]   
+    + \mu\E_n\{h(B)^2\}
+
+We simply modify the updates for :math:`v_t', v_t` as
+
+.. math::
+
+    v_i'^t = \frac{1}{\mu't}\sum_{\tau=1}^{t}\bigg(f'_\tau(c'_i)1\big(i\in[p]\big)-f_\tau(c_i)1\big(i\in[q]\big)\bigg), \quad
+    v_i^t = \frac{1}{\mu t}\sum_{\tau=1}^{t}f_\tau(c_i)1\big(i\in[q]\big)
+
 
 Estimator 3 - (Function class bounded)
 --------------------------------------
