@@ -178,4 +178,158 @@ By a similar argument to the existence of maximizers, for any :math:`(\hat{g}, \
 
 **Properties of pseudo-inverse**
 
-For any square symmetric matrix :math:`K \in \mathbb{R}^{n \times n}`, its eigendecomposition is :math:`K = U \Sigma U^{\top}` where :math:`\Sigma \in \mathbb{R}^{r \times r}` and :math:`r \leq n`. Its pseudo-inverse is :math:`K^- = U \Sigma^{\dagger} U^{\top}`.
+For any square symmetric matrix :math:`K \in \mathbb{R}^{n \times n}`, its eigendecomposition is :math:`K = U \Sigma U^{\top}` where :math:`\Sigma \in \mathbb{R}^{r \times r}` and :math:`r \leq n`. Its pseudo-inverse is :math:`K^- = U \Sigma^{\dagger} U^{\top}`. Moreover, :math:`K^{\dagger} K = KK^{\dagger} = UU^{\top}`, which is a projection.
+
+To lighten notation, let :math:`K_C^{\dagger} K_C = P_C`.
+
+**Formula of minimizers**
+
+The explicit formula for the coefficients is
+
+.. math::
+
+    \hat{\beta} = \left[ K_A \left\{ P_C + \left( P_{C'} + P_C + \mu' \right) K_A \left( K_B P_C K_A \right)^{\dagger} K_B \left( P_C + \mu \right) \right\} K_B \right]^{\dagger} K_A P_{C'} Y \\
+    \hat{\alpha} = \left( K_B P_C K_A \right)^{\dagger} K_B \left( P_C + \mu \right) K_B \hat{\beta}
+
+**Proof**
+
+We proceed in steps.
+
+1. Write the objective :math:`\mathcal{E}(g,h)` as
+
+.. math::
+
+    2 \langle \hat{f}'_{g,h}, \hat{\mu}'_{g,h} \rangle_{\mathcal{F}} - \langle \hat{f}'_{g,h}, \hat{T}_{C'} \hat{f}'_{g,h} \rangle_{\mathcal{F}}  
+    + \mu' \langle g, \hat{T}_A g \rangle_{\mathcal{G}} \\
+    + 2 \langle \hat{f}_{g,h}, \hat{\mu}_{g,h} \rangle_{\mathcal{F}} - \langle \hat{f}_{g,h}, \hat{T}_C \hat{f}_{g,h} \rangle_{\mathcal{F}}  
+    + \mu \langle h, \hat{T}_B h \rangle_{\mathcal{H}}
+
+where
+
+.. math::
+
+    \hat{\mu}'_{g,h} = \frac{1}{n} \Phi_{C'}^* \vec{V}'_{g,h}, \quad
+    \hat{\mu}_{g,h} = \frac{1}{n} \Phi_C^* \vec{V}_{g,h}
+
+and the covariance operators are defined analogously to the formula of maximizers. Hence,
+
+.. math::
+
+    \mathcal{E}(g,h) =
+    2 \langle \Phi_{C'}^* K_{C'}^{\dagger} \vec{V}'_{g,h}, \hat{\mu}'_{g,h} \rangle_{\mathcal{F}}
+    - \langle \Phi_{C'}^* K_{C'}^{\dagger} \vec{V}'_{g,h}, \hat{T}_{C'} \Phi_{C'}^* K_{C'}^{\dagger} \vec{V}'_{g,h} \rangle_{\mathcal{F}} \\
+    + \mu' \langle g, \hat{T}_A g \rangle_{\mathcal{G}} \\
+    + 2 \langle \Phi_C^* K_C^{\dagger} \vec{V}_{g,h}, \hat{\mu}_{g,h} \rangle_{\mathcal{F}}
+    - \langle \Phi_C^* K_C^{\dagger} \vec{V}_{g,h}, \hat{T}_C \Phi_C^* K_C^{\dagger} \vec{V}_{g,h} \rangle_{\mathcal{F}} \\
+    + \mu \langle h, \hat{T}_B h \rangle_{\mathcal{H}}
+
+.. math::
+
+    = \frac{2}{n} (\vec{V}'_{g,h})^{\top} K_{C'}^{\dagger} \Phi_{C'} \Phi_{C'}^* \vec{V}'_{g,h}
+    - \frac{1}{n} (\vec{V}'_{g,h})^{\top} K_{C'}^{\dagger} \Phi_{C'} \Phi_{C'}^* \Phi_{C'} \Phi_{C'}^* K_{C'}^{\dagger} \vec{V}'_{g,h} \\
+    + \mu' \langle g, \hat{T}_A g \rangle_{\mathcal{G}} \\
+    + \frac{2}{n} \vec{V}_{g,h}^{\top} K_C^{\dagger} \Phi_C \Phi_C^* \vec{V}_{g,h}
+    - \frac{1}{n} \vec{V}_{g,h}^{\top} K_C^{\dagger} \Phi_C \Phi_C^* \Phi_C \Phi_C^* K_C^{\dagger} \vec{V}_{g,h} \\
+    + \mu \langle h, \hat{T}_B h \rangle_{\mathcal{H}}
+
+.. math::
+
+    = \frac{1}{n} (\vec{V}'_{g,h})^{\top} P_{C'} \vec{V}'_{g,h}
+    + \mu' \langle g, \hat{T}_A g \rangle_{\mathcal{G}} \\
+    + \frac{1}{n} \vec{V}_{g,h}^{\top} P_C \vec{V}_{g,h}
+    + \mu \langle h, \hat{T}_B h \rangle_{\mathcal{H}}
+
+2. Let :math:`Y, G, H \in \mathbb{R}^n` be defined with :math:`G_i = g(A_i)` and :math:`H_i = h(B_i)`. In this notation,
+
+.. math::
+
+    \frac{1}{n} (\vec{V}'_{g,h})^{\top} P_{C'} \vec{V}'_{g,h}
+    = \frac{1}{n} (Y^{\top} P_{C'} Y - 2 G^{\top} P_{C'} Y + G^{\top} P_{C'} G), \quad
+    \mu' \langle g, \hat{T}_A g \rangle_{\mathcal{G}} = \frac{\mu'}{n} G^{\top} G \\
+    \frac{1}{n} \vec{V}_{g,h}^{\top} P_C \vec{V}_{g,h}
+    = \frac{1}{n} (H^{\top} P_C H - 2 G^{\top} P_C H + G^{\top} P_C G), \quad
+    \mu \langle h, \hat{T}_B h \rangle_{\mathcal{H}} = \frac{\mu}{n} H^{\top} H
+
+Combining with :math:`G = \Phi_A g = K_A \alpha` and :math:`H = \Phi_B h = K_B \beta` from the existence of minimizers,
+
+.. math::
+
+    n \mathcal{E}(\alpha, \beta) = Y^{\top} P_{C'} Y - 2 G^{\top} (P_{C'} Y + P_C H)
+    + G^{\top} (P_{C'} + P_C + \mu') G + H^{\top} (P_C + \mu) H \\
+    = Y^{\top} P_{C'} Y - 2 \alpha^{\top} K_A (P_{C'} Y + P_C K_B \beta)
+    + \alpha^{\top} K_A (P_{C'} + P_C + \mu') K_A \alpha \\
+    \quad + \beta^{\top} K_B (P_C + \mu) K_B \beta
+
+3. The first order conditions yield
+
+.. math::
+
+    0 = -2 K_A (P_{C'} Y + P_C K_B \hat{\beta}) + 2 K_A (P_{C'} + P_C + \mu') K_A \hat{\alpha} \\
+    0 = -2 K_B P_C K_A \hat{\alpha} + 2 K_B (P_C + \mu) K_B \hat{\beta}
+    \Longrightarrow \hat{\alpha} = \left( K_B P_C K_A \right)^{\dagger} K_B \left( P_C + \mu \right) K_B \hat{\beta}
+
+4. Substituting the latter into the former,
+
+.. math::
+
+    K_A P_{C'} Y + K_A P_C K_B \hat{\beta} = K_A (P_{C'} + P_C + \mu') K_A \left( K_B P_C K_A \right)^{\dagger} K_B \left( P_C + \mu \right) K_B \hat{\beta}
+
+and solving for :math:`\hat{\beta}`,
+
+.. math::
+
+    \hat{\beta} = \left[ K_A \left\{ P_C + \left( P_{C'} + P_C + \mu' \right) K_A \left( K_B P_C K_A \right)^{\dagger} K_B \left( P_C + \mu \right) \right\} K_B \right]^{\dagger} K_A P_{C'} Y
+
+Remark (Subsetted estimator)
+----------------------------
+
+The explicit formula for the coefficients is
+
+.. math::
+
+    \hat{\beta} = \left[ K_A \left\{ \tilde{P}_C + \left( \tilde{P}_{C'} + \tilde{P}_C + \mu' \right) K_A \left( K_B \tilde{P}_C K_A \right)^{\dagger} K_B \left( \tilde{P}_C + \mu \right) \right\} K_B \right]^{\dagger} K_A \tilde{P}_{C'} Y \\
+    \hat{\alpha} = \left( K_B \tilde{P}_C K_A \right)^{\dagger} K_B \left( \tilde{P}_C + \mu \right) K_B \hat{\beta}
+
+where :math:`\tilde{P}_{C'} = \frac{n}{p} I_{[p]}^{\top} P_{C';[p,p]} I_{[p]}` and :math:`\tilde{P}_C = \frac{n}{q} I_{[q]}^{\top} P_{C;[q,q]} I_{[q]}`. Note that :math:`P_{C';[p,p]} = (K_{C';[p,p]})^- K_{C';[p,p]}` and :math:`K_{C';[p,p]} = I_{[p]} K_{C'} I_{[p]}^{\top}`.
+
+**Proof**
+
+We proceed in steps.
+
+1. Write the objective :math:`\mathcal{E}(g,h)` as
+
+.. math::
+
+    2 \langle \hat{f}'_{g,h}, \hat{\mu}'_{g,h;[p]} \rangle_{\mathcal{F}} - \langle \hat{f}'_{g,h}, \hat{T}_{C';[p,p]} \hat{f}'_{g,h} \rangle_{\mathcal{F}}
+    + \mu' \langle g, \hat{T}_A g \rangle_{\mathcal{G}} \\
+    + 2 \langle \hat{f}_{g,h}, \hat{\mu}_{g,h;[q]} \rangle_{\mathcal{F}} - \langle \hat{f}_{g,h}, \hat{T}_{C;[q,q]} \hat{f}_{g,h} \rangle_{\mathcal{F}}
+    + \mu \langle h, \hat{T}_B h \rangle_{\mathcal{H}}
+
+where
+
+.. math::
+
+    \hat{\mu}'_{g,h;[p]} = \frac{1}{p} \Phi_{C';[p]}^* \vec{V}'_{g,h;[p]}, \quad
+    \hat{\mu}_{g,h;[q]} = \frac{1}{q} \Phi_{C;[q]}^* \vec{V}_{g,h;[q]}
+
+and the covariance operators are defined analogously to the subsetted estimator. Hence,
+
+.. math::
+
+    \mathcal{E}(g,h) = \frac{1}{p} (\vec{V}'_{g,h;[p]})^{\top} P_{C';[p,p]} \vec{V}'_{g,h;[p]}
+    + \mu' \langle g, \hat{T}_A g \rangle_{\mathcal{G}} \\
+    + \frac{1}{q} \vec{V}_{g,h;[q]}^{\top} P_{C;[q,q]} \vec{V}_{g,h;[q]}
+    + \mu \langle h, \hat{T}_B h \rangle_{\mathcal{H}}
+
+2. Let :math:`Y, G, H \in \mathbb{R}^n` be defined with :math:`G_i = g(A_i)` and :math:`H_i = h(B_i)` as before. Now, let :math:`\tilde{P}_{C'} = \frac{n}{p} I_{[p]}^{\top} P_{C';[p,p]} I_{[p]}` and :math:`\tilde{P}_C = \frac{n}{q} I_{[q]}^{\top} P_{C;[q,q]} I_{[q]}`. Then
+
+.. math::
+
+    \frac{1}{p} (\vec{V}'_{g,h;[p]})^{\top} P_{C';[p,p]} \vec{V}'_{g,h;[p]}
+    = \frac{1}{n} (Y^{\top} \tilde{P}_{C'} Y - 2 G^{\top} \tilde{P}_{C'} Y + G^{\top} \tilde{P}_{C'} G) \\
+    \mu' \langle g, \hat{T}_A g \rangle_{\mathcal{G}} = \frac{\mu'}{n} G^{\top} G \\
+    \frac{1}{q} \vec{V}_{g,h;[q]}^{\top} P_{C;[q,q]} \vec{V}_{g,h;[q]}
+    = \frac{1}{n} (H^{\top} \tilde{P}_C H - 2 G^{\top} \tilde{P}_C H + G^{\top} \tilde{P}_C G) \\
+    \mu \langle h, \hat{T}_B h \rangle_{\mathcal{H}} = \frac{\mu}{n} H^{\top} H
+
+Hereafter we use the same argument as in the formula of minimizers.
