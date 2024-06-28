@@ -62,7 +62,7 @@ We study the ridge regularized *joint* estimator:
     \quad + \max_{f \in \mathcal{F}} \mathbb{E}_n \left[ 2 \left\{ h(B) - g(A) \right\} f(C) - f(C)^2 \right]
     + \mu \mathbb{E}_n \{ h(B)^2 \}
 
-Let :math:`V_{g,h}' = g(A) - Y` and :math:`V_{g,h} = h(B) - g(A)`. Let :math:`\Phi_C : \mathcal{F} \rightarrow \mathbb{R}^n` be an operator with :math:`i`th row :math:`\langle \phi(C_i), \cdot \rangle_{\mathcal{F}}`. Define :math:`\Phi_{C'}` analogously, replacing :math:`C_i` with :math:`C_i'`. Let :math:`K_C` and :math:`K_{C'}` be the corresponding kernel matrices.
+Let :math:`V_{g,h}' = g(A) - Y` and :math:`V_{g,h} = h(B) - g(A)`. Let :math:`\Phi_C : \mathcal{F} \rightarrow \mathbb{R}^n` be an operator with :math:`i` th row :math:`\langle \phi(C_i), \cdot \rangle_{\mathcal{F}}`. Define :math:`\Phi_{C'}` analogously, replacing :math:`C_i` with :math:`C_i'`. Let :math:`K_C` and :math:`K_{C'}` be the corresponding kernel matrices.
 
 In remarks below, we also study the following modification, which we call the "subsetted" estimator:
 
