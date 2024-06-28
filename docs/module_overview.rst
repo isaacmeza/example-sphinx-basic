@@ -6,8 +6,3 @@ Module Overview
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: mymodule
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
