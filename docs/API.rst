@@ -1,18 +1,37 @@
-.. _python_api:
+API Documentation
+=================
 
-API reference
-=============
+.. toctree::
+   :maxdepth: 2
+   :caption: Contents:
 
-Double machine learning models
-------------------------------
+   module_overview
+   class_myclass
+   function_myfunction
 
-.. autosummary::
-   :toctree: generated
+Module Overview
+---------------
 
-    dml_npiv
-    test
-    mymodule
-    semiparametrics.dml_npiv
-    semiparametrics.dml_mediated
-    semiparametrics.dml_joint_mediated
-    semiparametrics.dml_longterm
+.. automodule:: mymodule
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Classes
+-------
+
+Class: MyClass
+~~~~~~~~~~~~~~
+
+.. autoclass:: mymodule.MyClass
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Functions
+---------
+
+Function: my_function
+~~~~~~~~~~~~~~~~~~~~~
+
+.. autofunction:: mymodule.my_function
