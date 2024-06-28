@@ -23,6 +23,7 @@ author = "Isaac Meza and Rahul Singh"
 
 extensions = [
     "sphinx.ext.duration",
+    "sphinx.ext.mathjax",
     "sphinx.ext.doctest",
     "sphinx.ext.autodoc",
     "sphinx.ext.napoleon",
