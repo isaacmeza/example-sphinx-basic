@@ -337,3 +337,55 @@ and the covariance operators are defined analogously to the subsetted estimator.
     \mu \langle h, \hat{T}_B h \rangle_{\mathcal{H}} = \frac{\mu}{n} H^{\top} H
 
 Hereafter we use the same argument as in the formula of minimizers.
+
+
+Closed form - Estimator 3 (RKHS norm)
+-------------------------------------
+
+We study the RKHS-norm regularized *joint* estimator:
+
+.. math::
+
+    (\hat{g},\hat{h})=\arg \min _{g\in\mathcal{G}, h \in \mathcal{H}} 
+    \max_{f' \in \mathcal{F}} \mathbb{E}_n\left[2\left\{g(A)-Y\right\} f'(C')-f'(C')^2\right]-\lambda'\|f'\|_\mathcal{F'}^2
+     +\mu'\|g\|_\mathcal{G}^2 \\
+    &\quad +
+    \max_{f \in \mathcal{F}} \mathbb{E}_n\left[2\left\{h(B)-g(A)\right\} f(C)-f(C)^2\right] -\lambda\|f\|_\mathcal{F}^2  
+    +\mu\|h\|_\mathcal{H}^2
+
+.. admonition:: Formula of minimizers 
+
+    
+    The minimizer takes the form :math:`\hat{g} = \Phi_A^*\hat\alpha`, :math:`\hat{h} = \Phi_B^*\hat\beta` where,
+    
+    .. math::
+    
+        \hat{\beta} &= \left[ K_A \left\{ P_C + \left(P_{C'} K_A + P_C K_A + \mu'\right) \left( K_B P_C K_A \right)^{\dagger} \left( K_B P_C + \mu  \right)\right\} K_B \right]^{\dagger} K_A P_{C'} Y \\
+        \hat{\alpha} &= \left( K_B P_C K_A \right)^{\dagger} \left( K_B P_C + \mu \right) K_B \hat{\beta}
+    
+    and
+    
+    .. math::
+    
+        P_C &= \left(K_C+\lambda\right)^{\dagger}K_C \\
+        P_{C'} &= \left(K_{C'}+\lambda'\right)^{\dagger}K_{C'}
+
+Remark: Subsetted estimator
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. admonition:: Formula of minimizers (Subsetted estimator)
+    
+    The subsetted estimator satisfies:
+    
+    .. math::
+    
+        \hat{\beta} &= \left[ K_A \left\{ \tilde{P}_C + \left(\tilde{P}_{C'} K_A + \tilde{P}_C K_A + \mu'\right) \left( K_B \tilde{P}_C K_A \right)^{\dagger} \left( K_B \tilde{P}_C + \mu  \right)\right\} K_B \right]^{\dagger} K_A \tilde{P}_{C'} Y \\
+        \hat{\alpha} &= \left( K_B \tilde{P}_C K_A \right)^{\dagger} \left( K_B \tilde{P}_C + \mu \right) K_B \hat{\beta}
+    
+    with :math:`\tilde{P}_{C'}=\frac{n}{p}I_{[p]}^{\top}P_{C';[p,p]}I_{[p]}` and :math:`\tilde{P}_{C}=\frac{n}{q}I_{[q]}^{\top}P_{C;[q,q]}I_{[q]}`. And
+    
+    .. math::
+    
+        P_{C';[p,p]}&=(K_{C';[p,p]}+\lambda I_{[p]}I_{[p]}^\top)^-K_{C';[p,p]}\;, \qquad K_{C';[p,p]}=I_{[p]}K_{C'}I_{[p]}^{\top} \\
+        P_{C;[q,q]}&=(K_{C;[q,q]}+\lambda I_{[q]}I_{[q]}^\top)^-K_{C;[q,q]}\;, \qquad K_{C;[q,q]}=I_{[q]}K_{C}I_{[q]}^{\top}
+    
