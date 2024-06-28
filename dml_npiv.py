@@ -1,7 +1,34 @@
 """
-This is a module for demonstrating Sphinx documentation.
+This module implements Double Machine Learning for Nonparametric Instrumental Variables (DML-npiv).
+It provides tools for estimating causal effects using a combination of machine learning models and 
+instrumental variables techniques. The module supports cross-validation, kernel density estimation 
+for localization, and confidence interval computation.
+
+Classes:
+    DML_npiv: Main class for performing DML-npiv with various configuration options.
+
+Functions:
+    _get: Utility function to retrieve options from a dictionary.
+    _transform_poly: Utility function to apply polynomial feature transformation.
+    _fun_threshold_alpha: Function to compute the threshold alpha for propensity score trimming.
 """
 
+
+import numpy as np
+from scipy.stats import norm
+from sklearn.model_selection import KFold
+from sklearn.linear_model import LogisticRegression
+from sklearn.preprocessing import PolynomialFeatures
+from statsmodels.nonparametric.kde import kernel_switch
+import warnings
+from tqdm import tqdm
+import copy
+import torch
+from mliv.rkhs import ApproxRKHSIVCV
+from joblib import Parallel, delayed
+from scipy.optimize import minimize_scalar
+
+device = torch.cuda.current_device() if torch.cuda.is_available() else None
 
 def _get(opts, key, default):
     """
@@ -416,7 +443,7 @@ class DML_npiv:
             else:
                 bridge_[0] = copy.deepcopy(model_q1).fit(A2, A1, 1/ps_hat_0)
                 bridge_[1] = copy.deepcopy(model_q1).fit(A2, A1, 1/ps_hat_1)
-           
+        
         return bridge_[1], bridge_[0]
 
 
@@ -510,7 +537,7 @@ class DML_npiv:
         # Print progress bar using tqdm
         if self.verbose==True:
             self.progress_bar.update(1)
-   
+
         return psi_hat
 
 
