@@ -6,5 +6,3 @@ API Documentation
    :caption: Contents:
 
    module_overview
-   class_myclass
-   function_myfunction
