@@ -245,7 +245,7 @@ We simply modify the updates for :math:`v_t', v_t` as
 
 
 Estimator 3 - (Function class bounded)
-======================================
+--------------------------------------
 
 For the joint estimator:
 
