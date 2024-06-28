@@ -12,7 +12,7 @@ Let
 be oracles for the regression and (weighted) classification problems. For data :math:`A = \{a_1,\ldots, a_n\}`, define :math:`\mathcal{F}_A = \left\{\left(f\left(a_1\right), \ldots, f\left(a_n\right)\right): f \in \mathcal{F}\right\}`.
 
 Estimator 1
-===========
+-----------
 
 Whenever the function classes :math:`\mathcal{G}`, :math:`\mathcal{F'}` are already norm constrained, the estimator \ref{estimator:npiv_general} can be reduced to
 
