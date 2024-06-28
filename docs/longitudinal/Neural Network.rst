@@ -10,10 +10,11 @@ We now consider the case where the function classes correspond to neural network
     (\hat{g}, \hat{h}) = \arg \min _{\theta_1, \theta_2} 
     \max_{\omega_1, \omega_2} \left\{ 
     \mathbb{E}_n\left[2\left\{g_{\theta_1}(A) - Y\right\} f_{\omega_1}'(C') - f_{\omega_1}'(C')^2\right] 
-    + \mu' \mathbb{E}_n\{g_{\theta_1}(A)^2\} \\
-    + \mathbb{E}_n\left[2\left\{h_{\theta_2}(B) - g_{\theta_1}(A)\right\} f_{\omega_2}(C) - f_{\omega_2}(C)^2\right] 
+    + \mu' \mathbb{E}_n\{g_{\theta_1}(A)^2\} \right. \\
+    \left. + \mathbb{E}_n\left[2\left\{h_{\theta_2}(B) - g_{\theta_1}(A)\right\} f_{\omega_2}(C) - f_{\omega_2}(C)^2\right] 
     + \mu \mathbb{E}_n\{h_{\theta_2}(B)^2\} 
     \right\}
+
 
 where :math:`\theta_1, \theta_2, \omega_1, \omega_2` are weights of the neural networks.
 
