@@ -19,6 +19,24 @@ from scipy.optimize import minimize_scalar
 
 device = torch.cuda.current_device() if torch.cuda.is_available() else None
 
+def my_function(param1, param2):
+    """
+    Example standalone function.
+
+    Parameters
+    ----------
+    param1 : str
+        Description of param1.
+    param2 : int
+        Description of param2.
+
+    Returns
+    -------
+    bool
+        Description of return value.
+    """
+    return True
+    
 class MyClass:
     """
     A simple example class.
@@ -63,20 +81,4 @@ class MyClass:
         """
         return True
 
-def my_function(param1, param2):
-    """
-    Example standalone function.
 
-    Parameters
-    ----------
-    param1 : str
-        Description of param1.
-    param2 : int
-        Description of param2.
-
-    Returns
-    -------
-    bool
-        Description of return value.
-    """
-    return True
