@@ -78,8 +78,10 @@ where :math:`[p]` and :math:`[q]` partition :math:`[n] = (1, \ldots, n)`, so :ma
 
 For the index set :math:`[p]`, let :math:`I_{[p]} \in \mathbb{R}^{p \times n}` be the matrix of ones and zeros such that :math:`V_{[p]} = I_{[p]} V` gives the elements of :math:`V` whose indices are in :math:`[p]`.
 
+
 Maximizers
-----------
+^^^^^^^^^^
+
 
 **Existence of maximizers**
 
@@ -140,7 +142,7 @@ where :math:`\hat{\mu}_{g,h} = \mathbb{E}_n \{ V_{g,h} \phi(C) \} = \frac{1}{n} 
 Since :math:`K_C = \Phi_C \Phi_C^*`, the first order condition yields :math:`K_C \vec{V}_{g,h} = K_C^2 \hat{\gamma}_{g,h}`, i.e. :math:`\hat{\gamma}_{g,h} = K_C^{\dagger} \vec{V}_{g,h}` where :math:`K_C^{\dagger}` is the pseudoinverse of :math:`K_C`.
 
 Minimizers
-----------
+^^^^^^^^^^
 
 Let :math:`\Phi_A : \mathcal{H} \rightarrow \mathbb{R}^n` be an operator with :math:`i`th row :math:`\langle \phi(A_i), \cdot \rangle_{\mathcal{H}}`. Define :math:`\Phi_B` analogously, replacing :math:`A_i` with :math:`B_i`. Let :math:`K_A` and :math:`K_B` be the corresponding kernel matrices.
 
@@ -281,7 +283,8 @@ and solving for :math:`\hat{\beta}`,
     \hat{\beta} = \left[ K_A \left\{ P_C + \left( P_{C'} + P_C + \mu' \right) K_A \left( K_B P_C K_A \right)^{\dagger} K_B \left( P_C + \mu \right) \right\} K_B \right]^{\dagger} K_A P_{C'} Y
 
 Remark (Subsetted estimator)
-----------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 .. admonition:: Formula of minimizers (Subsetted estimator)
 
     The explicit formula for the coefficients is
