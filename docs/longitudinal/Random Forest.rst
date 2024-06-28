@@ -136,17 +136,21 @@ Now, the learner plays *be-the-leader* (BTL) which involves choosing :math:`(a_t
     \frac{1}{t}\sum_{\tau=1}^{t}\ell(\{c_\tau,c'_\tau\},\{a,b\})
 
 which after separating the minimization problem and completing the square we get:
-.. math::
-
-    a_t = \operatorname{argmin}_{a\in \mathcal{G}_A} \frac{1}{n}\sum_{i=1}^{n} \left(a_i-\frac{1}{\mu't}\sum_{\tau=1}^{t}\left\{c'_{i\tau}-c_{i\tau}\right\}\right)^2
-        = \operatorname{argmin}_{a\in \mathcal{G}_A} \frac{1}{n}\sum_{i=1}^{n} \left(a_i-v_i'^{t}\right)^2 
-        = \operatorname{Oracle}_{\mathcal{G}, \text{reg}}\left(\{a_i\}, \{v_i'^t\}\right)
 
 .. math::
 
-    b_t = \operatorname{argmin}_{b\in \mathcal{H}_{B}} \frac{1}{n}\sum_{i=1}^{n} \left(b_i-\frac{1}{\mu t}\sum_{\tau=1}^{t}c_{i\tau}\right)^2 
-        = \operatorname{argmin}_{b\in \mathcal{H}_{B}} \frac{1}{n}\sum_{i=1}^{n} \left(b_i-v_i^{t}\right)^2 
-        = \operatorname{Oracle}_{\mathcal{H}, \text{reg}}\left(\{b_i\}, \{v_i^t\}\right)
+    a_t = \operatorname{argmin}_{a \in \mathcal{G}_A} \frac{1}{n} \sum_{i=1}^{n} 
+    \left( a_i - \frac{1}{\mu' t} \sum_{\tau=1}^{t} \left\{ c'_{i\tau} - c_{i\tau} \right\} \right)^2 \\
+    = \operatorname{argmin}_{a \in \mathcal{G}_A} \frac{1}{n} \sum_{i=1}^{n} \left( a_i - v_i'^{t} \right)^2 \\
+    = \operatorname{Oracle}_{\mathcal{G}, \text{reg}} \left( \{a_i\}, \{v_i'^t\} \right)
+
+.. math::
+
+    b_t = \operatorname{argmin}_{b \in \mathcal{H}_{B}} \frac{1}{n} \sum_{i=1}^{n} 
+    \left( b_i - \frac{1}{\mu t} \sum_{\tau=1}^{t} c_{i\tau} \right)^2 \\
+    = \operatorname{argmin}_{b \in \mathcal{H}_{B}} \frac{1}{n} \sum_{i=1}^{n} \left( b_i - v_i^{t} \right)^2 \\
+    = \operatorname{Oracle}_{\mathcal{H}, \text{reg}} \left( \{b_i\}, \{v_i^t\} \right)
+
 
 Thus it remains to show that the ensembles
 
