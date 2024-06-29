@@ -150,16 +150,16 @@ is :math:`O\left(\frac{1}{T}\right)`-approximate solution for the minimax object
 .. admonition:: Duality Gap
     :class: note
 
-    The ensembles \(\bar{\alpha}\), \(\bar{\theta_1}\) can be thought of as primal and dual solutions and we can use the duality gap as a certificate for convergence of the algorithm.
+   The ensembles :math:`\bar{\alpha}`, :math:`\bar{\theta_1}` can be thought of as primal and dual solutions and we can use the duality gap as a certificate for convergence of the algorithm.
 
-    .. math::
-        :nowrap:
+.. math::
+    :nowrap:
 
-        \begin{aligned}
-        \text { Duality Gap } &:= \max _{\|\theta_1\|_1 \leq 1 } L(\bar{\alpha}, \theta_1) - \min _{\|\alpha\|_1 \leq V_1} L(\alpha, \bar{\theta_1}) \\
-        &\leq \left(\mathbb{E}_n [(y - \langle \bar{\alpha}, a \rangle)c']\right)^{\top} \mathbb{E}_n [c' c'^{\top}]^{\dagger} \left(\mathbb{E}_n [(y - \langle \bar{\alpha}, a \rangle)c']\right) + \mu' \|\bar{\alpha}\|_1 \\
-        &\quad - \left(\bar{\theta_1}^{\top} \mathbb{E}_n [c'y] + V_1 \left\{\mu' - 2 \|\mathbb{E}_n [a c'^{\top}] \bar{\theta_1}\|_\infty \right\}^{-} - \bar{\theta_1}^{\top} \mathbb{E}_n [c' c'^{\top}] \bar{\theta_1}\right) := \text{ tol}
-        \end{aligned}
+    \begin{aligned}
+    \text { Duality Gap } &:= \max _{\|\theta_1\|_1 \leq 1 } L(\bar{\alpha}, \theta_1) - \min _{\|\alpha\|_1 \leq V_1} L(\alpha, \bar{\theta_1}) \\
+    &\leq \left(\mathbb{E}_n [(y - \langle \bar{\alpha}, a \rangle)c']\right)^{\top} \mathbb{E}_n [c' c'^{\top}]^{\dagger} \left(\mathbb{E}_n [(y - \langle \bar{\alpha}, a \rangle)c']\right) + \mu' \|\bar{\alpha}\|_1 \\
+    &\quad - \left(\bar{\theta_1}^{\top} \mathbb{E}_n [c'y] + V_1 \left\{\mu' - 2 \|\mathbb{E}_n [a c'^{\top}] \bar{\theta_1}\|_\infty \right\}^{-} - \bar{\theta_1}^{\top} \mathbb{E}_n [c' c'^{\top}] \bar{\theta_1}\right) := \text{ tol}
+    \end{aligned}
 
 .. _estimator-2:
 
@@ -185,13 +185,13 @@ where
 
     \ell(\rho, \omega_1) := 2 \omega_1^{\top} \mathbb{E}_n [u_1 y] - 2 \omega_1^{\top} \mathbb{E}_n [u_1 v_1^{\top}] \rho - \omega_1^{\top} \mathbb{E}_n [u_1 u_1^{\top}] \omega_1 + \mu' \rho^{\top} \mathbb{E}_n [v_1 v_1^{\top}] \rho
 
-Moreover, \(v_1 = (a, -a)\), \(u_1 = (c', -c')\); and \(\theta_1 = \omega_1^{+} - \omega_1^{-}\), \(\alpha = \rho^+ - \rho^{-}\).
+Moreover, :math:`v_1 = (a, -a)`, :math:`u_1 = (c', -c')`; and :math:`\theta_1 = \omega_1^{+} - \omega_1^{-}`, :math:`\alpha = \rho^+ - \rho^{-}`.
 
 .. admonition:: FTRL iterates for Estimator 2
     :class: lemma
     :name: sparse-l1-l1-est2
 
-    Consider the iterates for \(t = 1, \ldots, T\):
+    Consider the iterates for :math:`t = 1, \ldots, T`:
 
     .. math::
         :nowrap:
@@ -210,9 +210,9 @@ Moreover, \(v_1 = (a, -a)\), \(u_1 = (c', -c')\); and \(\theta_1 = \omega_1^{+} 
         \omega_{1,t+1} &= \frac{\tilde{\omega}_{1,t+1}}{\|\tilde{\omega}_{1,t+1}\|_1}
         \end{aligned}
 
-    with \(\tilde{\rho}_{-1} = \tilde{\rho}_{0} = \frac{1}{e}\), \(\tilde{\omega}_{1,-1} = \tilde{\omega}_{1,0} = \frac{1}{2p}\), and \(\eta = \frac{1}{8 \|\mathbb{E}_n [v_1 u_1^{\top}]\|_\infty}\).
+    with :math:`\tilde{\rho}_{-1} = \tilde{\rho}_{0} = \frac{1}{e}`, :math:`\tilde{\omega}_{1,-1} = \tilde{\omega}_{1,0} = \frac{1}{2p}`, and :math:`\eta = \frac{1}{8 \|\mathbb{E}_n [v_1 u_1^{\top}]\|_\infty}`.
 
-    Then, \(\bar{\rho} = \frac{1}{T} \sum_{t=1}^{T} \rho_t\), \(\bar{\alpha} = \bar{\rho}^{+} - \bar{\rho}^{-}\) is a \(O(T^{-1})\)-approximate solution for :eq:`minimax-sparse-est2`.
+    Then, :math:`\bar{\rho} = \frac{1}{T} \sum_{t=1}^{T} \rho_t`, :math:`\bar{\alpha} = \bar{\rho}^{+} - \bar{\rho}^{-}` is a :math:`O(T^{-1})`-approximate solution for :eq:`minimax-sparse-est2`.
 
 **Proof**
 
