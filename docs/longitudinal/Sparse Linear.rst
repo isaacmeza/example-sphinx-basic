@@ -67,7 +67,7 @@ Moreover, :math:`v_1 = (a, -a)`, :math:`u_1 = (c', -c')`; and :math:`\theta_1 = 
     :class: lemma
     :name: sparse-l1-l1-est1
 
-    Consider the iterates for :math:`\(t=1,\ldots, T\)':
+    Consider the iterates for :math:`\(t=1,\ldots, T\)`:
 
     .. math::
         :nowrap:
