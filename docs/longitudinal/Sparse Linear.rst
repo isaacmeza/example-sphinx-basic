@@ -154,14 +154,14 @@ is :math:`O\left(\frac{1}{T}\right)`-approximate solution for the minimax object
 
    The ensembles :math:`\bar{\alpha}`, :math:`\bar{\theta_1}` can be thought of as primal and dual solutions and we can use the duality gap as a certificate for convergence of the algorithm.
 
-.. math::
-    :nowrap:
-
-    \begin{aligned}
-    \text { Duality Gap } &:= \max _{\|\theta_1\|_1 \leq 1 } L(\bar{\alpha}, \theta_1) - \min _{\|\alpha\|_1 \leq V_1} L(\alpha, \bar{\theta_1}) \\
-    &\leq \left(\mathbb{E}_n [(y - \langle \bar{\alpha}, a \rangle)c']\right)^{\top} \mathbb{E}_n [c' c'^{\top}]^{\dagger} \left(\mathbb{E}_n [(y - \langle \bar{\alpha}, a \rangle)c']\right) + \mu' \|\bar{\alpha}\|_1 \\
-    &\quad - \left(\bar{\theta_1}^{\top} \mathbb{E}_n [c'y] + V_1 \left\{\mu' - 2 \|\mathbb{E}_n [a c'^{\top}] \bar{\theta_1}\|_\infty \right\}^{-} - \bar{\theta_1}^{\top} \mathbb{E}_n [c' c'^{\top}] \bar{\theta_1}\right) := \text{ tol}
-    \end{aligned}
+    .. math::
+        :nowrap:
+    
+        \begin{aligned}
+        \text { Duality Gap } &:= \max _{\|\theta_1\|_1 \leq 1 } L(\bar{\alpha}, \theta_1) - \min _{\|\alpha\|_1 \leq V_1} L(\alpha, \bar{\theta_1}) \\
+        &\leq \left(\mathbb{E}_n [(y - \langle \bar{\alpha}, a \rangle)c']\right)^{\top} \mathbb{E}_n [c' c'^{\top}]^{\dagger} \left(\mathbb{E}_n [(y - \langle \bar{\alpha}, a \rangle)c']\right) + \mu' \|\bar{\alpha}\|_1 \\
+        &\quad - \left(\bar{\theta_1}^{\top} \mathbb{E}_n [c'y] + V_1 \left\{\mu' - 2 \|\mathbb{E}_n [a c'^{\top}] \bar{\theta_1}\|_\infty \right\}^{-} - \bar{\theta_1}^{\top} \mathbb{E}_n [c' c'^{\top}] \bar{\theta_1}\right) := \text{ tol}
+        \end{aligned}
 
 .. _estimator-2:
 
