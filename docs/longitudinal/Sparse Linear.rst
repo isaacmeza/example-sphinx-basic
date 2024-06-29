@@ -234,17 +234,275 @@ The proof is analogous to :ref:`sparse-l1-l1-est1`.
         \end{aligned}
 
 
-.. _proposition-18:
+Estimator 3 - (Ridge)
+---------------------
 
-.. admonition:: Proposition 18
-   :class: proposition
+The joint estimator is:
 
-   Suppose that the sets :math:`\mathcal{F'}_{C'}`, :math:`\mathcal{F}_{C}` are convex sets. Then the ensembles: :math:`\bar{g} = \frac{1}{T} \sum_{t=1}^T g_t`, :math:`\bar{h} = \frac{1}{T} \sum_{t=1}^T h_t`, are a :math:`O \left( \frac{\log (T) + 1}{T} \right)`-approximate solution to the minimax problem.
+.. math::
+    :label: minimax-sparse-est3
 
----
+    \hat\alpha, \hat\beta := \underset{\|\beta\|_1 \leq V_2}{\argmin_{\|\alpha\|_1 \leq V_1}} \underset{\|\theta_2\|_1 \leq 1}{\max_{\|\theta_1\|_1 \leq 1}} & 2\langle \mathbb{E}_n [(y - \langle \alpha, a \rangle)c'], \theta_1 \rangle - \mathbb{E}_n [\langle c', \theta_1 \rangle^2] + \mu' \mathbb{E}_n [\langle a, \alpha \rangle^2] \\
+    & + 2\langle \mathbb{E}_n [(\langle \alpha, a \rangle - \langle \beta, b \rangle)c], \theta_2 \rangle - \mathbb{E}_n [\langle c, \theta_2 \rangle^2] + \mu \mathbb{E}_n [\langle b, \beta \rangle^2]
 
-with :math:`\omega_{1,-1} = \omega_{1,0} = \frac{1}{2p}`. Therefore, by Proposition :ref:`proposition-18`, the ensemble
+and the problem is equivalent to:
 
 .. math::
 
-    \bar{\rho} = \frac{1}{T} \sum_{t=1}^T \rho_t
+    \underset{\rho_2 \geq 0, \|\rho_2\|_1 \leq V_2}{\min_{\rho_1 \geq 0, \|\rho_1\|_1 \leq V_1}} \underset{\omega_2 \geq 0, \|\omega_2\|_1 = 1}{\max_{\omega_1 \geq 0, \|\omega_1\|_1 = 1}} \ell(\{\rho_1, \rho_2\}, \{\omega_1, \omega_2\})
+
+.. math::
+
+    \begin{aligned}
+    \ell(\{\rho_1, \rho_2\}, \{\omega_1, \omega_2\}) := & 2 \omega_1^{\top} \mathbb{E}_n [u_1 y] - 2 \omega_1^{\top} \mathbb{E}_n \left[u_1 v_1^{\top}\right] \rho_1 - \omega_1^{\top} \mathbb{E}_n \left[u_1 u_1^{\top}\right] \omega_1 + \mu' \rho_1^\top \mathbb{E}_n [v_1 v_1^{\top}] \rho_1 \\
+    & + 2 \omega_2^{\top} \mathbb{E}_n [u_2 v_1^{\top}] \rho_1 - 2 \omega_2^{\top} \mathbb{E}_n \left[u_2 v_2^{\top}\right] \rho_2 - \omega_2^{\top} \mathbb{E}_n \left[u_2 u_2^{\top}\right] \omega_2 + \mu \rho_2^\top \mathbb{E}_n [v_2 v_2^{\top}] \rho_2
+    \end{aligned}
+
+and :math:`v_1 = (a, -a)`, :math:`v_2 = (b, -b)`, :math:`u_1 = (c', -c')`, :math:`u_2 = (c, -c)`.
+
+.. admonition:: FTRL iterates for Estimator 3
+    :class: lemma
+    :name: sparse-l1-l1-est3
+
+    Consider the iterates for :math:`t = 1, \ldots, T`:
+
+    .. math::
+        :nowrap:
+
+        \begin{aligned}
+        \tilde{\rho}_{1,t+1} &= \exp\left(-\frac{\eta}{V_1}\left\{\sum_{\tau = 1}^{t} \left(-2 \mathbb{E}_n [v_1 u_1^{\top}] \omega_{1,\tau} + 2 \mu' \mathbb{E}_n [v_1 v_1^\top] \tilde{\rho}_{1,\tau} + 2 \mathbb{E}_n [v_1 u_2^\top] \omega_{2,\tau}\right)\right. \right. \\
+        & \left. \left. -2 \mathbb{E}_n [v_1 u_1^{\top}] \omega_{1,t} + 2 \mu' \mathbb{E}_n [v_1 v_1^\top] \tilde{\rho}_{1,t} + 2 \mathbb{E}_n [v_1 u_2^\top] \omega_{2,t} \right\} - 1\right) \\
+        \rho_{1,t+1} &= \tilde{\rho}_{1,t+1} \min\left\{1, \frac{V_1}{\| \tilde{\rho}_{1,t+1} \|_1}\right\}, \\
+        \tilde{\rho}_{2,t+1} &= \exp\left(-\frac{\eta}{V_2}\left\{\sum_{\tau = 1}^{t} \left(-2 \mathbb{E}_n [v_2 u_2^\top] \omega_{2,\tau} + 2 \mu \mathbb{E}_n [v_2 v_2^\top] \tilde{\rho}_{2,\tau}\right)\right. \right. \\
+        & \left. \left. -2 \mathbb{E}_n [v_2 u_2^\top] \omega_{2,t} + 2 \mu \mathbb{E}_n [v_2 v_2^\top] \tilde{\rho}_{2,t} \right\} - 1\right) \\
+        \rho_{2,t+1} &= \tilde{\rho}_{2,t+1} \min\left\{1, \frac{V_2}{\| \tilde{\rho}_{2,t+1} \|_1}\right\},
+        \end{aligned}
+
+    .. math::
+        :nowrap:
+
+        \begin{aligned}
+        \tilde{\omega}_{1,t+1} &= \tilde{\omega}_{1,t} \exp\bigg(2\eta\left\{2 \mathbb{E}_n [u_1 y] - 2 \mathbb{E}_n [u_1 v_1^\top] \rho_{1,t} - 2 \mathbb{E}_n [u_1 u_1^{\top}] \tilde{\omega}_{1,t}\right\} \\
+        &\qquad - \eta\left\{2 \mathbb{E}_n [u_1 y] - 2 \mathbb{E}_n [u_1 v_1^\top] \rho_{1,t-1} - 2 \mathbb{E}_n [u_1 u_1^{\top}] \tilde{\omega}_{1,t-1}\right\}\bigg) \\
+        \omega_{1,t+1} &= \frac{\tilde{\omega}_{1,t+1}}{\|\tilde{\omega}_{1,t+1}\|_1} \\
+        \tilde{\omega}_{2,t+1} &= \tilde{\omega}_{2,t} \exp\bigg(2\eta\left\{2 \mathbb{E}_n [u_2 v_1^\top] \rho_{1,t} - 2 \mathbb{E}_n [u_2 v_2^\top] \rho_{2,t} - 2 \mathbb{E}_n [u_2 u_2^{\top}] \tilde{\omega}_{2,t}\right\} \\
+        &\qquad - \eta\left\{2 \mathbb{E}_n [u_2 v_1^\top] \rho_{1,t-1} - 2 \mathbb{E}_n [u_2 v_2^\top] \rho_{2,t-1} - 2 \mathbb{E}_n [u_2 u_2^{\top}] \tilde{\omega}_{2,t-1}\right\}\bigg) \\
+        \omega_{2,t+1} &= \frac{\tilde{\omega}_{2,t+1}}{\|\tilde{\omega}_{2,t+1}\|_1}
+        \end{aligned}
+
+    with :math:`\tilde{\rho}_{1,-1} = \tilde{\rho}_{1,0} = \tilde{\rho}_{2,-1} = \tilde{\rho}_{2,0} = \frac{1}{e}` and :math:`\omega_{1,-1} = \omega_{1,0} = \omega_{2,-1} = \omega_{2,0} = \frac{1}{2p}`, and :math:`\eta = [16\max\left\{\left\|\mathbb{E}_n [v_1 u_1^\top]\right\|_\infty, \left\|\mathbb{E}_n [v_1 u_2^\top]\right\|_\infty, \left\|\mathbb{E}_n [v_2 u_2^\top]\right\|_\infty\right\}]^{-1}`.
+
+    Then,
+
+    .. math::
+
+        \bar{\rho_1} = \frac{1}{T} \sum_{t=1}^{T} \rho_{1,t}, \quad \bar\alpha = \bar\rho_1^{+} - \bar\rho_1^{-} \\
+        \bar{\rho_2} = \frac{1}{T} \sum_{t=1}^{T} \rho_{2,t}, \quad \bar\beta = \bar\rho_2^{+} - \bar\rho_2^{-}
+
+    are a :math:`O(T^{-1})`-approximate solution for :eq:`minimax-sparse-est3`.
+
+**Proof**
+
+We will match symbols with Proposition :ref:`proposition-17`. Let 
+
+.. math::
+
+    \Theta = \{\rho_1 \;|\; \rho_1 \geq 0,\, \|\rho_1\|_1 \leq V_1\} \times \{\rho_2 \;|\; \rho_2 \geq 0,\, \|\rho_2\|_1 \leq V_2\} \;,\quad W = \{\omega_1 \;|\; \omega_1 \geq 0, \|\omega_1\|_1 = 1\} \times \{\omega_2 \;|\; \omega_2 \geq 0, \|\omega_2\|_1 = 1\}
+
+be the convex feasibility sets. Note that :math:`\ell` is convex in :math:`(\rho_1, \rho_2)` and concave in :math:`(\omega_1, \omega_2)`. Equip the spaces :math:`\Theta` and :math:`W` with the direct sum :math:`1`-norm:
+
+.. math::
+
+    \|(\rho_1, \rho_2)\|_1 = \|\rho_1\|_1 + \|\rho_2\|_1
+
+with dual norm:
+
+.. math::
+
+    \|(\rho_1, \rho_2)\|_\infty = \max\{\|\rho_1\|_\infty, \|\rho_2\|_\infty\}
+
+Now, the derivatives are given by:
+
+.. math::
+
+    \begin{aligned}
+    \nabla_{(\rho_1, \rho_2)} \ell(\{\rho_1, \rho_2\}, \{\omega_1, \omega_2\}) &= \begin{pmatrix}
+        -2 \mathbb{E}_n [v_1 u_1^{\top}] \omega_1 + 2 \mu' \mathbb{E}_n [v_1 v_1^\top] \rho_1 + 2 \mathbb{E}_n [v_1 u_2^\top] \omega_2 \\
+        -2 \mathbb{E}_n [v_2 u_2^{\top}] \omega_2 + 2 \mu \mathbb{E}_n [v_2 v_2^\top] \rho_2
+    \end{pmatrix}^\top \\
+    \nabla_{(\omega_1, \omega_2)} \ell(\{\rho_1, \rho_2\}, \{\omega_1, \omega_2\}) &= \begin{pmatrix}
+        2 \mathbb{E}_n [u_1 y] - 2 \mathbb{E}_n [u_1 v_1^{\top}] \rho_1 - 2 \mathbb{E}_n [u_1 u_1^{\top}] \omega_1 \\
+        2 \mathbb{E}_n [u_2 v_1^\top] \rho_1 - 2 \mathbb{E}_n [u_2 v_2^{\top}] \rho_2 - 2 \mathbb{E}_n [u_2 u_2^{\top}] \omega_2
+    \end{pmatrix}^\top
+    \end{aligned}
+
+The Lipschitzness property is satisfied with :math:`L = 2 \max\left\{\left\|2 \mathbb{E}_n [v_1 u_1^\top]\right\|_\infty, \left\|2 \mathbb{E}_n [v_1 u_2^\top]\right\|_\infty, \left\|2 \mathbb{E}_n [v_2 u_2^\top]\right\|_\infty\right\}`:
+
+.. math::
+
+    \begin{aligned}
+    &\left\|\nabla_{(\rho_1, \rho_2)} \ell(\{\rho_1, \rho_2\}, \{\omega_1, \omega_2\}) - \nabla_{(\rho_1, \rho_2)} \ell(\{\rho_1, \rho_2\}, \{\omega_1', \omega_2'\})\right\|_{\infty} \\
+    &= \left\|\left(-2 \mathbb{E}_n [v_1 u_1^\top](\omega_1 - \omega_1') + 2 \mathbb{E}_n [v_1 u_2^\top](\omega_2 - \omega_2'), -2 \mathbb{E}_n [v_2 u_2^\top](\omega_2 - \omega_2')\right)\right\|_{\infty} \\
+    &= \max\left\{\left\|-2 \mathbb{E}_n [v_1 u_1^\top](\omega_1 - \omega_1') + 2 \mathbb{E}_n [v_1 u_2^\top](\omega_2 - \omega_2')\right\|_\infty, \left\|-2 \mathbb{E}_n [v_2 u_2^\top](\omega_2 - \omega_2')\right\|_\infty\right\} \\
+    &\leq \max\left\{\left\|2 \mathbb{E}_n [v_1 u_1^\top]\right\|_\infty \left\|(\omega_1 - \omega_1')\right\|_{1} + \left\|2 \mathbb{E}_n [v_1 u_2^\top]\right\|_\infty \left\|(\omega_2 - \omega_2')\right\|_{1}, \left\|2 \mathbb{E}_n [v_2 u_2^\top]\right\|_\infty \left\|(\omega_2 - \omega_2')\right\|_{1}\right\} \\
+    &\leq 2 \max\left\{\left\|2 \mathbb{E}_n [v_1 u_1^\top]\right\|_\infty, \left\|2 \mathbb{E}_n [v_1 u_2^\top]\right\|_\infty, \left\|2 \mathbb{E}_n [v_2 u_2^\top]\right\|_\infty\right\} \left[\left\|(\omega_1 - \omega_1')\right\|_{1} + \left\|(\omega_2 - \omega_2')\right\|_{1}\right]
+    \end{aligned}
+
+and similarly for the Lipschitzness of :math:`\nabla_{(\omega_1, \omega_2)} \ell(\{\rho_1, \rho_2\}, \{\omega_1, \omega_2\})`.
+
+Consider the following entropic regularizers:
+
+.. math::
+
+    \begin{aligned}
+    R_{min}(\rho_1, \rho_2) &= V_1 \sum_{i=1}^{2p} \rho_{1i} \log (\rho_{1i}) + V_2 \sum_{i=1}^{2p} \rho_{2i} \log (\rho_{2i}) \\
+    R_{max}(\omega_1, \omega_2) &= \sum_{i=1}^{2p} \omega_{1i} \log (\omega_{1i}) + \sum_{i=1}^{2p} \omega_{2i} \log (\omega_{2i})
+    \end{aligned}
+
+which are :math:`1`-strongly convex in the spaces :math:`\Theta`, and :math:`W` respectively.
+
+To find the iterates it remains to solve:
+
+.. math::
+
+    \begin{aligned}
+    (\rho_{1,t+1}, \rho_{2,t+1}) &= \argmin_{\rho_1, \rho_2} \big(\rho_1, \rho_2\big)^\top \left(\sum_{\tau = 1}^{t} \left\{\nabla_{(\rho_1, \rho_2)} \ell(\{\rho_{1,\tau}, \rho_{2,\tau}\}, \{\omega_{1,\tau}, \omega_{2,\tau}\})\right\} \\
+    &+\nabla_{(\rho_1, \rho_2)} \ell(\{\rho_{1,t}, \rho_{2,t}\}, \{\omega_{1,t}, \omega_{2,t}\})\right) + R_{min}(\rho_1, \rho_2)
+    \end{aligned}
+
+Given the derivatives computed above, and that the problem is separable in :math:`\rho_1`, :math:`\rho_2`, the iterates are:
+
+.. math::
+
+    \begin{aligned}
+    \tilde{\rho}_{1,t+1} &= \exp\left(-\frac{\eta}{V_1}\left\{\sum_{\tau = 1}^{t} \left(-2 \mathbb{E}_n [v_1 u_1^{\top}] \omega_{1,\tau} + 2 \mu' \mathbb{E}_n [v_1 v_1^\top] \tilde{\rho}_{1,\tau} + 2 \mathbb{E}_n [v_1 u_2^\top] \omega_{2,\tau}\right)\right.\right. \\
+    &\left.\left.-2 \mathbb{E}_n [v_1 u_1^{\top}] \omega_{1,t} + 2 \mu' \mathbb{E}_n [v_1 v_1^\top] \tilde{\rho}_{1,t} + 2 \mathbb{E}_n [v_1 u_2^\top] \omega_{2,t}\right\} - 1\right) \\
+    \rho_{1,t+1} &= \tilde{\rho}_{1,t+1} \min\left\{1, \frac{V_1}{\| \tilde{\rho}_{1,t+1} \|_1}\right\}, \\
+    \tilde{\rho}_{2,t+1} &= \exp\left(-\frac{\eta}{V_2}\left\{\sum_{\tau = 1}^{t} \left(-2 \mathbb{E}_n [v_2 u_2^\top] \omega_{2,\tau} + 2 \mu \mathbb{E}_n [v_2 v_2^\top] \tilde{\rho}_{2,\tau}\right)\right.\right. \\
+    &\left.\left.-2 \mathbb{E}_n [v_2 u_2^\top] \omega_{2,t} + 2 \mu \mathbb{E}_n [v_2 v_2^\top] \tilde{\rho}_{2,t}\right\} - 1\right) \\
+    \rho_{2,t+1} &= \tilde{\rho}_{2,t+1} \min\left\{1, \frac{V_2}{\| \tilde{\rho}_{2,t+1} \|_1}\right\},
+    \end{aligned}
+
+    .. math::
+        :nowrap:
+
+        \begin{aligned}
+        \tilde{\omega}_{1,t+1} &= \tilde{\omega}_{1,t} \exp\bigg(2\eta\left\{2 \mathbb{E}_n [u_1 y] - 2 \mathbb{E}_n [u_1 v_1^\top] \rho_{1,t} - 2 \mathbb{E}_n [u_1 u_1^{\top}] \tilde{\omega}_{1,t}\right\} \\
+        &\qquad - \eta\left\{2 \mathbb{E}_n [u_1 y] - 2 \mathbb{E}_n [u_1 v_1^\top] \rho_{1,t-1} - 2 \mathbb{E}_n [u_1 u_1^{\top}] \tilde{\omega}_{1,t-1}\right\}\bigg) \\
+        \omega_{1,t+1} &= \frac{\tilde{\omega}_{1,t+1}}{\|\tilde{\omega}_{1,t+1}\|_1} \\
+        \tilde{\omega}_{2,t+1} &= \tilde{\omega}_{2,t} \exp\bigg(2\eta\left\{2 \mathbb{E}_n [u_2 v_1^\top] \rho_{1,t} - 2 \mathbb{E}_n [u_2 v_2^\top] \rho_{2,t} - 2 \mathbb{E}_n [u_2 u_2^{\top}] \tilde{\omega}_{2,t}\right\} \\
+        &\qquad - \eta\left\{2 \mathbb{E}_n [u_2 v_1^\top] \rho_{1,t-1} - 2 \mathbb{E}_n [u_2 v_2^\top] \rho_{2,t-1} - 2 \mathbb{E}_n [u_2 u_2^{\top}] \tilde{\omega}_{2,t-1}\right\}\bigg) \\
+        \omega_{2,t+1} &= \frac{\tilde{\omega}_{2,t+1}}{\|\tilde{\omega}_{2,t+1}\|_1}
+        \end{aligned}
+
+    with :math:`\tilde{\rho}_{1,-1} = \tilde{\rho}_{1,0} = \tilde{\rho}_{2,-1} = \tilde{\rho}_{2,0} = \frac{1}{e}` and :math:`\omega_{1,-1} = \omega_{1,0} = \omega_{2,-1} = \omega_{2,0} = \frac{1}{2p}`.
+
+Putting everything together, by Proposition :ref:`proposition-17` the ensembles:
+
+.. math::
+
+    \bar{\rho_1} = \frac{1}{T} \sum_{t=1}^T \rho_{1,t}, \quad \bar{\rho_2} = \frac{1}{T} \sum_{t=1}^T \rho_{2,t}
+
+are a :math:`O\left(\frac{1}{T}\right)`-approximate solution for the minimax objective.
+
+.. admonition:: Duality gap
+    :class: remark
+
+    The upper bound for the duality gap to the minimax problem in :eq:`minimax-sparse-est3` is: 
+
+    .. math::
+        :nowrap:
+
+        \begin{aligned}
+        &\text { tol }=\left\|\mathbb{E}_n [(y - \langle \bar\alpha, a \rangle)c']\right\|^2_{\mathbb{E}_n [c'c'^\top]^{\dagger}} + \mu' \|\bar\alpha\|^2_{\mathbb{E}_n [aa^\top]} + \left\|\mathbb{E}_n [(\langle\bar\alpha, a\rangle - \langle\bar\beta, b\rangle)c]\right\|^2_{\mathbb{E}_n [c'c'^\top]^{\dagger}} + \mu \|\bar\beta\|^2_{\mathbb{E}_n [bb^\top]} \\
+        &- \left(2 \bar\theta_1^\top \mathbb{E}_n [c'y] - \frac{1}{\mu'}\left\|\mathbb{E}_n [ac'^\top] \bar\theta_1 - \mathbb{E}_n [ac^\top] \bar\theta_2\right\|^2_{\mathbb{E}_n [aa^\top]^\dagger} - \frac{1}{\mu}\left\|\mathbb{E}_n [bc^\top] \bar\theta_2\right\|^2_{\mathbb{E}_n [bb^\top]^\dagger} - \left\|\bar\theta_1\right\|^2_{\mathbb{E}_n [c'c'^\top]} - \left\|\bar\theta_2\right\|^2_{\mathbb{E}_n [cc^\top]}\right)
+        \end{aligned}
+
+    where  :math:`\|x\|_{M} = x^\top M x` is the ellipsoid norm.
+
+.. admonition:: Subsetted estimator
+    :class: remark
+
+    For the subsetted estimators it suffices to replace the empirical mean :math:`\mathbb{E}_n` with either :math:`\mathbb{E}_p` or :math:`\mathbb{E}_q` accordingly in the iterates given by the FTRL algorithm. In concrete, for the implementation, we compute :math:`\mathbb{E}_p` as a weighted average, where the weights are set to zero for the indices outside :math:`[p]`, and analogous for :math:`\mathbb{E}_q`.
+
+
+
+Estimator 3 - (:math:`\ell_1`-norm)
+----------------------------------
+
+The joint estimator is
+
+.. math::
+   :label: minimax-sparse_est3_l1
+
+   \hat\alpha, \hat\beta := \underset{\|\beta\|_1 \leq V_2}{\argmin_{\|\alpha\|_1 \leq V_1}} \underset{\|\theta_2\|_1\leq 1}{\max_{\|\theta_1\|_1\leq 1}} 
+   \left(
+   2\langle\E_n[(y-\langle\alpha, a\rangle)c'],\theta_1\rangle -\E_n[\langle c',\theta_1\rangle^2]+\mu'\|\alpha\|_1 \\
+   + 2\langle\E_n[(\langle\alpha, a\rangle-\langle\beta, b\rangle)c],\theta_2\rangle -\E_n[\langle c,\theta_2\rangle^2]+\mu\|\beta\|_1 
+   \right)
+
+This minimax problem can be reformulated as
+
+.. math::
+
+   \underset{\rho_2 \geq 0,\|\rho_2\|_1 \leq V_2}{\min_{\rho_1 \geq 0,\|\rho_1\|_1 \leq V_1}} \underset{\omega_2\geq 0, \|\omega_2\|_1\leq 1}{\max_{\omega_1\geq 0, \|\omega_1\|_1= 1}} \ell(\{\rho_1,\rho_2\}, \{\omega_1,\omega_2\})
+
+where
+
+.. math::
+
+   \ell(\{\rho_1,\rho_2\}, \{\omega_1,\omega_2\}) := 
+   2\omega_1^{\top} \mathbb{E}_n[u_1 y] - 2\omega_1^{\top} \mathbb{E}_n\left[u_1 v_1^{\top}\right] \rho_1 - \omega_1^{\top} \mathbb{E}_n\left[u_1 u_1^{\top}\right]\omega_1 + \mu' \sum_{i=1}^{2 p} \rho_{1i} \\
+   + 2\omega_2^{\top} \mathbb{E}_n[u_2 v_1^{\top}] \rho_1 - 2\omega_2^{\top} \mathbb{E}_n\left[u_2 v_2^{\top}\right] \rho_2 - \omega_2^{\top} \mathbb{E}_n\left[u_2 u_2^{\top}\right]\omega_2 + \mu \sum_{i=1}^{2 p} \rho_{2i}
+
+and :math:`v_1 = (a, -a)`, :math:`v_2 = (b, -b)`, :math:`u_1 = (c',-c')`, :math:`u_2 = (c,-c)`.
+
+We state without proof, the algorithm for an approximate solution:
+
+.. admonition:: Lemma
+   :name: ftrl-iterates-estimator3-l1
+
+   **FTRL iterates for Estimator** :ref:`estimator:npiv_joint` **with** :math:`\ell_1` **-norm**
+
+   Consider the iterates for :math:`t=1,\ldots, T`:
+
+   .. math::
+
+      \tilde{\rho}_{1,t+1} &= \exp\left(-\frac{\eta}{V_1}\left\{\sum_{\tau=1}^{t} \bigg(-2\E_n[v_1u_1^{\top}]\omega_{1,\tau} + 2\E_n[v_1u_2^\top]\omega_{2,\tau}\bigg)\right.\right. \\
+      &\left.\left.-2\E_n[v_1u_1^{\top}]\omega_{1,t} + 2\E_n[v_1u_2^\top]\omega_{2,t} + (t+1)\mu'\right\}-1\right) \\
+      \rho_{1,t+1} &=  \tilde{\rho}_{1,t+1}\min\left\{1, \frac{V_1}{\| \tilde{\rho}_{1,t+1}\|_1}\right\},\\
+      \tilde{\rho}_{2,t+1} &= \exp\left(-\frac{\eta}{V_2}\left\{\sum_{\tau=1}^{t} \bigg(-2\E_n[v_2u_2^\top]\omega_{2,\tau}\bigg)-2\E_n[v_2u_2^\top]\omega_{2,t}+(t+1)\mu\right\}-1\right)\\
+      \rho_{2,t+1} &=  \tilde{\rho}_{2,t+1}\min\left\{1, \frac{V_2}{\| \tilde{\rho}_{2,t+1}\|_1}\right\},
+
+   .. math::
+
+      \tilde{\omega}_{1,t+1} &= \tilde\omega_{1,t}\exp\bigg(2\eta\left\{2\E_n[u_1y]-2\E_n[u_1v_1^\top]\rho_{1,t} - 2\E_n[u_1u_1^{\top}]\tilde\omega_{1,t}\right\} \\
+      &\qquad -\eta\left\{2\E_n[u_1y]-2\E_n[u_1v_1^\top]\rho_{1,t-1} - 2\E_n[u_1u_1^{\top}]\tilde\omega_{1,t-1}\right\}\bigg)\\
+      \omega_{1,t+1} &= \frac{\tilde{\omega}_{1,t+1}}{\|\tilde{\omega}_{1,t+1}\|_1}\\
+      \tilde{\omega}_{2,t+1} &= \tilde\omega_{2,t}\exp\bigg(2\eta\left\{2\E_n[u_2v_1^\top]\rho_{1,t}-2\E_n[u_2v_2^\top]\rho_{2,t} - 2\E_n[u_2u_2^{\top}]\tilde\omega_{2,t}\right\} \\
+      &\qquad -\eta\left\{2\E_n[u_2v_1^\top]\rho_{1,t-1}-2\E_n[u_2v_2^\top]\rho_{2,t-1} - 2\E_n[u_2u_2^{\top}]\tilde\omega_{2,t-1}\right\}\bigg)\\
+      \omega_{2,t+1} &= \frac{\tilde{\omega}_{2,t+1}}{\|\tilde{\omega}_{2,t+1}\|_1}
+
+   with :math:`\tilde\rho_{1,-1} = \tilde\rho_{1,0} =\tilde\rho_{2,-1} = \tilde\rho_{2,0}= \frac{1}{e}` and :math:`\omega_{1,-1}=\omega_{1,0} = \omega_{2,-1}=\omega_{2,0}= \frac{1}{2p}`, and :math:`\eta =[16\max\left\{\left\|\E_n[v_1u_1^\top]\right\|_\infty, \left\|\E_n[v_1u_2^\top]\right\|_\infty, \left\| \E_n[v_2u_2^\top]\right\|_\infty\right\}]^{-1}`.
+
+   Then,
+
+   .. math::
+
+      \bar{\rho_1} = \frac{1}{T}\sum_{t=1}^{T}\rho_{1,t}\,,\quad \bar\alpha = \bar\rho_1^{+}-\bar\rho_1^{-} \\
+      \bar{\rho_2} = \frac{1}{T}\sum_{t=1}^{T}\rho_{2,t}\,,\quad \bar\beta = \bar\rho_2^{+}-\bar\rho_2^{-} 
+
+   are a :math:`O(T^{-1})`-approximate solution for :math:`\ref{minimax:sparse_est3_l1}`.
+
+
+.. admonition:: Duality gap
+    :class: remark
+    
+    The tolerance for the duality gap (to :math:`\ref{minimax:sparse_est3_l1}`) is given by
+    
+    .. math::
+    
+       \text{tol} &= \left\|\E_n[(y-\langle \bar\alpha, a \rangle)c']\right\|^2_{\E_n[c'c'^\top]^{\dagger}}+\mu'\|\bar\alpha\|_1+\left\|\E_n[(\langle\bar\alpha, a\rangle-\langle\bar\beta, b\rangle)c]\right\|^2_{\E_n[c'c'^\top]^{\dagger}}+\mu\|\bar\beta\|_1 \\
+       &-\bigg(\bar\theta_1^\top\E_n[c'y] + V_1\left\{\mu'-2\|\E_n[ac'^\top]\bar\theta_1\|_\infty+2\|\E_n[ac^\top]\bar\theta_2\|_\infty\right\}^{-}+V_2\left\{\mu-2\|\E_n[bc^\top]\bar\theta_2\|_\infty\right\}^{-} \\
+       &\qquad\qquad\qquad -\left\|\bar\theta_1\right\|_{\E_n[c'c'^\top]}-\left\|\bar\theta_2\right\|_{\E_n[cc^\top]}\bigg)
+    
