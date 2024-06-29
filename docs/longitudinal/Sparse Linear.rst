@@ -156,3 +156,73 @@ is \(O\left(\frac{1}{T}\right)\)-approximate solution for the minimax objective.
         &\leq \left(\mathbb{E}_n [(y - \langle \bar{\alpha}, a \rangle)c']\right)^{\top} \mathbb{E}_n [c' c'^{\top}]^{\dagger} \left(\mathbb{E}_n [(y - \langle \bar{\alpha}, a \rangle)c']\right) + \mu' \|\bar{\alpha}\|_1 \\
         &\quad - \left(\bar{\theta_1}^{\top} \mathbb{E}_n [c'y] + V_1 \left\{\mu' - 2 \|\mathbb{E}_n [a c'^{\top}] \bar{\theta_1}\|_\infty \right\}^{-} - \bar{\theta_1}^{\top} \mathbb{E}_n [c' c'^{\top}] \bar{\theta_1}\right) := \text{ tol}
         \end{aligned}
+
+.. _estimator-2:
+
+Estimator 2
+===========
+
+The ridge estimator takes the form:
+
+.. math::
+    :label: minimax-sparse-est2
+
+    \hat{\alpha} := \argmin_{\|\alpha\|_1 \leq V_1} \max _{\|\theta_1\|_1 \leq 1} 2 \langle \mathbb{E}_n [(y - \langle \alpha, a \rangle)c'], \theta_1 \rangle - \mathbb{E}_n [\langle c', \theta_1 \rangle^2] + \mu' \mathbb{E}_n [\langle a, \alpha \rangle^2]
+
+This estimator can be shown to solve the problem:
+
+.. math::
+
+    \min _{\rho \geq 0, \|\rho\|_1 \leq V_1} \max _{\omega_1 \geq 0, \|\omega_1\|_1 = 1} \ell(\rho, \omega_1)
+
+where 
+
+.. math::
+
+    \ell(\rho, \omega_1) := 2 \omega_1^{\top} \mathbb{E}_n [u_1 y] - 2 \omega_1^{\top} \mathbb{E}_n [u_1 v_1^{\top}] \rho - \omega_1^{\top} \mathbb{E}_n [u_1 u_1^{\top}] \omega_1 + \mu' \rho^{\top} \mathbb{E}_n [v_1 v_1^{\top}] \rho
+
+Moreover, \(v_1 = (a, -a)\), \(u_1 = (c', -c')\); and \(\theta_1 = \omega_1^{+} - \omega_1^{-}\), \(\alpha = \rho^+ - \rho^{-}\).
+
+.. admonition:: FTRL iterates for Estimator 2
+    :class: lemma
+    :name: sparse-l1-l1-est2
+
+    Consider the iterates for \(t = 1, \ldots, T\):
+
+    .. math::
+        :nowrap:
+
+        \begin{aligned}
+        \tilde{\rho}_{t+1} &= \exp\left(-\frac{\eta}{V_1} \left\{\sum_{\tau \leq t} -2 \mathbb{E}_n [v_1 u_1^{\top}] \omega_{1\tau} + 2 \mu' \mathbb{E}_n [v_1 v_1^{\top}] \tilde{\rho}_{\tau} - 2 \mathbb{E}_n [v_1 u_1^{\top}] \omega_{1t} + 2 \mu' \mathbb{E}_n [v_1 v_1^{\top}] \tilde{\rho}_{t} \right\} - 1\right) \\
+        \rho_{t+1} &= \tilde{\rho}_{t+1} \min\left\{1, \frac{V_1}{\| \tilde{\rho}_{t+1} \|_1}\right\},
+        \end{aligned}
+
+    .. math::
+        :nowrap:
+
+        \begin{aligned}
+        \tilde{\omega}_{1,t+1} &= \tilde{\omega}_{1,t} \exp\bigg(2\eta\left\{2 \mathbb{E}_n [u_1 y] - 2 \mathbb{E}_n [u_1 v_1^{\top}] \rho_{t} - 2 \mathbb{E}_n [u_1 u_1^{\top}] \tilde{\omega}_{1,t}\right\} \\
+        &\qquad -\eta\left\{2 \mathbb{E}_n [u_1 y] - 2 \mathbb{E}_n [u_1 v_1^{\top}] \rho_{t-1} - 2 \mathbb{E}_n [u_1 u_1^{\top}] \tilde{\omega}_{1,t-1}\right\}\bigg) \\
+        \omega_{1,t+1} &= \frac{\tilde{\omega}_{1,t+1}}{\|\tilde{\omega}_{1,t+1}\|_1}
+        \end{aligned}
+
+    with \(\tilde{\rho}_{-1} = \tilde{\rho}_{0} = \frac{1}{e}\), \(\tilde{\omega}_{1,-1} = \tilde{\omega}_{1,0} = \frac{1}{2p}\), and \(\eta = \frac{1}{8 \|\mathbb{E}_n [v_1 u_1^{\top}]\|_\infty}\).
+
+    Then, \(\bar{\rho} = \frac{1}{T} \sum_{t=1}^{T} \rho_t\), \(\bar{\alpha} = \bar{\rho}^{+} - \bar{\rho}^{-}\) is a \(O(T^{-1})\)-approximate solution for :eq:`minimax-sparse-est2`.
+
+**Proof**
+
+The proof is analogous to :ref:`sparse-l1-l1-est1`.
+
+.. admonition:: Duality gap
+    :class: remark
+
+    The upper bound for the duality gap as a certificate for convergence of the algorithm is given by:
+
+    .. math::
+        :nowrap:
+
+        \begin{aligned}
+        \text { tol } &= \left(\mathbb{E}_n [(y - \langle \bar{\alpha}, a \rangle)c']\right)^{\top} \mathbb{E}_n [c' c'^{\top}]^{\dagger} \left(\mathbb{E}_n [(y - \langle \bar{\alpha}, a \rangle)c']\right) + \mu' \bar{\alpha}^{\top} \mathbb{E}_n [aa^{\top}] \bar{\alpha} \\
+        &\quad - \left(2 \bar{\theta_1}^{\top} \mathbb{E}_n [c'y] - \bar{\theta_1}^{\top} \mathbb{E}_n [c'a^{\top}] \frac{\mathbb{E}_n [aa^{\top}]^{\dagger}}{\mu'} \mathbb{E}_n [ac'^{\top}] \bar{\theta_1} - \bar{\theta_1}^{\top} \mathbb{E}_n [c' c'^{\top}] \bar{\theta_1} \right)
+        \end{aligned}
