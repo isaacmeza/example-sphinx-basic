@@ -132,12 +132,13 @@ Consider the entropic regularizers :math:`R_{min}(\rho) = V_1 \sum_{i=1}^{2p} \r
     :nowrap:
 
     \begin{aligned}
-    \omega_{1,t+1} &= \underset{\|\omega_1\|_1 \leq 1}{\operatorname{argmax}} \omega_1^{\top} \left(\sum_{\tau \leq t} \left\{2 \mathbb{E}_n [u_1 y] - 2 \mathbb{E}_n [u_1 v_1^{\top}] \rho_{\tau} - 2 \mathbb{E}_n [u_1 u_1^{\top}] \omega_{1\tau} \right\} \\
-    &\qquad + 2 \mathbb{E}_n [u_1 y] - 2 \mathbb{E}_n [u_1 v_1^{\top}] \rho_{t} - 2 \mathbb{E}_n [u_1 u_1^{\top}] \omega_{1t} \right) - \frac{1}{\eta} \sum_{i=1}^{2p} \omega_{1i} \log (\omega_{1i}) \\
-    \tilde{\omega}_{1,t+1} &= \tilde{\omega}_{1,t} \exp\left(2\eta \left\{2 \mathbb{E}_n [u_1 y] - 2 \mathbb{E}_n [u_1 v_1^{\top}] \rho_{t} - 2 \mathbb{E}_n [u_1 u_1^{\top}] \tilde{\omega}_{1,t}\right\} \\
-    &\qquad -\eta \left\{2 \mathbb{E}_n [u_1 y] - 2 \mathbb{E}_n [u_1 v_1^{\top}] \rho_{t-1} - 2 \mathbb{E}_n [u_1 u_1^{\top}] \tilde{\omega}_{1,t-1}\right\}\right) \\
+    \omega_{1,t+1} &= \underset{\|\omega_1\|_1 \leq 1}{\operatorname{argmax}} \omega_1^{\top} \left(\sum_{\tau \leq t} \left\{2 \mathbb{E}_n [u_1 y] - 2 \mathbb{E}_n [u_1 v_1^{\top}] \rho_{\tau} - 2 \mathbb{E}_n [u_1 u_1^{\top}] \omega_{1\tau} \right\} \right. \\
+    &\qquad \left. + 2 \mathbb{E}_n [u_1 y] - 2 \mathbb{E}_n [u_1 v_1^{\top}] \rho_{t} - 2 \mathbb{E}_n [u_1 u_1^{\top}] \omega_{1t} \right) - \frac{1}{\eta} \sum_{i=1}^{2p} \omega_{1i} \log (\omega_{1i}) \\
+    \tilde{\omega}_{1,t+1} &= \tilde{\omega}_{1,t} \exp\left(2\eta \left\{2 \mathbb{E}_n [u_1 y] - 2 \mathbb{E}_n [u_1 v_1^{\top}] \rho_{t} - 2 \mathbb{E}_n [u_1 u_1^{\top}] \tilde{\omega}_{1,t}\right\} \right. \\
+    &\qquad \left. -\eta \left\{2 \mathbb{E}_n [u_1 y] - 2 \mathbb{E}_n [u_1 v_1^{\top}] \rho_{t-1} - 2 \mathbb{E}_n [u_1 u_1^{\top}] \tilde{\omega}_{1,t-1}\right\}\right) \\
     \omega_{1,t+1} &= \frac{\tilde{\omega}_{1,t+1}}{\|\tilde{\omega}_{1,t+1}\|_1}
     \end{aligned}
+
 
 with :math:`\omega_{1,-1} = \omega_{1,0} = \frac{1}{2p}`. Therefore, by Proposition :ref:`proposition-17`, the ensemble
 
