@@ -218,11 +218,11 @@ Finally,
 
 .. math::
 
-    \operatorname{Regret}(T) \leq \frac{1}{T} \sum_{t=1}^T \left( \ell\left(\{c_t, c'_t\}, \{a_t, b_t\}\right) 
+    \operatorname{Regret}(T) &\leq \frac{1}{T} \sum_{t=1}^T \left( \ell\left(\{c_t, c'_t\}, \{a_t, b_t\}\right) 
     - \ell\left(\{c_{t+1}, c'_{t+1}\}, \{a_t, b_t\}\right) \right) \\
-    \leq \frac{1}{T} \sum_{t=1}^T \frac{K}{\sqrt{n}} \left\|\{c_{t}, c'_{t}\}, \{c_{t+1}, c'_{t+1}\}\right\|_2 \\
-    \leq \frac{1}{T} \sum_{t=1}^T \frac{K^2}{2} \frac{1}{t} \\
-    \leq K^2 \frac{\log T + 1}{T}
+   & \leq \frac{1}{T} \sum_{t=1}^T \frac{K}{\sqrt{n}} \left\|\{c_{t}, c'_{t}\}, \{c_{t+1}, c'_{t+1}\}\right\|_2 \\
+   & \leq \frac{1}{T} \sum_{t=1}^T \frac{K^2}{2} \frac{1}{t} \\
+   & \leq K^2 \frac{\log T + 1}{T}
 
 
 
