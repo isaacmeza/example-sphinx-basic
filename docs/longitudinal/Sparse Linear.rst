@@ -7,6 +7,7 @@ In this section we address the high-dimensional case, where the function class i
 
 Thus we will be solving an optimization problem over the :math:`2p`-dimensional simplex, and we will be using *Optimistic-Follow-the-Regularized-Leader* to find an :math:`\epsilon`-approximate solution. The approximate solutions of the minimax problems for all of our estimator will rely on the following proposition:
 
+.. _proposition-17:
 .. admonition:: Proposition 17 in `Dikkala et al. (2020) <https://arxiv.org/abs/2006.07201>`_
     :class: lemma
     :name: proposition-17
@@ -62,6 +63,7 @@ where
 
 Moreover, :math:`v_1 = (a, -a)`, :math:`u_1 = (c', -c')`; and :math:`\theta_1 = \omega_1^{+} - \omega_1^{-}`, :math:`\alpha = \rho^+ - \rho^{-}`.
 
+.. _sparse-l1-l1-est1:
 
 .. admonition:: FTRL iterates for Estimator 1
     :class: lemma
