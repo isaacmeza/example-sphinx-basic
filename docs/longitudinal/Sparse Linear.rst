@@ -8,6 +8,8 @@ In this section we address the high-dimensional case, where the function class i
 Thus we will be solving an optimization problem over the :math:`2p`-dimensional simplex, and we will be using *Optimistic-Follow-the-Regularized-Leader* to find an :math:`\epsilon`-approximate solution. The approximate solutions of the minimax problems for all of our estimator will rely on the following proposition:
 
 .. admonition:: Proposition 17 in `Dikkala et al. (2020) <https://arxiv.org/abs/2006.07201>`_
+    :class: lemma
+    :name: proposition-17
 
     Consider a minimax objective: :math:`\min _{\theta \in \Theta} \max _{w \in W} \ell(\theta, w)`. Suppose that :math:`\Theta, W` are convex sets and that :math:`\ell(\theta, w)` is convex in :math:`\theta` for every :math:`w` and concave in :math:`w` for any :math:`\theta`. Let :math:`\|\cdot\|_{\Theta}` and :math:`\|\cdot\|_W` be arbitrary norms in the corresponding spaces. Moreover, suppose that the following Lipschitzness properties are satisfied:
 
@@ -58,7 +60,8 @@ where
 
     \ell(\rho, \omega_1) := 2 \omega_1^{\top} \mathbb{E}_n [u_1 y] - 2 \omega_1^{\top} \mathbb{E}_n [u_1 v_1^{\top}] \rho - \omega_1^{\top} \mathbb{E}_n [u_1 u_1^{\top}] \omega_1 + \mu' \sum_{i=1}^{2 p} \rho_i.
 
-Moreover, \(v_1 = (a, -a)\), \(u_1 = (c', -c')\); and \(\theta_1 = \omega_1^{+} - \omega_1^{-}\), \(\alpha = \rho^+ - \rho^{-}\).
+Moreover, :math:`v_1 = (a, -a)`, :math:`u_1 = (c', -c')`; and :math:`\theta_1 = \omega_1^{+} - \omega_1^{-}`, :math:`\alpha = \rho^+ - \rho^{-}`.
+
 
 .. admonition:: FTRL iterates for Estimator 1
     :class: lemma
@@ -83,9 +86,10 @@ Moreover, \(v_1 = (a, -a)\), \(u_1 = (c', -c')\); and \(\theta_1 = \omega_1^{+} 
         \omega_{1,t+1} &= \frac{\tilde{\omega}_{1,t+1}}{\|\tilde{\omega}_{1,t+1}\|_1}
         \end{aligned}
 
-    with \(\tilde{\rho}_{-1} = \tilde{\rho}_{0} = \frac{1}{e}\), \(\tilde{\omega}_{1,-1} = \tilde{\omega}_{1,0} = \frac{1}{2p}\), and \(\eta = \frac{1}{8 \|\mathbb{E}_n [v_1 u_1^{\top}]\|_\infty}\).
-
-    Then, \(\bar{\rho} = \frac{1}{T}\sum_{t=1}^{T} \rho_t\), \(\bar{\alpha} = \bar{\rho}^{+} - \bar{\rho}^{-}\) is a \(O(T^{-1})\)-approximate solution for :eq:`minimax-sparse-est1`.
+    with :math:`\tilde{\rho}_{-1} = \tilde{\rho}_{0} = \frac{1}{e}`, :math:`\tilde{\omega}_{1,-1} = \tilde{\omega}_{1,0} = \frac{1}{2p}`, and :math:`\eta = \frac{1}{8 \|\mathbb{E}_n [v_1 u_1^{\top}]\|_\infty}`.
+    
+    Then, :math:`\bar{\rho} = \frac{1}{T}\sum_{t=1}^{T} \rho_t`, :math:`\bar{\alpha} = \bar{\rho}^{+} - \bar{\rho}^{-}` is a :math:`O(T^{-1})`-approximate solution for :eq:`minimax-sparse-est1`.
+    
 
 **Proof**
 
@@ -95,7 +99,7 @@ The proof will match symbols with Proposition :ref:`proposition-17`. Let
 
     \Theta = \{\rho \;|\; \rho \geq 0,\, \|\rho\|_1 \leq V_1\}\;,\quad W = \{\omega_1 \;|\; \omega_1 \geq 0, \|\omega_1\|_1 = 1\}
 
-be the convex feasibility sets. Note that \(\ell\) is convex in \(\rho\) and concave in \(\omega_1\). Since
+be the convex feasibility sets. Note that :math:`\ell` is convex in :math:`\rho` and concave in :math:`\omega_1`. Since
 
 .. math::
 
@@ -104,7 +108,7 @@ be the convex feasibility sets. Note that \(\ell\) is convex in \(\rho\) and con
     \nabla_{\omega_1} \ell(\rho, \omega_1) &= 2 \mathbb{E}_n [u_1 y] - 2 \mathbb{E}_n [u_1 v_1^{\top}] \rho - 2 \mathbb{E}_n [u_1 u_1^{\top}] \omega_1 
     \end{aligned}
 
-the Lipschitzness property is satisfied with \(L = 2 \|\mathbb{E}_n [v_1 u_1^{\top}]\|_\infty\):
+the Lipschitzness property is satisfied with :math:`L = 2 \|\mathbb{E}_n [v_1 u_1^{\top}]\|_\infty`:
 
 .. math::
 
@@ -113,7 +117,7 @@ the Lipschitzness property is satisfied with \(L = 2 \|\mathbb{E}_n [v_1 u_1^{\t
     \left\|\nabla_{\omega_{1}} \ell(\rho, \omega_{1}) - \nabla_{\omega_{1}} \ell(\rho^{\prime}, \omega_{1})\right\|_{\infty} &= \left\|2 \mathbb{E}_n [u v^{\top}] (\rho - \rho^{\prime})\right\|_{\infty} \leq 2 \|\mathbb{E}_n [v u^{\top}]\|_{\infty} \left\|\rho - \rho^{\prime}\right\|_1
     \end{aligned}
 
-Consider the entropic regularizers \(R_{min}(\rho) = V_1 \sum_{i=1}^{2p} \rho_i \log (\rho_i)\), and \(R_{max}(\omega_1) = \sum_{i=1}^{2p} \omega_{1i} \log (\omega_{1i})\) which are \(1\)-strongly convex in the spaces \(\Theta\), and \(W\) respectively. Then, the iterates satisfy:
+Consider the entropic regularizers :math:`R_{min}(\rho) = V_1 \sum_{i=1}^{2p} \rho_i \log (\rho_i)`, and :math:`R_{max}(\omega_1) = \sum_{i=1}^{2p} \omega_{1i} \log (\omega_{1i})` which are :math:`1`-strongly convex in the spaces :math:`\Theta`, and :math:`W` respectively. Then, the iterates satisfy:
 
 .. math::
     :nowrap:
@@ -135,13 +139,13 @@ Consider the entropic regularizers \(R_{min}(\rho) = V_1 \sum_{i=1}^{2p} \rho_i 
     \omega_{1,t+1} &= \frac{\tilde{\omega}_{1,t+1}}{\|\tilde{\omega}_{1,t+1}\|_1}
     \end{aligned}
 
-with \(\omega_{1,-1} = \omega_{1,0} = \frac{1}{2p}\). Therefore, by Proposition :ref:`proposition-17`, the ensemble
+with :math:`\omega_{1,-1} = \omega_{1,0} = \frac{1}{2p}`. Therefore, by Proposition :ref:`proposition-17`, the ensemble
 
 .. math::
 
     \bar{\rho} = \frac{1}{T} \sum_{t=1}^T \rho_t
 
-is \(O\left(\frac{1}{T}\right)\)-approximate solution for the minimax objective.
+is :math:`O\left(\frac{1}{T}\right)`-approximate solution for the minimax objective.
 
 .. admonition:: Duality Gap
     :class: note
