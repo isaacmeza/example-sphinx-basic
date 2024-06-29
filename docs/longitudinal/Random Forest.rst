@@ -117,15 +117,15 @@ by separating the minimization and completing the square, we have that
 
 .. math::
 
-    c_t = \operatorname{argmin}_{c \in \mathcal{F}_C} \frac{1}{n} \sum_{i=1}^{n} \left( c_i - \frac{1}{t-1} \sum_{\tau=1}^{t-1} \left\{ a_{i\tau} - b_{i\tau} \right\} \right)^2 \\
-        = \operatorname{argmin}_{c \in \mathcal{F}_C} \frac{1}{n} \sum_{i=1}^{n} \left( c_i - u_i^{t} \right)^2 \\
-        = \operatorname{Oracle}_{\mathcal{F}, \text{reg}} \left( \{c_i\}, \{u_i^t\} \right)
+    c_t &= \operatorname{argmin}_{c \in \mathcal{F}_C} \frac{1}{n} \sum_{i=1}^{n} \left( c_i - \frac{1}{t-1} \sum_{\tau=1}^{t-1} \left\{ a_{i\tau} - b_{i\tau} \right\} \right)^2 \\
+        &= \operatorname{argmin}_{c \in \mathcal{F}_C} \frac{1}{n} \sum_{i=1}^{n} \left( c_i - u_i^{t} \right)^2 \\
+        &= \operatorname{Oracle}_{\mathcal{F}, \text{reg}} \left( \{c_i\}, \{u_i^t\} \right)
 
 .. math::
 
-    c'_t = \operatorname{argmin}_{c' \in \mathcal{F'}_{C'}} \frac{1}{n} \sum_{i=1}^{n} \left( c_i' - \frac{1}{t-1} \sum_{\tau=1}^{t-1} \left\{ y_i - a_{i\tau} \right\} \right)^2 \\
-         = \operatorname{argmin}_{c' \in \mathcal{F'}_{C'}} \frac{1}{n} \sum_{i=1}^{n} \left( c_i' - u_i'^{t} \right)^2 \\
-         = \operatorname{Oracle}_{\mathcal{F'}, \text{reg}} \left( \{c_i'\}, \{u_i'^t\} \right)
+    c'_t &= \operatorname{argmin}_{c' \in \mathcal{F'}_{C'}} \frac{1}{n} \sum_{i=1}^{n} \left( c_i' - \frac{1}{t-1} \sum_{\tau=1}^{t-1} \left\{ y_i - a_{i\tau} \right\} \right)^2 \\
+         &= \operatorname{argmin}_{c' \in \mathcal{F'}_{C'}} \frac{1}{n} \sum_{i=1}^{n} \left( c_i' - u_i'^{t} \right)^2 \\
+         &= \operatorname{Oracle}_{\mathcal{F'}, \text{reg}} \left( \{c_i'\}, \{u_i'^t\} \right)
 
 
 Now, the learner plays *be-the-leader* (BTL) which involves choosing :math:`(a_t,b_t)` that best responds
@@ -139,17 +139,17 @@ which after separating the minimization problem and completing the square we get
 
 .. math::
 
-    a_t = \operatorname{argmin}_{a \in \mathcal{G}_A} \frac{1}{n} \sum_{i=1}^{n} 
+    a_t &= \operatorname{argmin}_{a \in \mathcal{G}_A} \frac{1}{n} \sum_{i=1}^{n} 
     \left( a_i - \frac{1}{\mu' t} \sum_{\tau=1}^{t} \left\{ c'_{i\tau} - c_{i\tau} \right\} \right)^2 \\
-    = \operatorname{argmin}_{a \in \mathcal{G}_A} \frac{1}{n} \sum_{i=1}^{n} \left( a_i - v_i'^{t} \right)^2 \\
-    = \operatorname{Oracle}_{\mathcal{G}, \text{reg}} \left( \{a_i\}, \{v_i'^t\} \right)
+    &= \operatorname{argmin}_{a \in \mathcal{G}_A} \frac{1}{n} \sum_{i=1}^{n} \left( a_i - v_i'^{t} \right)^2 \\
+    &= \operatorname{Oracle}_{\mathcal{G}, \text{reg}} \left( \{a_i\}, \{v_i'^t\} \right)
 
 .. math::
 
-    b_t = \operatorname{argmin}_{b \in \mathcal{H}_{B}} \frac{1}{n} \sum_{i=1}^{n} 
+    b_t &= \operatorname{argmin}_{b \in \mathcal{H}_{B}} \frac{1}{n} \sum_{i=1}^{n} 
     \left( b_i - \frac{1}{\mu t} \sum_{\tau=1}^{t} c_{i\tau} \right)^2 \\
-    = \operatorname{argmin}_{b \in \mathcal{H}_{B}} \frac{1}{n} \sum_{i=1}^{n} \left( b_i - v_i^{t} \right)^2 \\
-    = \operatorname{Oracle}_{\mathcal{H}, \text{reg}} \left( \{b_i\}, \{v_i^t\} \right)
+    &= \operatorname{argmin}_{b \in \mathcal{H}_{B}} \frac{1}{n} \sum_{i=1}^{n} \left( b_i - v_i^{t} \right)^2 \\
+    &= \operatorname{Oracle}_{\mathcal{H}, \text{reg}} \left( \{b_i\}, \{v_i^t\} \right)
 
 
 Thus it remains to show that the ensembles
@@ -179,16 +179,16 @@ so
 .. math::
 
     \|\nabla_{\{c,c'\}}\ell\left(\{c,c'\}, \{a,b\}\right)\|_2 
-    = \frac{2}{n}\sqrt{\sum_{i=1}^{n}\left(c_i-(y_i-a_i)+c_i'-(a_i-b_i)\right)^2}  \\ 
-    \leq \frac{2}{n}\left(\|c\|_2+\|y\|_2+\|a\|_2+\|c'\|_2+\|a\|_2+\|b\|_2\right) \\
-    \leq O\left(\frac{1}{\sqrt{n}}\right)
+    &= \frac{2}{n}\sqrt{\sum_{i=1}^{n}\left(c_i-(y_i-a_i)+c_i'-(a_i-b_i)\right)^2}  \\ 
+    &\leq \frac{2}{n}\left(\|c\|_2+\|y\|_2+\|a\|_2+\|c'\|_2+\|a\|_2+\|b\|_2\right) \\
+    &\leq O\left(\frac{1}{\sqrt{n}}\right)
 
 Then :math:`L_t = \sum_{\tau=1}^t \ell(\cdot, \{a_\tau, b_\tau\})` is :math:`\frac{2t}{n}`-strongly convex. Since :math:`\{c_{t+1}, c'_{t+1}\}` is a minimizer of :math:`L_t` and the set :math:`C\times C'` is convex, we have by the strong convexity and the first order condition that 
 
 .. math::
 
-    L_t(\{c_t,c'_t\}) \geq L_t(\{c_{t+1},c'_{t+1}\}) + \left\langle \{c_{t},c'_{t}\}-\{c_{t+1},c'_{t+1}\}, \nabla_{\{c,c'\}}L_t(\{c_{t+1},c'_{t+1}\})\right\rangle + \frac{t}{n}\left\|\{c_{t},c'_{t}\},\{c_{t+1},c'_{t+1}\}\right\|_2^2 \\
-    \geq  L_t(\{c_{t+1},c'_{t+1}\})+ \frac{t}{n}\left\|\{c_{t},c'_{t}\},\{c_{t+1},c'_{t+1}\}\right\|_2^2
+    L_t(\{c_t,c'_t\}) &\geq L_t(\{c_{t+1},c'_{t+1}\}) + \left\langle \{c_{t},c'_{t}\}-\{c_{t+1},c'_{t+1}\}, \nabla_{\{c,c'\}}L_t(\{c_{t+1},c'_{t+1}\})\right\rangle + \frac{t}{n}\left\|\{c_{t},c'_{t}\},\{c_{t+1},c'_{t+1}\}\right\|_2^2 \\
+    &\geq  L_t(\{c_{t+1},c'_{t+1}\})+ \frac{t}{n}\left\|\{c_{t},c'_{t}\},\{c_{t+1},c'_{t+1}\}\right\|_2^2
 
 and
 
