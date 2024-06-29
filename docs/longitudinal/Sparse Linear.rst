@@ -232,3 +232,19 @@ The proof is analogous to :ref:`sparse-l1-l1-est1`.
         \text { tol } &= \left(\mathbb{E}_n [(y - \langle \bar{\alpha}, a \rangle)c']\right)^{\top} \mathbb{E}_n [c' c'^{\top}]^{\dagger} \left(\mathbb{E}_n [(y - \langle \bar{\alpha}, a \rangle)c']\right) + \mu' \bar{\alpha}^{\top} \mathbb{E}_n [aa^{\top}] \bar{\alpha} \\
         &\quad - \left(2 \bar{\theta_1}^{\top} \mathbb{E}_n [c'y] - \bar{\theta_1}^{\top} \mathbb{E}_n [c'a^{\top}] \frac{\mathbb{E}_n [aa^{\top}]^{\dagger}}{\mu'} \mathbb{E}_n [ac'^{\top}] \bar{\theta_1} - \bar{\theta_1}^{\top} \mathbb{E}_n [c' c'^{\top}] \bar{\theta_1} \right)
         \end{aligned}
+
+
+.. _proposition-18:
+
+.. admonition:: Proposition 18
+   :class: proposition
+
+   Suppose that the sets :math:`\mathcal{F'}_{C'}`, :math:`\mathcal{F}_{C}` are convex sets. Then the ensembles: :math:`\bar{g} = \frac{1}{T} \sum_{t=1}^T g_t`, :math:`\bar{h} = \frac{1}{T} \sum_{t=1}^T h_t`, are a :math:`O \left( \frac{\log (T) + 1}{T} \right)`-approximate solution to the minimax problem.
+
+---
+
+with :math:`\omega_{1,-1} = \omega_{1,0} = \frac{1}{2p}`. Therefore, by Proposition :ref:`proposition-18`, the ensemble
+
+.. math::
+
+    \bar{\rho} = \frac{1}{T} \sum_{t=1}^T \rho_t
