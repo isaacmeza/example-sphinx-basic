@@ -32,3 +32,127 @@ Thus we will be solving an optimization problem over the :math:`2p`-dimensional 
     .. math::
 
         R_* := \max \left\{\sup _{\theta \in \Theta} R_{\min }(\theta) - \inf _{\theta \in \Theta} R_{\min }(\theta), \sup _{w \in W} R_{\max }(w) - \inf _{w \in W} R_{\max }(w)\right\}
+
+
+.. _estimator-1:
+
+Estimator 1
+-----------
+
+The minimax problem is:
+
+.. math::
+    :label: minimax-sparse-est1
+
+    \min_{\|\alpha\|_1 \leq V_1} \max _{\|\theta_1\|_1 \leq 1} L(\alpha, \theta) := \min_{\|\alpha\|_1 \leq V_1} \max _{\|\theta_1\|_1 \leq 1} 2\langle \mathbb{E}_n [(y - \langle \alpha, a \rangle)c'], \theta_1 \rangle - \mathbb{E}_n [\langle c', \theta_1 \rangle^2] + \mu' \|\alpha\|_1
+
+which can be written as:
+
+.. math::
+
+    \min _{\rho \geq 0, \|\rho\|_1 \leq V_1} \max _{\omega_1 \geq 0, \|\omega_1\|_1 = 1} \ell(\rho, \omega_1)
+
+where 
+
+.. math::
+
+    \ell(\rho, \omega_1) := 2 \omega_1^{\top} \mathbb{E}_n [u_1 y] - 2 \omega_1^{\top} \mathbb{E}_n [u_1 v_1^{\top}] \rho - \omega_1^{\top} \mathbb{E}_n [u_1 u_1^{\top}] \omega_1 + \mu' \sum_{i=1}^{2 p} \rho_i.
+
+Moreover, \(v_1 = (a, -a)\), \(u_1 = (c', -c')\); and \(\theta_1 = \omega_1^{+} - \omega_1^{-}\), \(\alpha = \rho^+ - \rho^{-}\).
+
+.. admonition:: FTRL iterates for Estimator 1
+    :class: lemma
+    :name: sparse-l1-l1-est1
+
+    Consider the iterates for \(t=1,\ldots, T\):
+
+    .. math::
+        :nowrap:
+
+        \begin{aligned}
+        \tilde{\rho}_{t+1} &= \exp\left(-\frac{\eta}{V_1} \left\{\sum_{\tau \leq t} -2 \mathbb{E}_n [v_1 u_1^{\top}] \omega_{1\tau} -2 \mathbb{E}_n [v_1 u_1^{\top}] \omega_{1t} + (t+1)\mu' \right\} - 1\right) \\
+        \rho_{t+1} &=  \tilde{\rho}_{t+1} \min\left\{1, \frac{V_1}{\| \tilde{\rho}_{t+1} \|_1}\right\},
+        \end{aligned}
+
+    .. math::
+        :nowrap:
+
+        \begin{aligned}
+        \tilde{\omega}_{1,t+1} &= \tilde{\omega}_{1,t} \exp\bigg(2\eta\left\{2 \mathbb{E}_n [u_1 y] - 2 \mathbb{E}_n [u_1 v_1^{\top}] \rho_{t} - 2 \mathbb{E}_n [u_1 u_1^{\top}] \tilde{\omega}_{1,t}\right\} \\
+        &\qquad -\eta\left\{2 \mathbb{E}_n [u_1 y] - 2 \mathbb{E}_n [u_1 v_1^{\top}] \rho_{t-1} - 2 \mathbb{E}_n [u_1 u_1^{\top}] \tilde{\omega}_{1,t-1}\right\}\bigg) \\
+        \omega_{1,t+1} &= \frac{\tilde{\omega}_{1,t+1}}{\|\tilde{\omega}_{1,t+1}\|_1}
+        \end{aligned}
+
+    with \(\tilde{\rho}_{-1} = \tilde{\rho}_{0} = \frac{1}{e}\), \(\tilde{\omega}_{1,-1} = \tilde{\omega}_{1,0} = \frac{1}{2p}\), and \(\eta = \frac{1}{8 \|\mathbb{E}_n [v_1 u_1^{\top}]\|_\infty}\).
+
+    Then, \(\bar{\rho} = \frac{1}{T}\sum_{t=1}^{T} \rho_t\), \(\bar{\alpha} = \bar{\rho}^{+} - \bar{\rho}^{-}\) is a \(O(T^{-1})\)-approximate solution for :eq:`minimax-sparse-est1`.
+
+**Proof**
+
+The proof will match symbols with Proposition :ref:`proposition-17`. Let 
+
+.. math::
+
+    \Theta = \{\rho \;|\; \rho \geq 0,\, \|\rho\|_1 \leq V_1\}\;,\quad W = \{\omega_1 \;|\; \omega_1 \geq 0, \|\omega_1\|_1 = 1\}
+
+be the convex feasibility sets. Note that \(\ell\) is convex in \(\rho\) and concave in \(\omega_1\). Since
+
+.. math::
+
+    \begin{aligned}
+    \nabla_{\rho} \ell(\rho, \omega_1) &= -2 \mathbb{E}_n [v_1 u_1^{\top}] \omega_1 + \mu' \\
+    \nabla_{\omega_1} \ell(\rho, \omega_1) &= 2 \mathbb{E}_n [u_1 y] - 2 \mathbb{E}_n [u_1 v_1^{\top}] \rho - 2 \mathbb{E}_n [u_1 u_1^{\top}] \omega_1 
+    \end{aligned}
+
+the Lipschitzness property is satisfied with \(L = 2 \|\mathbb{E}_n [v_1 u_1^{\top}]\|_\infty\):
+
+.. math::
+
+    \begin{aligned}
+    \left\|\nabla_\rho \ell(\rho, \omega_1) - \nabla_\rho \ell(\rho, \omega_1^{\prime})\right\|_{\infty} &= \left\|2 \mathbb{E}_n [v u^{\top}] (\omega_1 - \omega_1^{\prime})\right\|_{\infty} \leq 2 \|\mathbb{E}_n [v u^{\top}]\|_{\infty} \left\|\omega_1 - \omega_1^{\prime}\right\|_1 \\
+    \left\|\nabla_{\omega_{1}} \ell(\rho, \omega_{1}) - \nabla_{\omega_{1}} \ell(\rho^{\prime}, \omega_{1})\right\|_{\infty} &= \left\|2 \mathbb{E}_n [u v^{\top}] (\rho - \rho^{\prime})\right\|_{\infty} \leq 2 \|\mathbb{E}_n [v u^{\top}]\|_{\infty} \left\|\rho - \rho^{\prime}\right\|_1
+    \end{aligned}
+
+Consider the entropic regularizers \(R_{min}(\rho) = V_1 \sum_{i=1}^{2p} \rho_i \log (\rho_i)\), and \(R_{max}(\omega_1) = \sum_{i=1}^{2p} \omega_{1i} \log (\omega_{1i})\) which are \(1\)-strongly convex in the spaces \(\Theta\), and \(W\) respectively. Then, the iterates satisfy:
+
+.. math::
+    :nowrap:
+
+    \begin{aligned}
+    \rho_{t+1} &= \underset{\rho \geq 0, \|\rho\|_1 \leq V_1}{\operatorname{argmin}} \rho^{\top} \left(\sum_{\tau \leq t} \left\{-2 \mathbb{E}_n [v_1 u_1^{\top}] \omega_{1\tau} + \mu'\right\} - 2 \mathbb{E}_n [v_1 u_1^{\top}] \omega_{1t} + \mu'\right) + \frac{V_1}{\eta} \sum_{i=1}^{2p} \rho_i \log (\rho_i) \\
+    \tilde{\rho}_{t+1} &= \exp\left(-\frac{\eta}{V_1} \left\{\sum_{\tau \leq t} -2 \mathbb{E}_n [v_1 u_1^{\top}] \omega_{1\tau} -2 \mathbb{E}_n [v_1 u_1^{\top}] \omega_{1t} + (t+1)\mu' \right\} - 1\right) \\
+    \rho_{t+1} &=  \tilde{\rho}_{t+1} \min\left\{1, \frac{V_1}{\| \tilde{\rho}_{t+1} \|_1}\right\},
+    \end{aligned}
+
+.. math::
+    :nowrap:
+
+    \begin{aligned}
+    \omega_{1,t+1} &= \underset{\|\omega_1\|_1 \leq 1}{\operatorname{argmax}} \omega_1^{\top} \left(\sum_{\tau \leq t} \left\{2 \mathbb{E}_n [u_1 y] - 2 \mathbb{E}_n [u_1 v_1^{\top}] \rho_{\tau} - 2 \mathbb{E}_n [u_1 u_1^{\top}] \omega_{1\tau} \right\} \\
+    &\qquad + 2 \mathbb{E}_n [u_1 y] - 2 \mathbb{E}_n [u_1 v_1^{\top}] \rho_{t} - 2 \mathbb{E}_n [u_1 u_1^{\top}] \omega_{1t} \right) - \frac{1}{\eta} \sum_{i=1}^{2p} \omega_{1i} \log (\omega_{1i}) \\
+    \tilde{\omega}_{1,t+1} &= \tilde{\omega}_{1,t} \exp\left(2\eta \left\{2 \mathbb{E}_n [u_1 y] - 2 \mathbb{E}_n [u_1 v_1^{\top}] \rho_{t} - 2 \mathbb{E}_n [u_1 u_1^{\top}] \tilde{\omega}_{1,t}\right\} \\
+    &\qquad -\eta \left\{2 \mathbb{E}_n [u_1 y] - 2 \mathbb{E}_n [u_1 v_1^{\top}] \rho_{t-1} - 2 \mathbb{E}_n [u_1 u_1^{\top}] \tilde{\omega}_{1,t-1}\right\}\right) \\
+    \omega_{1,t+1} &= \frac{\tilde{\omega}_{1,t+1}}{\|\tilde{\omega}_{1,t+1}\|_1}
+    \end{aligned}
+
+with \(\omega_{1,-1} = \omega_{1,0} = \frac{1}{2p}\). Therefore, by Proposition :ref:`proposition-17`, the ensemble
+
+.. math::
+
+    \bar{\rho} = \frac{1}{T} \sum_{t=1}^T \rho_t
+
+is \(O\left(\frac{1}{T}\right)\)-approximate solution for the minimax objective.
+
+.. admonition:: Duality Gap
+    :class: note
+
+    The ensembles \(\bar{\alpha}\), \(\bar{\theta_1}\) can be thought of as primal and dual solutions and we can use the duality gap as a certificate for convergence of the algorithm.
+
+    .. math::
+        :nowrap:
+
+        \begin{aligned}
+        \text { Duality Gap } &:= \max _{\|\theta_1\|_1 \leq 1 } L(\bar{\alpha}, \theta_1) - \min _{\|\alpha\|_1 \leq V_1} L(\alpha, \bar{\theta_1}) \\
+        &\leq \left(\mathbb{E}_n [(y - \langle \bar{\alpha}, a \rangle)c']\right)^{\top} \mathbb{E}_n [c' c'^{\top}]^{\dagger} \left(\mathbb{E}_n [(y - \langle \bar{\alpha}, a \rangle)c']\right) + \mu' \|\bar{\alpha}\|_1 \\
+        &\quad - \left(\bar{\theta_1}^{\top} \mathbb{E}_n [c'y] + V_1 \left\{\mu' - 2 \|\mathbb{E}_n [a c'^{\top}] \bar{\theta_1}\|_\infty \right\}^{-} - \bar{\theta_1}^{\top} \mathbb{E}_n [c' c'^{\top}] \bar{\theta_1}\right) := \text{ tol}
+        \end{aligned}
