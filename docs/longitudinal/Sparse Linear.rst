@@ -10,7 +10,6 @@ Thus we will be solving an optimization problem over the :math:`2p`-dimensional 
 .. _proposition-17:
 .. admonition:: Proposition 17 in `Dikkala et al. (2020) <https://arxiv.org/abs/2006.07201>`_
     :class: lemma
-    :name: proposition-17
 
     Consider a minimax objective: :math:`\min _{\theta \in \Theta} \max _{w \in W} \ell(\theta, w)`. Suppose that :math:`\Theta, W` are convex sets and that :math:`\ell(\theta, w)` is convex in :math:`\theta` for every :math:`w` and concave in :math:`w` for any :math:`\theta`. Let :math:`\|\cdot\|_{\Theta}` and :math:`\|\cdot\|_W` be arbitrary norms in the corresponding spaces. Moreover, suppose that the following Lipschitzness properties are satisfied:
 
