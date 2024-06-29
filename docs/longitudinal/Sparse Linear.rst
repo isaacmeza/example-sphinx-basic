@@ -15,7 +15,7 @@ Thus we will be solving an optimization problem over the :math:`2p`-dimensional 
 
         \begin{aligned}
         & \forall \theta \in \Theta, w, w^{\prime} \in W: \left\|\nabla_\theta \ell(\theta, w) - \nabla_\theta \ell\left(\theta, w^{\prime}\right)\right\|_{\Theta, *} \leq L\left\|w - w^{\prime}\right\|_W \\
-        & \forall w \in W, \theta, \theta^{\prime} in \Theta: \left\|\nabla_w \ell(\theta, w) - \nabla_w \ell\left(\theta^{\prime}, w\right)\right\|_{W, *} \leq L\left\|\theta - \theta^{\prime}\right\|_W
+        & \forall w \in W, \theta, \theta^{\prime} \in \Theta: \left\|\nabla_w \ell(\theta, w) - \nabla_w \ell\left(\theta^{\prime}, w\right)\right\|_{W, *} \leq L\left\|\theta - \theta^{\prime}\right\|_W
         \end{aligned}
 
     where :math:`\|\cdot\|_{\Theta, *}` and :math:`\|\cdot\|_{W, *}` correspond to the dual norms of :math:`\|\cdot\|_{\Theta}` and :math:`\|\cdot\|_W`. Consider the algorithm where at each iteration each player updates their strategy based on:
