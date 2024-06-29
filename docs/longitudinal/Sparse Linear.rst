@@ -166,7 +166,7 @@ is :math:`O\left(\frac{1}{T}\right)`-approximate solution for the minimax object
 .. _estimator-2:
 
 Estimator 2
-===========
+-----------
 
 The ridge estimator takes the form:
 
