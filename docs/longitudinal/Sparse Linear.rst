@@ -173,7 +173,7 @@ The ridge estimator takes the form:
 .. math::
     :label: minimax-sparse-est2
 
-    \hat{\alpha} := \argmin_{\|\alpha\|_1 \leq V_1} \max _{\|\theta_1\|_1 \leq 1} 2 \langle \mathbb{E}_n [(y - \langle \alpha, a \rangle)c'], \theta_1 \rangle - \mathbb{E}_n [\langle c', \theta_1 \rangle^2] + \mu' \mathbb{E}_n [\langle a, \alpha \rangle^2]
+    \hat{\alpha} := \operatorname{argmin}_{\|\alpha\|_1 \leq V_1} \max _{\|\theta_1\|_1 \leq 1} 2 \langle \mathbb{E}_n [(y - \langle \alpha, a \rangle)c'], \theta_1 \rangle - \mathbb{E}_n [\langle c', \theta_1 \rangle^2] + \mu' \mathbb{E}_n [\langle a, \alpha \rangle^2]
 
 This estimator can be shown to solve the problem:
 
