@@ -277,7 +277,8 @@ For the joint estimator:
         &
         \end{aligned}
 
-    Suppose that the sets \(\mathcal{F'}_{C'}\), \(\mathcal{F}_{C}\), are convex sets. Then the ensembles: \(\bar{g} = \frac{1}{T} \sum_{t=1}^T g_t\), \(\bar{h} = \frac{1}{T} \sum_{t=1}^T h_t\), are a \(O \left( \frac{\log (T) + 1}{T} \right)\)-approximate solution to the minimax problem.
+    Suppose that the sets :math:`\mathcal{F'}_{C'}`, :math:`\mathcal{F}_{C}` are convex sets. Then the ensembles: :math:`\bar{g} = \frac{1}{T} \sum_{t=1}^T g_t`, :math:`\bar{h} = \frac{1}{T} \sum_{t=1}^T h_t`, are a :math:`O \left( \frac{\log (T) + 1}{T} \right)`-approximate solution to the minimax problem.
+
 
 **Proof**
 
