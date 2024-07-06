@@ -258,7 +258,7 @@ and the problem is equivalent to:
 
 and :math:`v_1 = (a, -a)`, :math:`v_2 = (b, -b)`, :math:`u_1 = (c', -c')`, :math:`u_2 = (c, -c)`.
 
-.. admonition:: FTRL iterates for Estimator 3
+.. admonition:: FTRL iterates for Estimator 3 (Ridge)
     :class: lemma
     :name: sparse-l1-l1-est3
 
@@ -365,7 +365,7 @@ To find the iterates it remains to solve:
 .. math::
 
     \begin{aligned}
-    (\rho_{1,t+1}, \rho_{2,t+1}) &= \argmin_{\rho_1, \rho_2} \big(\rho_1, \rho_2\big)^\top \left(\sum_{\tau = 1}^{t} \left\{\nabla_{(\rho_1, \rho_2)} \ell(\{\rho_{1,\tau}, \rho_{2,\tau}\}, \{\omega_{1,\tau}, \omega_{2,\tau}\})\right\} \right. \\
+    (\rho_{1,t+1}, \rho_{2,t+1}) &= \operatorname{argmin}_{\rho_1, \rho_2} \big(\rho_1, \rho_2\big)^\top \left(\sum_{\tau = 1}^{t} \left\{\nabla_{(\rho_1, \rho_2)} \ell(\{\rho_{1,\tau}, \rho_{2,\tau}\}, \{\omega_{1,\tau}, \omega_{2,\tau}\})\right\} \right. \\
     &+\left. \nabla_{(\rho_1, \rho_2)} \ell(\{\rho_{1,t}, \rho_{2,t}\}, \{\omega_{1,t}, \omega_{2,t}\})\right) + R_{min}(\rho_1, \rho_2)
     \end{aligned}
 
@@ -435,11 +435,13 @@ The joint estimator is
 .. math::
    :label: minimax-sparse_est3_l1
 
-   \hat\alpha, \hat\beta := \underset{\|\beta\|_1 \leq V_2}{\operatorname{argmin}_{\|\alpha\|_1 \leq V_1}} \underset{\|\theta_2\|_1\leq 1}{\max_{\|\theta_1\|_1\leq 1}} 
-   \left(
-   2\langle\mathbb{E}_n[(y-\langle\alpha, a\rangle)c'],\theta_1\rangle -\mathbb{E}_n[\langle c',\theta_1\rangle^2]+\mu'\|\alpha\|_1 \\
-   + 2\langle\mathbb{E}_n[(\langle\alpha, a\rangle-\langle\beta, b\rangle)c],\theta_2\rangle -\mathbb{E}_n[\langle c,\theta_2\rangle^2]+\mu\|\beta\|_1 
+   \begin{aligned}
+   \hat\alpha, \hat\beta &:= \underset{\|\beta\|_1 \leq V_2}{\operatorname{argmin}_{\|\alpha\|_1 \leq V_1}} \underset{\|\theta_2\|_1\leq 1}{\max_{\|\theta_1\|_1\leq 1}} \\
+   &\left(
+   2\langle\mathbb{E}_n[(y-\langle\alpha, a\rangle)c'],\theta_1\rangle -\mathbb{E}_n[\langle c',\theta_1\rangle^2]+\mu'\|\alpha\|_1 \right.\\
+   &\left. + 2\langle\mathbb{E}_n[(\langle\alpha, a\rangle-\langle\beta, b\rangle)c],\theta_2\rangle -\mathbb{E}_n[\langle c,\theta_2\rangle^2]+\mu\|\beta\|_1 
    \right)
+   \end{aligned}
 
 This minimax problem can be reformulated as
 
@@ -459,10 +461,8 @@ and :math:`v_1 = (a, -a)`, :math:`v_2 = (b, -b)`, :math:`u_1 = (c',-c')`, :math:
 
 We state without proof, the algorithm for an approximate solution:
 
-.. admonition:: Lemma
+.. admonition:: FTRL iterates for Estimator 3 (:math:`\ell_1`-norm)
    :name: ftrl-iterates-estimator3-l1
-
-   **FTRL iterates for Estimator** :ref:`estimator:npiv_joint` **with** :math:`\ell_1` **-norm**
 
    Consider the iterates for :math:`t=1,\ldots, T`:
 
@@ -501,13 +501,13 @@ We state without proof, the algorithm for an approximate solution:
         \bar{\rho_2} = \frac{1}{T}\sum_{t=1}^{T}\rho_{2,t}\,,\quad \bar\beta = \bar\rho_2^{+}-\bar\rho_2^{-} 
         \end{aligned}
 
-   are a :math:`O(T^{-1})`-approximate solution for :math:`\ref{minimax:sparse_est3_l1}`.
+   are a :math:`O(T^{-1})`-approximate solution for :eq:`minimax:sparse_est3_l1`.
 
 
 .. admonition:: Duality gap
     :class: remark
     
-    The tolerance for the duality gap (to :math:`\ref{minimax:sparse_est3_l1}`) is given by
+    The tolerance for the duality gap (to  :eq:`minimax:sparse_est3_l1`) is given by
     
     .. math::
         :nowrap:
