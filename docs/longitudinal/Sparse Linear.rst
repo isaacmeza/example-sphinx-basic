@@ -9,7 +9,7 @@ Thus we will be solving an optimization problem over the :math:`2p`-dimensional 
 
 .. _proposition-17:
 Proposition 17 in `Dikkala et al. (2020) <https://arxiv.org/abs/2006.07201>`_
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+=============================================================================
 
 .. admonition:: Proposition 17 in `Dikkala et al. (2020) <https://arxiv.org/abs/2006.07201>`_
     :class: lemma
