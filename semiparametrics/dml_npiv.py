@@ -1,5 +1,5 @@
 """
-This module implements Double Machine Learning for Nonparametric Instrumental Variables (DML-npiv).
+This module implements Debiased Machine Learning for Nonparametric Instrumental Variables (DML-npiv).
 It provides tools for estimating causal effects using a combination of machine learning models and 
 instrumental variables techniques. The module supports cross-validation, kernel density estimation 
 for localization, and confidence interval computation.
@@ -26,7 +26,7 @@ DML_npiv Methods:
     
     _split_and_estimate: Split the data and estimate the model using cross-validation.
     
-    dml: Perform Double Machine Learning for Nonparametric Instrumental Variables.
+    dml: Perform Debiased Machine Learning for Nonparametric Instrumental Variables.
 """
 
 import numpy as np
@@ -113,7 +113,7 @@ def _fun_threshold_alpha(alpha, g):
 
 class DML_npiv:
     """
-    Double Machine Learning for Nonparametric Instrumental Variables (DML-npiv) class.
+    Debiased Machine Learning for Nonparametric Instrumental Variables (DML-npiv) class.
 
     Parameters
     ----------
@@ -673,7 +673,7 @@ class DML_npiv:
 
     def dml(self):
         """
-        Perform Double Machine Learning for Nonparametric Instrumental Variables.
+        Perform Debiased Machine Learning for Nonparametric Instrumental Variables.
 
         Returns
         -------
