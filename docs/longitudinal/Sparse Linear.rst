@@ -500,13 +500,13 @@ We state without proof, the algorithm for an approximate solution:
         \bar{\rho_2} = \frac{1}{T}\sum_{t=1}^{T}\rho_{2,t}\,,\quad \bar\beta = \bar\rho_2^{+}-\bar\rho_2^{-} 
         \end{aligned}
 
-   are a :math:`O(T^{-1})`-approximate solution for :eq:`sparse_est3_l1`.
+   are a :math:`O(T^{-1})`-approximate solution for :eq:`minimax-sparse_est3_l1`.
 
 
 .. admonition:: Duality gap
     :class: remark
     
-    The tolerance for the duality gap (to  :eq:`sparse_est3_l1`) is given by
+    The tolerance for the duality gap (to  :eq:`minimax-sparse_est3_l1`) is given by
     
     .. math::
         :nowrap:
