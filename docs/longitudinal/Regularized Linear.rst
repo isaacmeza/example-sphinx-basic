@@ -3,7 +3,7 @@
 Regularized Linear Function Spaces (:math:`\ell_2-\ell_2`)
 ==========================================================
 
-We continue to work with linear function classes, but in contrast with the previous section :ref:`sparse-linear-function-spaces`, the learner and adversary function spaces are equipped with the :math:`\ell_2`-norm. This difference will translate to modifying :math:`R_{\min}` and :math:`R_{\max}` in Proposition :ref:`proposition-17`, given that the dual norm for the spaces :math:`\Theta` and :math:`W` in this setting is again the :math:`\ell_2`-norm. In particular, for the sequential estimators we will take
+We continue to work with linear function classes, but in contrast with the previous section :ref:`sparse-linear-function-spaces`, the learner and adversary function spaces are equipped with the :math:`\ell_2`-norm. This difference will translate to modifying :math:`R_{\min}` and :math:`R_{\max}` in :ref:`proposition-17`, given that the dual norm for the spaces :math:`\Theta` and :math:`W` in this setting is again the :math:`\ell_2`-norm. In particular, for the sequential estimators we will take
 
 .. math::
 
