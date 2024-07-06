@@ -3,7 +3,7 @@
 Regularized Linear Function Spaces (:math:`\ell_2-\ell_2`)
 ==========================================================
 
-We continue to work with linear function classes, but in contrast with the previous section :ref:`sparse-linear-function-spaces`, the learner and adversary function spaces are equipped with the :math:`\ell_2`-norm. This difference will translate to modifying :math:`R_{\min}` and :math:`R_{\max}` in :ref:`proposition-17`, given that the dual norm for the spaces :math:`\Theta` and :math:`W` in this setting is again the :math:`\ell_2`-norm. In particular, for the sequential estimators we will take
+We continue to work with linear function classes, but in contrast with the previous section :ref:`sparse-linear-function-spaces`, the learner and adversary function spaces are equipped with the :math:`\ell_2`-norm. This difference will translate to modifying :math:`R_{\min}` and :math:`R_{\max}` in Proposition 17, given that the dual norm for the spaces :math:`\Theta` and :math:`W` in this setting is again the :math:`\ell_2`-norm. In particular, for the sequential estimators we will take
 
 .. math::
 
@@ -19,10 +19,10 @@ for the joint estimator, since these regularizers are 1-strongly convex in their
 
 .. _estimator-1-l2:
 
-FTRL Iterates for Estimator 1 (:math:`\ell_2-\ell_2`)
------------------------------------------------------
+Estimator 1 
+-----------
 
-.. admonition:: Lemma
+.. admonition:: FTRL Iterates for Estimator 1
     :class: lemma
     :name: regularized-l2-est1
 
@@ -55,10 +55,10 @@ FTRL Iterates for Estimator 1 (:math:`\ell_2-\ell_2`)
 
 .. _estimator-2-l2:
 
-FTRL Iterates for Estimator 2 (:math:`\ell_2-\ell_2`)
------------------------------------------------------
+Estimator 2 
+-----------
 
-.. admonition:: Lemma
+.. admonition:: FTRL Iterates for Estimator 2
     :class: lemma
     :name: regularized-l2-est2
 
@@ -91,10 +91,11 @@ FTRL Iterates for Estimator 2 (:math:`\ell_2-\ell_2`)
 
 .. _estimator-3-ridge-l2:
 
-FTRL Iterates for Estimator 3 (Ridge, :math:`\ell_2-\ell_2`)
-------------------------------------------------------------
 
-.. admonition:: Lemma
+Estimator 3 - (Ridge)
+-------------------
+
+.. admonition:: FTRL Iterates for Estimator 3 (Ridge)
     :class: lemma
     :name: regularized-l2-est3-ridge
 
@@ -143,10 +144,10 @@ FTRL Iterates for Estimator 3 (Ridge, :math:`\ell_2-\ell_2`)
 
 .. _estimator-3-l2:
 
-FTRL Iterates for Estimator 3 (:math:`\ell_2-\ell_2`)
------------------------------------------------------
+Estimator 3 - (:math:`\ell_2`-norm)
+-----------------------------------
 
-.. admonition:: Lemma
+.. admonition:: FTRL Iterates for Estimator 3 - (:math:`\ell_2`-norm)
     :class: lemma
     :name: regularized-l2-est3
 
@@ -154,14 +155,15 @@ FTRL Iterates for Estimator 3 (:math:`\ell_2-\ell_2`)
 
     .. math::
         :nowrap:
-
+    
         \begin{aligned}
         \tilde{\alpha}_{t+1} &= \tilde{\alpha}_{t} -2\eta\left(-2\mathbb{E}_n[ac'^{\top}]\theta_{1,t} + 2\mu'\tilde\alpha_{t}+ 2\mathbb{E}_n[ac^\top]\theta_{2,t}\right) \\
         &\qquad +\eta\left(-2\mathbb{E}_n[ac'^{\top}]\theta_{1,t-1} + 2\mu'\tilde\alpha_{t-1}+ 2\mathbb{E}_n[ac^\top]\theta_{2,t-1}\right) \\
         \alpha_{t+1} &= \tilde{\alpha}_{t+1}\min\left\{1, \frac{V_1}{\| \tilde{\alpha}_{t+1}\|_2}\right\},\\
         \tilde{\beta}_{t+1} &= \tilde{\beta}_{t}-2\eta\left(-2\mathbb{E}_n[bc^\top]\theta_{2,t}+2\mu\tilde\beta_{t}\right)+\eta\left(-2\mathbb{E}_n[bc^\top]\theta_{2,t-1}+2\mu\tilde\beta_{t-1}\right) \\
-        \beta_{t+1} &= \tilde{\beta}_{t+1}\min\left\{1, \frac{V_2}{\| \tilde{\beta}_{t+1}\right\|_2}\right\},
+        \beta_{t+1} &= \tilde{\beta}_{t+1}\min\left\{1, \frac{V_2}{\| \tilde{\beta}_{t+1}\|_2}\right\},
         \end{aligned}
+
 
     .. math::
         :nowrap:
