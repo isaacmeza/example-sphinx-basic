@@ -8,6 +8,7 @@ Longitudinal Estimation
    longitudinal/Random Forest
    longitudinal/Neural Network
    longitudinal/Sparse Linear
+   longitudinal/Regularized Linear
    longitudinal/Linear
 
 
