@@ -149,7 +149,6 @@ with :math:`\omega_{1,-1} = \omega_{1,0} = \frac{1}{2p}`. Therefore, by Proposit
 is :math:`O\left(\frac{1}{T}\right)`-approximate solution for the minimax objective.
 
 .. admonition:: Duality Gap
-    :class: note
 
    The ensembles :math:`\bar{\alpha}`, :math:`\bar{\theta_1}` can be thought of as primal and dual solutions and we can use the duality gap as a certificate for convergence of the algorithm.
 
