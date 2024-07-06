@@ -340,7 +340,7 @@ For the subsetted estimator:
     + \max_{f \in \mathcal{F}} \mathbb{E}_q \left[ 2 \left\{ h(B) - g(A) \right\} f(C) - f(C)^2 \right]
     \end{aligned}
 
-We simply modify the updates for \(w_t', w_t\) as:
+We simply modify the updates for :math:`(w_t', w_t)' as:
 
 .. math::
 
