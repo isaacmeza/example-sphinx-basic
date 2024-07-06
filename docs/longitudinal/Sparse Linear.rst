@@ -436,8 +436,7 @@ The joint estimator is
    :label: minimax-sparse_est3_l1
 
    \begin{aligned}
-   \hat\alpha, \hat\beta &:= \underset{\|\beta\|_1 \leq V_2}{\operatorname{argmin}_{\|\alpha\|_1 \leq V_1}} \underset{\|\theta_2\|_1\leq 1}{\max_{\|\theta_1\|_1\leq 1}} \\
-   &\left(
+   \hat\alpha, \hat\beta &:= \underset{\|\beta\|_1 \leq V_2}{\operatorname{argmin}_{\|\alpha\|_1 \leq V_1}} \underset{\|\theta_2\|_1\leq 1}{\max_{\|\theta_1\|_1\leq 1}} \left(
    2\langle\mathbb{E}_n[(y-\langle\alpha, a\rangle)c'],\theta_1\rangle -\mathbb{E}_n[\langle c',\theta_1\rangle^2]+\mu'\|\alpha\|_1 \right.\\
    &\left. + 2\langle\mathbb{E}_n[(\langle\alpha, a\rangle-\langle\beta, b\rangle)c],\theta_2\rangle -\mathbb{E}_n[\langle c,\theta_2\rangle^2]+\mu\|\beta\|_1 
    \right)
@@ -501,13 +500,13 @@ We state without proof, the algorithm for an approximate solution:
         \bar{\rho_2} = \frac{1}{T}\sum_{t=1}^{T}\rho_{2,t}\,,\quad \bar\beta = \bar\rho_2^{+}-\bar\rho_2^{-} 
         \end{aligned}
 
-   are a :math:`O(T^{-1})`-approximate solution for :eq:`minimax:sparse_est3_l1`.
+   are a :math:`O(T^{-1})`-approximate solution for :eq:`sparse_est3_l1`.
 
 
 .. admonition:: Duality gap
     :class: remark
     
-    The tolerance for the duality gap (to  :eq:`minimax:sparse_est3_l1`) is given by
+    The tolerance for the duality gap (to  :eq:`sparse_est3_l1`) is given by
     
     .. math::
         :nowrap:
