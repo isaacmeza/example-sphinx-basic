@@ -422,10 +422,10 @@ are a :math:`O\left(\frac{1}{T}\right)`-approximate solution for the minimax obj
 
     where  :math:`\|x\|_{M} = x^\top M x` is the ellipsoid norm.
 
-.. admonition:: Subsetted estimator
-    :class: remark
+Remark: Subsetted estimator
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-    For the subsetted estimators it suffices to replace the empirical mean :math:`\mathbb{E}_n` with either :math:`\mathbb{E}_p` or :math:`\mathbb{E}_q` accordingly in the iterates given by the FTRL algorithm. In concrete, for the implementation, we compute :math:`\mathbb{E}_p` as a weighted average, where the weights are set to zero for the indices outside :math:`[p]`, and analogous for :math:`\mathbb{E}_q`.
+For the subsetted estimators it suffices to replace the empirical mean :math:`\mathbb{E}_n` with either :math:`\mathbb{E}_p` or :math:`\mathbb{E}_q` accordingly in the iterates given by the FTRL algorithm. In concrete, for the implementation, we compute :math:`\mathbb{E}_p` as a weighted average, where the weights are set to zero for the indices outside :math:`[p]`, and analogous for :math:`\mathbb{E}_q`.
 
 Estimator 3 - (:math:`\ell_1`-norm)
 ----------------------------------
