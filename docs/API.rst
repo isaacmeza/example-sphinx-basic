@@ -12,3 +12,4 @@ API Documentation
    :template: class.rst
 
    dml_npiv.DML_npiv
+   dml_mediated.DML_mediated
