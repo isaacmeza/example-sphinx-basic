@@ -4,8 +4,6 @@ It provides tools for estimating causal effects using a combination of machine l
 instrumental variables techniques. The module supports cross-validation, kernel density estimation 
 for localization, and confidence interval computation.
 
-Module Overview:
-----------------
 Classes:
     DML_npiv: Main class for performing DML-npiv with various configuration options.
 
