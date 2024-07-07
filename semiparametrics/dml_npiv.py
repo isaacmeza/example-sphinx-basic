@@ -90,7 +90,10 @@ def _transform_poly(X, opts):
 
 def _fun_threshold_alpha(alpha, g):
     """
-    Compute the threshold alpha function.
+    Auxiliary function for computation of optimal alpha for improvement in overlap: CHIM (Dealing with limited overlap in estimation of average treatment effects).
+    
+    Richard K. Crump, V. Joseph Hotz, Guido W. Imbens, Oscar A. Mitnik
+    Biometrika, Volume 96, Issue 1, March 2009.
 
     Parameters
     ----------
@@ -124,7 +127,7 @@ class DML_npiv:
     Z : array-like
         Instrumental variable.
     W : array-like
-        Control variable.
+        Negative control outcome.
     X1 : array-like, optional
         Additional covariates.
     V : array-like, optional
@@ -132,7 +135,7 @@ class DML_npiv:
     v_values : array-like, optional
         Values for localization.
     loc_kernel : str, optional
-        Kernel for localization.
+        Kernel for localization. Options include 'gau', 'epanechnikov', 'uniform', etc.
     bw_loc : str, optional
         Bandwidth for localization.
     estimator : str, optional
@@ -148,15 +151,15 @@ class DML_npiv:
     alpha : float, optional
         Significance level for confidence intervals.
     n_folds : int, optional
-        Number of folds for cross-validation.
+        Number of folds for estimation.
     n_rep : int, optional
-        Number of repetitions for cross-validation.
+        Number of repetitions for estimation.
     random_seed : int, optional
         Seed for random number generator.
     prop_score : estimator, optional
         Model for propensity score.
     CHIM : bool, optional
-        Use CHIM method.
+        Use CHIM method. Dropping observations with extreme values of the propensity score - CHIM (2009).
     verbose : bool, optional
         Print progress information.
     fitargs1 : dict, optional
@@ -204,7 +207,7 @@ class DML_npiv:
         Z : array-like
             Instrumental variable.
         W : array-like
-            Control variable.
+            Negative control outcome.
         X1 : array-like, optional
             Additional covariates.
         V : array-like, optional
@@ -212,7 +215,7 @@ class DML_npiv:
         v_values : array-like, optional
             Values for localization.
         loc_kernel : str, optional
-            Kernel for localization.
+            Kernel for localization. Options include 'gau', 'epanechnikov', 'uniform', etc.
         bw_loc : str, optional
             Bandwidth for localization.
         estimator : str, optional
@@ -228,15 +231,15 @@ class DML_npiv:
         alpha : float, optional
             Significance level for confidence intervals.
         n_folds : int, optional
-            Number of folds for cross-validation.
+            Number of folds for estimation.
         n_rep : int, optional
-            Number of repetitions for cross-validation.
+            Number of repetitions for estimation.
         random_seed : int, optional
             Seed for random number generator.
         prop_score : estimator, optional
             Model for propensity score.
         CHIM : bool, optional
-            Use CHIM method.
+            Use CHIM method. Dropping observations with extreme values of the propensity score - CHIM (2009).
         verbose : bool, optional
             Print progress information.
         fitargs1 : dict, optional
@@ -612,7 +615,7 @@ class DML_npiv:
 
     def _split_and_estimate(self):
         """
-        Split the data and estimate the model using cross-validation.
+        Split the data and estimate the model for each fold.
 
         Returns
         -------
@@ -685,3 +688,4 @@ class DML_npiv:
             return theta[0], theta_var[0], confidence_interval[0]
         else:
             return theta, theta_var, confidence_interval
+
