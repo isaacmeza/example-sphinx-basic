@@ -53,6 +53,12 @@ Estimator 1
 
         \operatorname{argmin}_{\|\alpha\|_2 \leq V_1} \max _{\|\theta_1\|_1 \leq U_1} 2\langle\mathbb{E}_n[(y-\langle\alpha, a\rangle)c'],\theta_1\rangle -\mathbb{E}_n[\langle c',\theta_1\rangle^2]+\mu'\|\alpha\|_2^2
 
+.. autosummary::
+   :toctree: _autosummary
+   :template: class.rst
+
+   sparse_l2_l2.sparse_l2vsl2
+
 .. _estimator-2-l2:
 
 Estimator 2 
@@ -88,6 +94,12 @@ Estimator 2
     .. math::
 
         \operatorname{argmin}_{\|\alpha\|_2 \leq V_1} \max _{\|\theta_1\|_1 \leq U_1} 2\langle\mathbb{E}_n[(y-\langle\alpha, a\rangle)c'],\theta_1\rangle -\mathbb{E}_n[\langle c',\theta_1\rangle^2]+\mu'\mathbb{E}_n[\langle a,\alpha\rangle^2]
+
+.. autosummary::
+   :toctree: _autosummary
+   :template: class.rst
+
+   sparse_l2_l2.sparse_ridge_l2vsl2
 
 .. _estimator-3-ridge-l2:
 
@@ -142,6 +154,12 @@ Estimator 3 - (Ridge)
         \underset{\|\beta\|_2 \leq V_2}{\operatorname{argmin}_{\|\alpha\|_2 \leq V_1}} \underset{\|\theta_2\|_2\leq U_2}{\max _{\|\theta_1\|_2\leq U_1}} \left( 2\langle\mathbb{E}_n[(y-\langle\alpha, a\rangle)c'],\theta_1\rangle -\mathbb{E}_n[\langle c',\theta_1\rangle^2]+\mu'\mathbb{E}_n[\langle a,\alpha\rangle^2] \right. \\
         \left. + 2\langle\mathbb{E}_n[(\langle\alpha, a\rangle-\langle\beta, b\rangle)c],\theta_2\rangle -\mathbb{E}_n[\langle c,\theta_2\rangle^2]+\mu\mathbb{E}_n[\langle b,\beta\rangle^2] \right)
 
+.. autosummary::
+   :toctree: _autosummary
+   :template: class.rst
+
+   sparse2_l2_l2.sparse2_ridge_l2vsl2
+
 .. _estimator-3-l2:
 
 Estimator 3 - (:math:`\ell_2`-norm)
@@ -194,3 +212,9 @@ Estimator 3 - (:math:`\ell_2`-norm)
 
         \underset{\|\beta\|_2 \leq V_2}{\operatorname{argmin}_{\|\alpha\|_2 \leq V_1}} \underset{\|\theta_2\|_2\leq U_2}{\max _{\|\theta_1\|_2\leq U_1}} \left( 2\langle\mathbb{E}_n[(y-\langle\alpha, a\rangle)c'],\theta_1\rangle -\mathbb{E}_n[\langle c',\theta_1\rangle^2]+\mu'\|\alpha\|_2^2 \right. \\
         \left. + 2\langle\mathbb{E}_n[(\langle\alpha, a\rangle-\langle\beta, b\rangle)c],\theta_2\rangle -\mathbb{E}_n[\langle c,\theta_2\rangle^2]+\mu\|\beta\|_2^2 \right)
+
+.. autosummary::
+   :toctree: _autosummary
+   :template: class.rst
+
+   sparse2_l2_l2.sparse2_l2vsl2
