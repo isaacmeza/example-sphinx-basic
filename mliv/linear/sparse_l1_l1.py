@@ -6,7 +6,6 @@ Classes:
     sparse_l1vsl1: Sparse Linear NPIV estimator using $\ell_1-\ell_1$ optimization.
     sparse_ridge_l1vsl1: Sparse Ridge NPIV estimator using $\ell_1-\ell_1$ optimization.
 """
-
 # Copyright (c) Microsoft Corporation.
 # Licensed under the MIT License.
 
