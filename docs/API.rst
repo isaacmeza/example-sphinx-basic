@@ -3,6 +3,11 @@ API Documentation
 
 Longitudinal Analysis
 ---------------------
+.. toctree::
+   :maxdepth: 2
+
+   mliv_overview
+
 
 Semiparametrics
 ---------------
