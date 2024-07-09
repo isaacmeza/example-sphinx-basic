@@ -4,11 +4,14 @@ API Documentation
 Longitudinal Analysis
 ---------------------
 
-.. automodule:: mliv.linear.sparse_l2_l2
-   :members:
-   :undoc-members:
-   :show-inheritance:
-   :private-members:
+.. toctree::
+   :maxdepth: 2
+
+   .. automodule:: mliv.linear.sparse_l2_l2
+      :members:
+      :undoc-members:
+      :show-inheritance:
+      :private-members:
 
 
 Semiparametrics
