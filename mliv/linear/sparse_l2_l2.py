@@ -21,7 +21,7 @@ class _SparseLinearAdversarialGMM:
 
     This class implements common functionality for sparse linear models using adversarial GMM.
 
-    Attributes:
+    Parameters:
         lambda_theta (float): Regularization parameter.
         B (int): Budget parameter.
         eta_theta (str or float): Learning rate for theta.
@@ -41,7 +41,7 @@ class _SparseLinearAdversarialGMM:
         """
         Initialize the sparse linear adversarial GMM model.
 
-        Args:
+        Parameters:
             lambda_theta (float, optional): Regularization parameter. Defaults to 0.01.
             B (int, optional): Budget parameter. Defaults to 100.
             eta_theta (str or float, optional): Learning rate for theta. Defaults to 'auto'.
@@ -70,7 +70,7 @@ class _SparseLinearAdversarialGMM:
         """
         Predict using the fitted model.
 
-        Args:
+        Parameters:
             X (array-like): Covariates.
 
         Returns:
@@ -95,12 +95,8 @@ class sparse_l2vsl2(_SparseLinearAdversarialGMM):
 
     This class solves the high-dimensional sparse linear problem using $\ell_2$ relaxations for the minimax optimization problem.
 
-    Attributes:
+    Parameters:
         Same as `_SparseLinearAdversarialGMM`.
-
-    Methods:
-        fit(Z, X, Y): Fit the model.
-        predict(X): Predict using the fitted model.
     """
 
     def _check_duality_gap(self, Z, X, Y):
@@ -129,7 +125,7 @@ class sparse_l2vsl2(_SparseLinearAdversarialGMM):
         """
         Fit the model.
 
-        Args:
+        Parameters:
             Z (array-like): Instrumental variables.
             X (array-like): Covariates.
             Y (array-like): Outcomes.
@@ -229,12 +225,8 @@ class sparse_ridge_l2vsl2(_SparseLinearAdversarialGMM):
 
     This class solves the high-dimensional sparse ridge problem using $\ell_2$ relaxations for the minimax optimization problem.
 
-    Attributes:
+    Parameters:
         Same as `_SparseLinearAdversarialGMM`.
-
-    Methods:
-        fit(Z, X, Y): Fit the model.
-        predict(X): Predict using the fitted model.
     """
 
     def _check_duality_gap(self, Z, X, Y):
@@ -263,7 +255,7 @@ class sparse_ridge_l2vsl2(_SparseLinearAdversarialGMM):
         """
         Fit the model.
 
-        Args:
+        Parameters:
             Z (array-like): Instrumental variables.
             X (array-like): Covariates.
             Y (array-like): Outcomes.
