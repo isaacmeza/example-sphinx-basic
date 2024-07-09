@@ -1,3 +1,11 @@
+"""
+This module provides implementations of sparse linear NPIV estimators with L2 norm regularization.
+
+Classes:
+    _SparseLinearAdversarialGMM: Base class for sparse linear adversarial GMM.
+    sparse_l2vsl2: Sparse Linear NPIV estimator using $\ell_2-\ell_2$ optimization.
+    sparse_ridge_l2vsl2: Sparse Ridge NPIV estimator using $\ell_2-\ell_2$ optimization.
+"""
 # Copyright (c) Microsoft Corporation.
 # Licensed under the MIT License.
 
@@ -7,11 +15,42 @@ from sklearn.base import clone
 from .utilities import cross_product
 
 
-
 class _SparseLinearAdversarialGMM:
+    """
+    Base class for sparse linear adversarial GMM.
+
+    This class implements common functionality for sparse linear models using adversarial GMM.
+
+    Attributes:
+        lambda_theta (float): Regularization parameter.
+        B (int): Budget parameter.
+        eta_theta (str or float): Learning rate for theta.
+        eta_w (str or float): Learning rate for w.
+        n_iter (int): Number of iterations.
+        tol (float): Tolerance for duality gap.
+        sparsity (int or None): Sparsity level for the model.
+        fit_intercept (bool): Whether to fit an intercept.
+
+    Methods:
+        fit(Z, X, Y): Fit the model.
+        predict(X): Predict using the fitted model.
+    """
 
     def __init__(self, lambda_theta=0.01, B=100, eta_theta='auto', eta_w='auto',
                  n_iter=2000, tol=1e-2, sparsity=None, fit_intercept=True):
+        """
+        Initialize the sparse linear adversarial GMM model.
+
+        Args:
+            lambda_theta (float, optional): Regularization parameter. Defaults to 0.01.
+            B (int, optional): Budget parameter. Defaults to 100.
+            eta_theta (str or float, optional): Learning rate for theta. Defaults to 'auto'.
+            eta_w (str or float, optional): Learning rate for w. Defaults to 'auto'.
+            n_iter (int, optional): Number of iterations. Defaults to 2000.
+            tol (float, optional): Tolerance for duality gap. Defaults to 1e-2.
+            sparsity (int or None, optional): Sparsity level for the model. Defaults to None.
+            fit_intercept (bool, optional): Whether to fit an intercept. Defaults to True.
+        """
         self.B = B
         self.lambda_theta = lambda_theta
         self.eta_theta = eta_theta
@@ -28,6 +67,15 @@ class _SparseLinearAdversarialGMM:
         return Z, X, Y.flatten()
 
     def predict(self, X):
+        """
+        Predict using the fitted model.
+
+        Args:
+            X (array-like): Covariates.
+
+        Returns:
+            array: Predicted values.
+        """
         if self.fit_intercept:
             X = np.hstack([np.ones((X.shape[0], 1)), X])
         return np.dot(X, self.coef_)
@@ -42,6 +90,18 @@ class _SparseLinearAdversarialGMM:
 
 
 class sparse_l2vsl2(_SparseLinearAdversarialGMM):
+    """
+    Sparse Linear NPIV estimator using $\ell_2-\ell_2$ optimization.
+
+    This class solves the high-dimensional sparse linear problem using $\ell_2$ relaxations for the minimax optimization problem.
+
+    Attributes:
+        Same as `_SparseLinearAdversarialGMM`.
+
+    Methods:
+        fit(Z, X, Y): Fit the model.
+        predict(X): Predict using the fitted model.
+    """
 
     def _check_duality_gap(self, Z, X, Y):
         self.max_response_loss_ = np.linalg.norm(
@@ -66,6 +126,17 @@ class sparse_l2vsl2(_SparseLinearAdversarialGMM):
         self._check_duality_gap(Z, X, Y)
 
     def fit(self, Z, X, Y):
+        """
+        Fit the model.
+
+        Args:
+            Z (array-like): Instrumental variables.
+            X (array-like): Covariates.
+            Y (array-like): Outcomes.
+
+        Returns:
+            self: Fitted estimator.
+        """
         Z, X, Y = self._check_input(Z, X, Y)
         T = self.n_iter
         d_x = X.shape[1]
@@ -153,6 +224,18 @@ class sparse_l2vsl2(_SparseLinearAdversarialGMM):
     
 
 class sparse_ridge_l2vsl2(_SparseLinearAdversarialGMM):
+    """
+    Sparse Ridge NPIV estimator using $\ell_2-\ell_2$ optimization.
+
+    This class solves the high-dimensional sparse ridge problem using $\ell_2$ relaxations for the minimax optimization problem.
+
+    Attributes:
+        Same as `_SparseLinearAdversarialGMM`.
+
+    Methods:
+        fit(Z, X, Y): Fit the model.
+        predict(X): Predict using the fitted model.
+    """
 
     def _check_duality_gap(self, Z, X, Y):
         self.max_response_loss_ = np.linalg.norm(
@@ -177,6 +260,17 @@ class sparse_ridge_l2vsl2(_SparseLinearAdversarialGMM):
         self._check_duality_gap(Z, X, Y)
 
     def fit(self, Z, X, Y):
+        """
+        Fit the model.
+
+        Args:
+            Z (array-like): Instrumental variables.
+            X (array-like): Covariates.
+            Y (array-like): Outcomes.
+
+        Returns:
+            self: Fitted estimator.
+        """
         Z, X, Y = self._check_input(Z, X, Y)
         T = self.n_iter
         d_x = X.shape[1]
