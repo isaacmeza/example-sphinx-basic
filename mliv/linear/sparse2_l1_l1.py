@@ -1,14 +1,43 @@
+"""
+This module provides implementations of sparse linear NPIV estimators with L1 norm regularization for nested NPIV.
+
+Classes:
+    _SparseLinear2AdversarialGMM: Base class for sparse linear adversarial GMM for nested NPIV.
+    sparse2_l1vsl1: Sparse Linear NPIV estimator using $\ell_1-\ell_1$ optimization for nested NPIV.
+    sparse2_ridge_l1vsl1: Sparse Ridge NPIV estimator using $\ell_1-\ell_1$ optimization for nested NPIV.
+"""
 # Copyright (c) Microsoft Corporation.
 # Licensed under the MIT License.
 
 import numpy as np
 from sklearn.linear_model import Lasso, LassoCV, ElasticNet
 from sklearn.base import clone
-from .utilities import cross_product
-
+from mliv.linear.utilities import cross_product
 
 
 class _SparseLinear2AdversarialGMM:
+    """
+    Base class for sparse linear adversarial GMM for nested NPIV.
+
+    This class implements common functionality for sparse linear models using adversarial GMM in a nested NPIV setting.
+
+    Attributes:
+        mu (float): Regularization parameter.
+        V1 (int): Budget parameter for the first stage.
+        V2 (int): Budget parameter for the second stage.
+        eta_alpha (str or float): Learning rate for alpha.
+        eta_w1 (str or float): Learning rate for w1.
+        eta_beta (str or float): Learning rate for beta.
+        eta_w2 (str or float): Learning rate for w2.
+        n_iter (int): Number of iterations.
+        tol (float): Tolerance for duality gap.
+        sparsity (int or None): Sparsity level for the model.
+        fit_intercept (bool): Whether to fit an intercept.
+
+    Methods:
+        fit(A, B, C, D, Y, W): Fit the model.
+        predict(B, *args): Predict using the fitted model.
+    """
 
     def __init__(self, mu=0.01, V1=100, V2=100,
                  eta_alpha='auto', eta_w1='auto', eta_beta='auto', eta_w2='auto',
@@ -45,6 +74,16 @@ class _SparseLinear2AdversarialGMM:
         return A, B, C, D, Y.flatten(), W.reshape(-1,1)
 
     def predict(self, B, *args):
+        """
+        Predict using the fitted model.
+
+        Args:
+            B (array-like): Covariates for the second stage.
+            *args: Additional arguments for the first stage.
+
+        Returns:
+            array: Predicted values for the second stage or both stages.
+        """
         if len(args) == 0:
             if self.fit_intercept:
                 B = np.hstack([np.ones((B.shape[0], 1)), B])
@@ -70,6 +109,18 @@ class _SparseLinear2AdversarialGMM:
 
 
 class sparse2_l1vsl1(_SparseLinear2AdversarialGMM):
+    """
+    Sparse Linear NPIV estimator using $\ell_1-\ell_1$ optimization for nested NPIV.
+
+    This class solves the high-dimensional sparse linear problem using $\ell_1$ relaxations for the minimax optimization problem in a nested NPIV setting.
+
+    Attributes:
+        Same as `_SparseLinear2AdversarialGMM`.
+
+    Methods:
+        fit(A, B, C, D, Y, W): Fit the model.
+        predict(B, *args): Predict using the fitted model.
+    """
 
     def _check_duality_gap(self, A, B, C, D, Y, W):
         self.max_response_loss_ = np.linalg.norm(self.weighted_mean(D * (Y - np.dot(A, self.alpha_)).reshape(-1, 1), self.weights1, axis=0), ord=np.inf)\
@@ -102,7 +153,24 @@ class sparse2_l1vsl1(_SparseLinear2AdversarialGMM):
             self.beta_[filt] = 0
         self._check_duality_gap(A, B, C, D, Y, W)
 
-    def fit(self, A, B, C, D, Y, W=None, subsetted=False, subset_ind1=None, subset_ind2=None):  
+    def fit(self, A, B, C, D, Y, W=None, subsetted=False, subset_ind1=None, subset_ind2=None):
+        """
+        Fit the model.
+
+        Args:
+            A (array-like): Covariates for the first stage.
+            B (array-like): Covariates for the second stage.
+            C (array-like): Instrumental variables for the second stage.
+            D (array-like): Instrumental variables for the first stage.
+            Y (array-like): Outcomes.
+            W (array-like, optional): Weights. Defaults to None.
+            subsetted (bool, optional): Whether to use subsets. Defaults to False.
+            subset_ind1 (array-like, optional): Subset indices for the first stage. Required if subsetted is True.
+            subset_ind2 (array-like, optional): Subset indices for the second stage. Defaults to None.
+
+        Returns:
+            self: Fitted estimator.
+        """
         W = np.ones(Y.shape[0]) if W is None else W 
         A, B, C, D, Y, W = self._check_input(A, B, C, D, Y, W) 
         self.weights1 = np.ones(Y.shape[0])
@@ -271,6 +339,18 @@ class sparse2_l1vsl1(_SparseLinear2AdversarialGMM):
 
 
 class sparse2_ridge_l1vsl1(_SparseLinear2AdversarialGMM):
+    """
+    Sparse Ridge NPIV estimator using $\ell_1-\ell_1$ optimization for nested NPIV.
+
+    This class solves the high-dimensional sparse ridge problem using $\ell_1$ relaxations for the minimax optimization problem in a nested NPIV setting.
+
+    Attributes:
+        Same as `_SparseLinear2AdversarialGMM`.
+
+    Methods:
+        fit(A, B, C, D, Y, W): Fit the model.
+        predict(B, *args): Predict using the fitted model.
+    """
 
     def _check_duality_gap(self, A, B, C, D, Y, W):
         self.max_response_loss_ = np.linalg.norm(self.weighted_mean(D * (Y - np.dot(A, self.alpha_)).reshape(-1, 1), self.weights1, axis=0), ord=np.inf)\
@@ -301,6 +381,23 @@ class sparse2_ridge_l1vsl1(_SparseLinear2AdversarialGMM):
         self._check_duality_gap(A, B, C, D, Y, W)
 
     def fit(self, A, B, C, D, Y, W=None, subsetted=False, subset_ind1=None, subset_ind2=None):
+        """
+        Fit the model.
+
+        Args:
+            A (array-like): Covariates for the first stage.
+            B (array-like): Covariates for the second stage.
+            C (array-like): Instrumental variables for the second stage.
+            D (array-like): Instrumental variables for the first stage.
+            Y (array-like): Outcomes.
+            W (array-like, optional): Weights. Defaults to None.
+            subsetted (bool, optional): Whether to use subsets. Defaults to False.
+            subset_ind1 (array-like, optional): Subset indices for the first stage. Required if subsetted is True.
+            subset_ind2 (array-like, optional): Subset indices for the second stage. Defaults to None.
+
+        Returns:
+            self: Fitted estimator.
+        """
         W = np.ones(Y.shape[0]) if W is None else W
         A, B, C, D, Y, W = self._check_input(A, B, C, D, Y, W) 
         self.weights1 = np.ones(Y.shape[0])
