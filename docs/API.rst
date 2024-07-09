@@ -4,11 +4,11 @@ API Documentation
 Longitudinal Analysis
 ---------------------
 
-.. autosummary::
-   :toctree: _autosummary
-   :template: class.rst
-
-   sparse_l2_l2.sparse_l2vsl2
+.. automodule:: sparse_l2_l2
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   :private-members:
 
 
 Semiparametrics
