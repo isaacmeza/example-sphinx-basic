@@ -96,8 +96,6 @@ Moreover, :math:`v_1 = (a, -a)`, :math:`u_1 = (c', -c')`; and :math:`\theta_1 = 
 
    mliv.linear.sparse_l1_l1.sparseL1vsL1
 
-.. autofunction::  mliv.linear.sparse_l1_l1.sparseL1vsL1.fit
-
 **Proof**
 
 The proof will match symbols with Proposition 17. Let 
