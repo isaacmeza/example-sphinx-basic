@@ -12,7 +12,7 @@ Longitudinal Analysis
    :toctree: _autosummary
    :template: class.rst
 
-   sparse_l1_l1.sparse_l1vsl1
+   sparse_l2_l2.sparse_l2vsl2
 
 Semiparametrics
 ---------------
@@ -29,5 +29,5 @@ Semiparametrics
    dml_mediated.DML_mediated
    dml_joint_mediated.DML_joint_mediated
    dml_longterm.DML_longterm
-   semiparametrics.sparse.sparse_l1vsl1
+   semiparametrics.sparse.sparse_ridge_l1vsl1
 
