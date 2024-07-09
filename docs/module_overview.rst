@@ -1,11 +1,17 @@
 Module Overview
 ===============
 
+Nonparametric Instrumental Variables
+------------------------------------
+
 .. automodule:: dml_npiv
    :members:
    :undoc-members:
    :show-inheritance:
    :private-members:
+
+Mediation Analysis
+------------------
 
 .. automodule:: dml_mediated
    :members:
@@ -18,6 +24,9 @@ Module Overview
    :undoc-members:
    :show-inheritance:
    :private-members:
+
+Longterm Analysis
+-----------------
 
 .. automodule:: dml_longterm
    :members:
