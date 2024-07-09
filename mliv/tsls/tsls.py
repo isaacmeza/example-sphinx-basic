@@ -14,10 +14,6 @@ class tsls:
     Two-stage least squares estimator.
 
     This class implements the TSLS estimator.
-
-    Methods:
-        fit(Z, T, Y): Fits the TSLS estimator.
-        predict(T): Predicts outcomes based on the fitted model.
     """
 
     def __init__(self):
@@ -62,10 +58,6 @@ class regtsls:
     Regularized two-stage least squares estimator using Elastic Net.
 
     This class implements the regularized TSLS estimator using Elastic Net regression.
-
-    Methods:
-        fit(Z, T, Y): Fits the regularized TSLS estimator.
-        predict(T): Predicts outcomes based on the fitted model.
     """
 
     def __init__(self):
