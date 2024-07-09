@@ -29,5 +29,5 @@ Semiparametrics
    dml_mediated.DML_mediated
    dml_joint_mediated.DML_joint_mediated
    dml_longterm.DML_longterm
-   sparse.sparse_l1vsl1
+
 
