@@ -9,7 +9,7 @@ from .utilities import cross_product
 class _SparseLinearAdversarialGMM:
     """
     Base class for Sparse Linear Adversarial GMM.
-    
+
     Attributes:
         B (int): Upper bound for the dual variables.
         lambda_theta (float): Regularization parameter for the primal variables.
@@ -22,6 +22,19 @@ class _SparseLinearAdversarialGMM:
     """
     def __init__(self, lambda_theta=0.01, B=100, eta_theta='auto', eta_w='auto',
                  n_iter=2000, tol=1e-2, sparsity=None, fit_intercept=True):
+        """
+        Initialize the SparseLinearAdversarialGMM.
+
+        Args:
+            lambda_theta (float): Regularization parameter for the primal variables.
+            B (int): Upper bound for the dual variables.
+            eta_theta (float or str): Learning rate for the primal updates.
+            eta_w (float or str): Learning rate for the dual updates.
+            n_iter (int): Number of iterations.
+            tol (float): Tolerance for the duality gap to determine convergence.
+            sparsity (int or None): Maximum number of non-zero coefficients.
+            fit_intercept (bool): Whether to fit an intercept in the model.
+        """
         self.B = B
         self.lambda_theta = lambda_theta
         self.eta_theta = eta_theta
@@ -38,16 +51,33 @@ class _SparseLinearAdversarialGMM:
         return Z, X, Y.flatten()
 
     def predict(self, X):
+        """
+        Predict using the fitted model.
+
+        Args:
+            X (array-like): Covariates.
+
+        Returns:
+            array: Predicted values.
+        """
         if self.fit_intercept:
             X = np.hstack([np.ones((X.shape[0], 1)), X])
         return np.dot(X, self.coef_)
 
     @property
     def coef(self):
+        """
+        Returns:
+            array: Coefficients of the fitted model.
+        """
         return self.coef_[1:] if self.fit_intercept else self.coef_
 
     @property
     def intercept(self):
+        """
+        Returns:
+            float: Intercept of the fitted model.
+        """
         return self.coef_[0] if self.fit_intercept else 0
 
 
@@ -187,13 +217,13 @@ class sparse_l1vsl1(_SparseLinearAdversarialGMM):
         self._post_process(Z, X, Y)
 
         return self
-    
+
 
 class sparse_ridge_l1vsl1(_SparseLinearAdversarialGMM):
     """
     Sparse Ridge NPIV estimator using $\ell_1-\ell_1$ optimization.
 
-    This class solves the high-dimensional sparse linear problem using $\ell_1$ relaxations for the minimax optimization problem with ridge regression.
+    This class solves the high-dimensional sparse ridge problem using $\ell_1$ relaxations for the minimax optimization problem.
 
     Attributes:
         Same as `_SparseLinearAdversarialGMM`.
