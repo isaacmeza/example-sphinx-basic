@@ -7,7 +7,7 @@ Longitudinal Analysis
 .. toctree::
    :maxdepth: 2
 
-   npiv_overview
+   mliv_overview
 
 
 Semiparametrics
