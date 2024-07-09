@@ -20,3 +20,10 @@ Note that the saddle point is given by the system:
    \end{aligned}
 
 Solving first for :math:`\alpha` in the first equation, and then for :math:`\beta` in the second equation gives the same solution as in the sequential procedure.
+
+.. autosummary::
+   :toctree: _autosummary
+   :template: class.rst
+
+   tsls.tsls
+   tsls.regtsls
