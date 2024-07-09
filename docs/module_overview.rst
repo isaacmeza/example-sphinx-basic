@@ -13,5 +13,10 @@ Module Overview
    :show-inheritance:
    :private-members:
 
+.. automodule:: dml_joint_mediated
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   :private-members:
 
 
