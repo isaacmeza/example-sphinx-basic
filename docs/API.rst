@@ -13,3 +13,4 @@ API Documentation
 
    dml_npiv.DML_npiv
    dml_mediated.DML_mediated
+   dml_joint_mediated.DML_joint_mediated
