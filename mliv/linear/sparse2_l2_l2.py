@@ -17,7 +17,7 @@ class _SparseLinear2AdversarialGMM:
 
     This class implements common functionality for sparse linear models using adversarial GMM in a nested NPIV setting.
 
-    Attributes:
+    Parameters:
         mu (float): Regularization parameter.
         V1 (int): Budget parameter for the first stage.
         V2 (int): Budget parameter for the second stage.
@@ -29,10 +29,6 @@ class _SparseLinear2AdversarialGMM:
         tol (float): Tolerance for duality gap.
         sparsity (int or None): Sparsity level for the model.
         fit_intercept (bool): Whether to fit an intercept.
-
-    Methods:
-        fit(A, B, C, D, Y, W): Fit the model.
-        predict(B, *args): Predict using the fitted model.
     """
 
     def __init__(self, mu=0.01, V1=100, V2=100,
@@ -115,15 +111,31 @@ class sparse2_l2vsl2(_SparseLinear2AdversarialGMM):
 
     This class solves the high-dimensional sparse linear problem using $\ell_2$ relaxations for the minimax optimization problem in a nested NPIV setting.
 
-    Attributes:
+    Parameters:
         Same as `_SparseLinear2AdversarialGMM`.
-
-    Methods:
-        fit(A, B, C, D, Y, W): Fit the model.
-        predict(B, *args): Predict using the fitted model.
     """
 
     def _check_duality_gap(self, A, B, C, D, Y, W):
+        """
+        Calculate the duality gap to certify convergence of the algorithm.
+
+        The ensembles $\bar{\alpha}$ and $\bar{\theta_1}$ can be thought of as primal and dual solutions, respectively. The duality gap is used as a certificate for convergence of the algorithm.
+
+        \begin{align*}
+        \text{Duality Gap} &:= \max_{\|\theta_1\|_1 \leq 1 } L(\bar{\alpha}, \theta_1) - \min_{\|\alpha\|_1 \leq V_1} L(\alpha, \bar{\theta_1})
+        \end{align*}
+
+        Parameters:
+            A (array-like): Covariates for the first stage.
+            B (array-like): Covariates for the second stage.
+            C (array-like): Instrumental variables for the second stage.
+            D (array-like): Instrumental variables for the first stage.
+            Y (array-like): Outcomes.
+            W (array-like): Weights.
+
+        Returns:
+            bool: True if the duality gap is below the tolerance level, indicating convergence.
+        """
         self.max_response_loss_ = np.linalg.norm(
             self.weighted_mean(D * (Y - np.dot(A, self.alpha_)).reshape(-1, 1), self.weights1, axis=0), ord=2)\
             + np.linalg.norm(self.weighted_mean(C * (np.dot(A * W, self.alpha_) - np.dot(B, self.beta_)).reshape(-1, 1), self.weights2, axis=0), ord=2)\
@@ -154,7 +166,7 @@ class sparse2_l2vsl2(_SparseLinear2AdversarialGMM):
         """
         Fit the model.
 
-        Args:
+        Parameters:
             A (array-like): Covariates for the first stage.
             B (array-like): Covariates for the second stage.
             C (array-like): Instrumental variables for the second stage.
@@ -334,15 +346,31 @@ class sparse2_ridge_l2vsl2(_SparseLinear2AdversarialGMM):
 
     This class solves the high-dimensional sparse ridge problem using $\ell_2$ relaxations for the minimax optimization problem in a nested NPIV setting.
 
-    Attributes:
+    Parameters:
         Same as `_SparseLinear2AdversarialGMM`.
-
-    Methods:
-        fit(A, B, C, D, Y, W): Fit the model.
-        predict(B, *args): Predict using the fitted model.
     """
 
     def _check_duality_gap(self, A, B, C, D, Y, W):
+        """
+        Calculate the duality gap to certify convergence of the algorithm.
+
+        The ensembles $\bar{\alpha}$ and $\bar{\theta_1}$ can be thought of as primal and dual solutions, respectively. The duality gap is used as a certificate for convergence of the algorithm.
+
+        \begin{align*}
+        \text{Duality Gap} &:= \max_{\|\theta_1\|_1 \leq 1 } L(\bar{\alpha}, \theta_1) - \min_{\|\alpha\|_1 \leq V_1} L(\alpha, \bar{\theta_1})
+        \end{align*}
+
+        Parameters:
+            A (array-like): Covariates for the first stage.
+            B (array-like): Covariates for the second stage.
+            C (array-like): Instrumental variables for the second stage.
+            D (array-like): Instrumental variables for the first stage.
+            Y (array-like): Outcomes.
+            W (array-like): Weights.
+
+        Returns:
+            bool: True if the duality gap is below the tolerance level, indicating convergence.
+        """
         self.max_response_loss_ = np.linalg.norm(
             self.weighted_mean(D * (Y - np.dot(A, self.alpha_)).reshape(-1, 1), self.weights1, axis=0), ord=2)\
             + np.linalg.norm(self.weighted_mean(C * (np.dot(A * W, self.alpha_) - np.dot(B, self.beta_)).reshape(-1, 1), self.weights2, axis=0), ord=2)\
@@ -373,7 +401,7 @@ class sparse2_ridge_l2vsl2(_SparseLinear2AdversarialGMM):
         """
         Fit the model.
 
-        Args:
+        Parameters:
             A (array-like): Covariates for the first stage.
             B (array-like): Covariates for the second stage.
             C (array-like): Instrumental variables for the second stage.
