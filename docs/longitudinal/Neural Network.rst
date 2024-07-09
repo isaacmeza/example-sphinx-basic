@@ -19,6 +19,11 @@ We now consider the case where the function classes correspond to neural network
 where :math:`\theta_1, \theta_2, \omega_1, \omega_2` are weights of the neural networks.
 
 We use the Optimistic Adam algorithm of `Daskalakis et al. (2017) <http://arxiv.org/abs/1711.00141>`_ to solve the previous minimax problem as was also proposed in `Dikkala et al. (2020) <https://arxiv.org/abs/2006.07201>`_.
+.. autosummary::
+   :toctree: _autosummary
+   :template: class.rst
+
+   oadam.OAdam
 
 Subsetted Estimator
 -------------------
@@ -30,3 +35,30 @@ Modify the computation of the loss for the adversary to be zero for the observat
     test = self.adversary(zb)
     test[indices_] = 0 
     G_loss = - torch.mean((yb - pred) * test) + torch.mean(test**2)
+
+
+Single estimator
+^^^^^^^^^^^^^^^^
+.. autosummary::
+   :toctree: _autosummary
+   :template: class.rst
+
+   agmm.AGMM
+   agmm.KernelLayerMMDGMM
+   agmm.CentroidMMDGMM
+   agmm.KernelLossAGMM
+   agmm.MMDGMM
+
+
+Joint estimator
+^^^^^^^^^^^^^^^
+.. autosummary::
+   :toctree: _autosummary
+   :template: class.rst
+
+   .. autosummary::
+   :toctree: _autosummary
+   :template: class.rst
+
+   agmm2.AGMM2
+   agmm2.AGMM2L2
