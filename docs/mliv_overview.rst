@@ -2,7 +2,7 @@
 Nonparametric
 =============
 
-.. automodule:: sparse_l1_l1
+.. automodule:: mliv.sparse_l1_l1
    :members:
    :undoc-members:
    :show-inheritance:
