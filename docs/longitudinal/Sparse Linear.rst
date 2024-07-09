@@ -90,6 +90,11 @@ Moreover, :math:`v_1 = (a, -a)`, :math:`u_1 = (c', -c')`; and :math:`\theta_1 = 
     
     Then, :math:`\bar{\rho} = \frac{1}{T}\sum_{t=1}^{T} \rho_t`, :math:`\bar{\alpha} = \bar{\rho}^{+} - \bar{\rho}^{-}` is a :math:`O(T^{-1})`-approximate solution for :eq:`minimax-sparse-est1`.
     
+.. autosummary::
+   :toctree: _autosummary
+   :template: class.rst
+
+   mliv.linear.sparse_l1_l1.sparseL1vsL1
 
 **Proof**
 
