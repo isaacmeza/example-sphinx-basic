@@ -1,312 +1,689 @@
 """
-This module provides implementations of sparse linear NPIV estimators.
+This module implements Debiased Machine Learning for Nonparametric Instrumental Variables (DML-npiv).
+It provides tools for estimating causal effects using a combination of machine learning models and 
+instrumental variables techniques. The module supports cross-validation, kernel density estimation 
+for localization, and confidence interval computation.
+
+Classes:
+    DML_npiv: Main class for performing DML-npiv with various configuration options.
+
+DML_npiv Methods:
+    __init__: Initialize the DML_npiv instance with data and model configurations.
+    
+    _calculate_confidence_interval: Calculate confidence intervals for the estimates.
+    
+    _localization: Perform localization using kernel density estimation.
+    
+    _npivfit_outcome: Fit the outcome model using nonparametric instrumental variables.
+    
+    _propensity_score: Estimate the propensity score.
+    
+    _npivfit_action: Fit the action model using nonparametric instrumental variables.
+    
+    _process_fold: Process a single fold for cross-validation.
+    
+    _split_and_estimate: Split the data and estimate the model using cross-validation.
+    
+    dml: Perform Debiased Machine Learning for Nonparametric Instrumental Variables.
 """
-# Copyright (c) Microsoft Corporation.
-# Licensed under the MIT License.
+
 import numpy as np
-from sklearn.linear_model import Lasso, LassoCV, ElasticNet
-from sklearn.base import clone
-from .utilities import cross_product
+from scipy.stats import norm
+from sklearn.model_selection import KFold
+from sklearn.linear_model import LogisticRegression
+from sklearn.preprocessing import PolynomialFeatures
+from statsmodels.nonparametric.kde import kernel_switch
+import warnings
+from tqdm import tqdm
+import copy
+import torch
+from mliv.rkhs import ApproxRKHSIVCV
+from joblib import Parallel, delayed
+from scipy.optimize import minimize_scalar
 
-class _SparseLinearAdversarialGMM:
+device = torch.cuda.current_device() if torch.cuda.is_available() else None
+
+def _get(opts, key, default):
     """
-    Base class for sparse linear adversarial GMM.
+    Retrieve the value associated with 'key' in 'opts', or return 'default' if not present.
 
-    This class implements common functionality for sparse linear models using adversarial GMM.
+    Parameters
+    ----------
+    opts : dict
+        Dictionary of options.
+    key : str
+        Key to look up in 'opts'.
+    default : any
+        Default value to return if 'key' is not found.
 
-    Attributes:
-        lambda_theta (float): Regularization parameter.
-        B (int): Budget parameter.
-        eta_theta (str or float): Learning rate for theta.
-        eta_w (str or float): Learning rate for w.
-        n_iter (int): Number of iterations.
-        tol (float): Tolerance for duality gap.
-        sparsity (int or None): Sparsity level for the model.
-        fit_intercept (bool): Whether to fit an intercept.
+    Returns
+    -------
+    any
+        Value associated with 'key' or 'default'.
+    """
+    return opts[key] if (opts is not None and key in opts) else default
 
-    Methods:
-        fit(Z, X, Y): Fit the model.
-        predict(X): Predict using the fitted model.
+def _transform_poly(X, opts):
+    """
+    Transform the input data X using polynomial features.
+
+    Parameters
+    ----------
+    X : array-like
+        Input data.
+    opts : dict
+        Options dictionary containing the polynomial degree ('lin_degree').
+
+    Returns
+    -------
+    array-like
+        Transformed data.
+    """
+    degree = _get(opts, 'lin_degree', 1)
+    if degree == 1:
+        return X
+    else:
+        trans = PolynomialFeatures(degree=degree, include_bias=False)
+        return trans.fit_transform(X)
+
+def _fun_threshold_alpha(alpha, g):
+    """
+    Auxiliary function for computation of optimal alpha for improvement in overlap: CHIM (Dealing with limited overlap in estimation of average treatment effects).
+    
+    Richard K. Crump, V. Joseph Hotz, Guido W. Imbens, Oscar A. Mitnik
+    Biometrika, Volume 96, Issue 1, March 2009.
+
+    Parameters
+    ----------
+    alpha : float
+        Alpha value.
+    g : array-like
+        Input array.
+
+    Returns
+    -------
+    float
+        Result of the threshold function.
+    """
+    lambda_val = 1 / (alpha * (1 - alpha))
+    ind = (g <= lambda_val)
+    den = sum(ind)
+    num = ind * g
+    result = (2 * sum(num) / den - lambda_val) ** 2
+    return result
+
+class DML_npiv:
+    """
+    Debiased Machine Learning for Nonparametric Instrumental Variables (DML-npiv) class.
+
+    Parameters
+    ----------
+    Y : array-like
+        Outcome variable.
+    D : array-like
+        Treatment variable.
+    Z : array-like
+        Instrumental variable.
+    W : array-like
+        Negative control outcome.
+    X1 : array-like, optional
+        Additional covariates.
+    V : array-like, optional
+        Localization covariates.
+    v_values : array-like, optional
+        Values for localization.
+    loc_kernel : str, optional
+        Kernel for localization. Options include 'gau', 'epanechnikov', 'uniform', etc.
+    bw_loc : str, optional
+        Bandwidth for localization.
+    estimator : str, optional
+        Estimator type ('MR', 'OR', 'IPW').
+    model1 : estimator, optional
+        Model for the first stage.
+    nn_1 : bool, optional
+        Use neural network for the first stage.
+    modelq1 : estimator, optional
+        Model for the second stage.
+    nn_q1 : bool, optional
+        Use neural network for the second stage.
+    alpha : float, optional
+        Significance level for confidence intervals.
+    n_folds : int, optional
+        Number of folds for estimation.
+    n_rep : int, optional
+        Number of repetitions for estimation.
+    random_seed : int, optional
+        Seed for random number generator.
+    prop_score : estimator, optional
+        Model for propensity score.
+    CHIM : bool, optional
+        Use CHIM method. Dropping observations with extreme values of the propensity score - CHIM (2009).
+    verbose : bool, optional
+        Print progress information.
+    fitargs1 : dict, optional
+        Arguments for fitting the first stage model.
+    fitargsq1 : dict, optional
+        Arguments for fitting the second stage model.
+    opts : dict, optional
+        Additional options.
     """
 
-    def __init__(self, lambda_theta=0.01, B=100, eta_theta='auto', eta_w='auto',
-                 n_iter=2000, tol=1e-2, sparsity=None, fit_intercept=True):
-        self.B = B
-        self.lambda_theta = lambda_theta
-        self.eta_theta = eta_theta
-        self.eta_w = eta_w
-        self.n_iter = n_iter
-        self.tol = tol
-        self.sparsity = sparsity
-        self.fit_intercept = fit_intercept
-
-    def _check_input(self, Z, X, Y):
-        if self.fit_intercept:
-            X = np.hstack([np.ones((X.shape[0], 1)), X])
-            Z = np.hstack([np.ones((X.shape[0], 1)), Z])
-        return Z, X, Y.flatten()
-
-    def predict(self, X):
+    def __init__(self, Y, D, Z, W, X1=None,
+                 V=None, 
+                 v_values=None,
+                 loc_kernel='gau',
+                 bw_loc='silverman',
+                 estimator='MR',
+                 model1=ApproxRKHSIVCV(kernel_approx='nystrom', n_components=100,
+                           kernel='rbf', gamma=.1, delta_scale='auto',
+                           delta_exp=.4, alpha_scales=np.geomspace(1, 10000, 10), cv=5), 
+                 nn_1=False,
+                 modelq1=ApproxRKHSIVCV(kernel_approx='nystrom', n_components=100,
+                           kernel='rbf', gamma=.1, delta_scale='auto',
+                           delta_exp=.4, alpha_scales=np.geomspace(1, 10000, 10), cv=5), 
+                 nn_q1=False,
+                 alpha=0.05,
+                 n_folds=5,
+                 n_rep=1,
+                 random_seed=123,
+                 prop_score=LogisticRegression(),
+                 CHIM=False,
+                 verbose=True,
+                 fitargs1=None,
+                 fitargsq1=None,
+                 opts=None
+                 ):
         """
-        Predict using the fitted model.
+        Initialize the DML_npiv instance with data and model configurations.
 
-        Args:
-            X (array-like): Covariates.
-
-        Returns:
-            array: Predicted values.
+        Parameters
+        ----------
+        Y : array-like
+            Outcome variable.
+        D : array-like
+            Treatment variable.
+        Z : array-like
+            Instrumental variable.
+        W : array-like
+            Negative control outcome.
+        X1 : array-like, optional
+            Additional covariates.
+        V : array-like, optional
+            Localization covariates.
+        v_values : array-like, optional
+            Values for localization.
+        loc_kernel : str, optional
+            Kernel for localization. Options include 'gau', 'epanechnikov', 'uniform', etc.
+        bw_loc : str, optional
+            Bandwidth for localization.
+        estimator : str, optional
+            Estimator type ('MR', 'OR', 'IPW').
+        model1 : estimator, optional
+            Model for the first stage.
+        nn_1 : bool, optional
+            Use neural network for the first stage.
+        modelq1 : estimator, optional
+            Model for the second stage.
+        nn_q1 : bool, optional
+            Use neural network for the second stage.
+        alpha : float, optional
+            Significance level for confidence intervals.
+        n_folds : int, optional
+            Number of folds for estimation.
+        n_rep : int, optional
+            Number of repetitions for estimation.
+        random_seed : int, optional
+            Seed for random number generator.
+        prop_score : estimator, optional
+            Model for propensity score.
+        CHIM : bool, optional
+            Use CHIM method. Dropping observations with extreme values of the propensity score - CHIM (2009).
+        verbose : bool, optional
+            Print progress information.
+        fitargs1 : dict, optional
+            Arguments for fitting the first stage model.
+        fitargsq1 : dict, optional
+            Arguments for fitting the second stage model.
+        opts : dict, optional
+            Additional options.
         """
-        if self.fit_intercept:
-            X = np.hstack([np.ones((X.shape[0], 1)), X])
-        return np.dot(X, self.coef_)
+        self.Y = Y
+        self.D = D
+        self.Z = Z
+        self.W = W
+        self.X1 = X1
+        self.V = V
+        self.v_values = v_values
+        self.loc_kernel = loc_kernel
+        self.bw_loc = bw_loc
+        self.estimator = estimator
+        self.model1 = copy.deepcopy(model1)
+        self.modelq1 = copy.deepcopy(modelq1)
+        self.nn_1 = nn_1
+        self.nn_q1 = nn_q1
+        self.prop_score = prop_score
+        self.CHIM = CHIM
+        self.alpha = alpha
+        self.n_folds = n_folds
+        self.n_rep = n_rep
+        self.random_seed = random_seed
+        self.verbose = verbose
+        self.fitargs1 = fitargs1
+        self.fitargsq1 = fitargsq1
+        self.opts = opts
 
-    @property
-    def coef(self):
-        return self.coef_[1:] if self.fit_intercept else self.coef_
-
-    @property
-    def intercept(self):
-        return self.coef_[0] if self.fit_intercept else 0
-
-
-class sparse_l1vsl1(_SparseLinearAdversarialGMM):
-    """
-    Sparse Linear NPIV estimator using $\ell_1-\ell_1$ optimization.
-
-    This class solves the high-dimensional sparse linear problem using $\ell_1$ relaxations for the minimax optimization problem.
-
-    Attributes:
-        Same as `_SparseLinearAdversarialGMM`.
-
-    Methods:
-        fit(Z, X, Y): Fit the model.
-        predict(X): Predict using the fitted model.
-    """
-
-    def fit(self, Z, X, Y):
-        """
-        Fit the model.
-
-        Args:
-            Z (array-like): Instrumental variables.
-            X (array-like): Covariates.
-            Y (array-like): Outcomes.
-
-        Returns:
-            self: Fitted estimator.
-        """
-        Z, X, Y = self._check_input(Z, X, Y)
-        T = self.n_iter
-        d_x = X.shape[1]
-        d_z = Z.shape[1]
-        n = X.shape[0]
-        B = self.B
-        eta_theta = .5 if self.eta_theta == 'auto' else self.eta_theta
-        eta_w = .5 if self.eta_w == 'auto' else self.eta_w
-        lambda_theta = self.lambda_theta
-
-        yz = np.mean(Y.reshape(-1, 1) * Z, axis=0)
-        if d_x * d_z < n**2:
-            xz = np.mean(cross_product(X, Z),
-                         axis=0).reshape(d_z, d_x).T
-
-        last_gap = np.inf
-        t = 1
-        while t < T:
-            t += 1
-            if t == 2:
-                self.duality_gaps = []
-                theta = np.ones(2 * d_x) * B / (2 * d_x)
-                theta_acc = np.ones(2 * d_x) * B / (2 * d_x)
-                w = np.ones(2 * d_z) / (2 * d_z)
-                w_acc = np.ones(2 * d_z) / (2 * d_z)
-                res = np.zeros(2 * d_z)
-                res_pre = np.zeros(2 * d_z)
-                cors = 0
-
-            # quantities for updating theta
-            if d_x * d_z < n**2:
-                cors_t = xz @ (w[:d_z] - w[d_z:])
+        if self.X1 is None:
+            if self.V is None:
+                self.X = np.ones((self.Y.shape[0], 1))
             else:
-                test_fn = np.dot(Z, w[:d_z] -
-                                 w[d_z:]).reshape(-1, 1)
-                cors_t = np.mean(test_fn * X, axis=0)
-            cors += cors_t
-
-            # quantities for updating w
-            if d_x * d_z < n**2:
-                res[:d_z] = (theta[:d_x] -
-                             theta[d_x:]).T @ xz - yz
+                self.X = self.V
+        else:
+            if self.V is None:
+                self.X = self.X1
             else:
-                pred_fn = np.dot(X, theta[:d_x] -
-                                 theta[d_x:]).reshape(-1, 1)
-                res[:d_z] = np.mean(Z * pred_fn, axis=0) - yz
-            res[d_z:] = - res[:d_z]
+                self.X = np.column_stack([self.X1, self.V])
 
-            # update theta
-            theta[:d_x] = np.exp(-1 - eta_theta *
-                                 (cors + cors_t + (t + 1) * lambda_theta))
-            theta[d_x:] = np.exp(-1 - eta_theta *
-                                 (- cors - cors_t + (t + 1) * lambda_theta))
-            normalization = np.sum(theta)
-            if normalization > B:
-                theta[:] = theta * B / normalization
+        lengths = [len(Y), len(D), len(Z), len(W), len(self.X)]
+        if len(set(lengths)) != 1:
+            raise ValueError("All input vectors must have the same length.")
+        
 
-            # update w
-            w[:] = w * \
-                np.exp(2 * eta_w * res - eta_w * res_pre)
-            w[:] = w / np.sum(w)
+        if self.estimator not in ['MR', 'OR', 'IPW']:
+            warnings.warn(f"Invalid estimator: {estimator}. Estimator must be one of ['MR', 'OR', 'IPW']. Using MR instead.", UserWarning)
+            self.estimator = 'MR'
 
-            theta_acc = theta_acc * (t - 1) / t + theta / t
-            w_acc = w_acc * (t - 1) / t + w / t
-            res_pre[:] = res
+        if self.loc_kernel not in list(kernel_switch.keys()):
+            warnings.warn(f"Invalid kernel: {loc_kernel}. Kernel must be one of {list(kernel_switch.keys())}. Using gau instead.", UserWarning)
+            self.loc_kernel = 'gau' 
 
-            if t % 50 == 0:
-                self.coef_ = theta_acc[:d_x] - theta_acc[d_x:]
-                self.w_ = w_acc[:d_z] - w_acc[d_z:]
-                if self._check_duality_gap(Z, X, Y):
-                    break
-                self.duality_gaps.append(self.duality_gap_)
-                if np.isnan(self.duality_gap_):
-                    eta_theta /= 2
-                    eta_w /= 2
-                    t = 1
-                elif last_gap < self.duality_gap_:
-                    eta_theta /= 1.01
-                    eta_w /= 1.01
-                last_gap = self.duality_gap_
+        if isinstance(self.bw_loc, str):
+            if self.bw_loc not in ['silverman', 'scott']:
+                warnings.warn(f"Invalid bw rule: {bw_loc}. Bandwidth rule must be one of ['silverman', 'scott'] or provided by the user. Using silverman instead.", UserWarning)
+                self.bw_loc = 'silverman'   
 
-        self.n_iters_ = t
-        self.rho_ = theta_acc
-        self.coef_ = theta_acc[:d_x] - theta_acc[d_x:]
-        self.w_ = w_acc[:d_z] - w_acc[d_z:]
-
-        self._post_process(Z, X, Y)
-
-        return self
-
-
-class sparse_ridge_l1vsl1(_SparseLinearAdversarialGMM):
-    """
-    Sparse Ridge NPIV estimator using $\ell_1-\ell_1$ optimization.
-
-    This class solves the high-dimensional sparse ridge problem using $\ell_1$ relaxations for the minimax optimization problem.
-
-    Attributes:
-        Same as `_SparseLinearAdversarialGMM`.
-
-    Methods:
-        fit(Z, X, Y): Fit the model.
-        predict(X): Predict using the fitted model.
-    """
-
-    def fit(self, Z, X, Y):
+        if self.V is not None:
+            if self.v_values is None:
+                warnings.warn(f"v_values is None. Computing localization around mean(V).", UserWarning)
+                self.v_values = np.mean(self.V, axis=0)    
+            
+    def _calculate_confidence_interval(self, theta, theta_var):
         """
-        Fit the model.
+        Calculate the confidence interval for the given estimates.
 
-        Args:
-            Z (array-like): Instrumental variables.
-            X (array-like): Covariates.
-            Y (array-like): Outcomes.
+        Parameters
+        ----------
+        theta : array-like
+            Estimated values.
+        theta_var : array-like
+            Variance of the estimates.
 
-        Returns:
-            self: Fitted estimator.
+        Returns
+        -------
+        array-like
+            Lower and upper bounds of the confidence intervals.
         """
-        Z, X, Y = self._check_input(Z, X, Y)
-        T = self.n_iter
-        d_x = X.shape[1]
-        d_z = Z.shape[1]
-        n = X.shape[0]
-        B = self.B
-        eta_theta = .5 if self.eta_theta == 'auto' else self.eta_theta
-        eta_w = .5 if self.eta_w == 'auto' else self.eta_w
-        lambda_theta = self.lambda_theta
+        z_alpha_half = norm.ppf(1 - self.alpha / 2)
+        n = self.Y.shape[0]
+        margin_of_error = z_alpha_half * np.sqrt(theta_var) * np.sqrt(1 / n)
+        lower_bound = theta - margin_of_error
+        upper_bound = theta + margin_of_error
+        return np.column_stack((lower_bound, upper_bound))
 
-        yz = np.mean(Y.reshape(-1, 1) * Z, axis=0)
-        xx = np.mean(cross_product(X, X),
-                     axis=0).reshape(d_x, d_x).T
-        self.xx = xx
-        # Perform SVD on E_n[xx^T]
-        Sigma = np.linalg.svd(xx, compute_uv=False)
-        # Find the minimum non-zero singular value
-        sigma_min = np.min(Sigma[Sigma > 1e-10])
-        # Compute the maximum singular value of the pseudoinverse
-        self.msvp = 1 / sigma_min
+    def _localization(self, V, v_val, bw):
+        """
+        Perform localization using kernel density estimation.
 
-        if d_x * d_z < n**2:
-            xz = np.mean(cross_product(X, Z),
-                         axis=0).reshape(d_z, d_x).T
+        Parameters
+        ----------
+        V : array-like
+            Localization covariates.
+        v_val : array-like
+            Values for localization.
+        bw : float
+            Bandwidth for localization.
 
-        last_gap = np.inf
-        t = 1
-        while t < T:
-            t += 1
-            if t == 2:
-                self.duality_gaps = []
-                theta = np.ones(2 * d_x) * B / (2 * d_x)
-                theta_acc = np.ones(2 * d_x) * B / (2 * d_x)
-                w = np.ones(2 * d_z) / (2 * d_z)
-                w_acc = np.ones(2 * d_z) / (2 * d_z)
-                res = np.zeros(2 * d_z)
-                res_pre = np.zeros(2 * d_z)
-                cors = 0
+        Returns
+        -------
+        array-like
+            Weights for localization.
+        """
+        if kernel_switch[self.loc_kernel]().domain is None:
+            def K(x):
+                return kernel_switch[self.loc_kernel]()(x)
+        else:    
+            def K(x): 
+                y = kernel_switch[self.loc_kernel]()(x)*((kernel_switch[self.loc_kernel]().domain[0]<=x) & (x<=kernel_switch[self.loc_kernel]().domain[1]))
+                return y
 
-            # quantities for updating theta
-            xx_theta = xx @ (theta[:d_x] - theta[d_x:])
-            if d_x * d_z < n**2:
-                cors_t = xz @ (w[:d_z] - w[d_z:]) + lambda_theta * xx_theta
+        v = (V-v_val)/bw    
+        KK = np.prod(list(map(K, v)),axis=1) 
+        omega = np.mean(KK,axis=0)   
+        ell = KK/omega
+        return ell.reshape(-1,1)
+    
+    def _npivfit_outcome(self, Y, D, X, Z):
+        """
+        Fit the outcome model using nonparametric instrumental variables.
+
+        Parameters
+        ----------
+        Y : array-like
+            Outcome variable.
+        D : array-like
+            Treatment variable.
+        X : array-like
+            Covariates.
+        Z : array-like
+            Instrumental variable.
+
+        Returns
+        -------
+        tuple
+            Fitted models for treatment and control groups.
+        """
+        bridge_ = [None]*2
+
+        if self.estimator == 'MR' or self.estimator == 'OR':
+            model_1 = copy.deepcopy(self.model1)
+
+            # First stage
+            if self.nn_1==True:
+                Y, X, Z = tuple(map(lambda x: torch.Tensor(x), [Y, X, Z]))
+
+            if self.nn_1==False:
+                X = _transform_poly(X,self.opts)
+                Z = _transform_poly(Z,self.opts)
+            
+            for d in [0,1]:    
+                ind = np.where(D==d)[0]
+                Y1 = Y[ind]
+                X1 = X[ind,:]
+                Z1 = Z[ind]
+
+                if self.fitargs1 is not None:   
+                    bridge_[d] = copy.deepcopy(model_1).fit(Z1, X1, Y1, **self.fitargs1)
+                else:
+                    bridge_[d] = copy.deepcopy(model_1).fit(Z1, X1, Y1)
+        
+        return bridge_[1], bridge_[0]
+
+
+    def _propensity_score(self, X, W, D):
+        """
+        Estimate the propensity score.
+
+        Parameters
+        ----------
+        X : array-like
+            Covariates.
+        W : array-like
+            Control variable.
+        D : array-like
+            Treatment variable.
+
+        Returns
+        -------
+        tuple
+            Estimated propensity scores and threshold alpha.
+        """
+        model_ps = copy.deepcopy(self.prop_score)
+        X1 = np.column_stack((X,W))
+            
+        # First stage
+        model_ps.fit(X1, D.flatten())
+        ps_hat_1 = model_ps.predict_proba(X1)[:,1]
+        
+        # Overlap assumption
+        ps_hat_1 = np.where(ps_hat_1 == 1, 0.99, ps_hat_1)
+        ps_hat_1 = np.where(ps_hat_1 == 0, 0.01, ps_hat_1)
+
+        if self.CHIM==True:
+            # Dropping observations with extreme values of the propensity score - CHIM (2009)
+            # One finds the smallest value of \alpha\in [0,0.5] s.t.
+            # $\lambda:=\frac{1}{\alpha(1-\alpha)}$
+            # $2\frac{\sum 1(g(X)\leq\lambda)*g(X)}{\sum 1(g(X)\leq\lambda)}-\lambda\geq 0$
+            # 
+            # Equivalently the first value of alpha (in increasing order) such that the constraint is achieved by equality
+            # (as the constraint is a monotone increasing function in alpha)
+
+            g_values = [1/(ps_hat_1*(1-ps_hat_1))]  
+            optimized_alphas = []
+
+            for g in g_values:
+                def _objective_function(alpha):
+                    return _fun_threshold_alpha(alpha, g)
+                result = minimize_scalar(_objective_function, bounds=(0.001, 0.499))
+                optimized_alphas.append(result.x)
+            alfa = max(optimized_alphas)
+        else:
+            alfa = 0.0
+
+        return ps_hat_1.reshape(-1,1), alfa
+
+
+    def _npivfit_action(self, ps_hat_1, W, X, Z, alfa=0.0):
+        """
+        Fit the action model using nonparametric instrumental variables.
+
+        Parameters
+        ----------
+        ps_hat_1 : array-like
+            Estimated propensity scores.
+        W : array-like
+            Control variable.
+        X : array-like
+            Covariates.
+        Z : array-like
+            Instrumental variable.
+        alfa : float, optional
+            Threshold alpha for propensity scores.
+
+        Returns
+        -------
+        tuple
+            Fitted models for treated and control groups.
+        """
+        bridge_ = [None]*2
+
+        if self.estimator == 'MR' or self.estimator == 'IPW':
+            mask = np.where((ps_hat_1 >= alfa) & (ps_hat_1 <= 1 - alfa))[0]
+            ps_hat_1 = ps_hat_1[mask]
+            ps_hat_0 = 1 - ps_hat_1
+
+            W = W[mask]
+            X = X[mask,:]
+            Z = Z[mask]
+
+            model_q1 = copy.deepcopy(self.modelq1)
+
+            # First stage
+            if self.nn_q1==True:
+                ps_hat_1, ps_hat_0, W, X, Z = tuple(map(lambda x: torch.Tensor(x), [ps_hat_1, ps_hat_0, W, X, Z]))
+
+            if self.nn_q1==True:
+                A2 = torch.cat((X,W),1)
+                A1 = torch.cat((X,Z),1)
             else:
-                test_fn = np.dot(Z, w[:d_z] -
-                                 w[d_z:]).reshape(-1, 1)
-                cors_t = np.mean(test_fn * X, axis=0) + lambda_theta * xx_theta
-            cors += cors_t
+                A2 = _transform_poly(np.column_stack((X,W)),self.opts)
+                A1 = _transform_poly(np.column_stack((X,Z)),self.opts)
 
-            # quantities for updating w
-            if d_x * d_z < n**2:
-                res[:d_z] = (theta[:d_x] -
-                             theta[d_x:]).T @ xz - yz
+            if self.fitargsq1 is not None:
+                bridge_[0] = copy.deepcopy(model_q1).fit(A2, A1, 1/ps_hat_0, **self.fitargsq1)
+                bridge_[1] = copy.deepcopy(model_q1).fit(A2, A1, 1/ps_hat_1, **self.fitargsq1)
             else:
-                pred_fn = np.dot(X, theta[:d_x] -
-                                 theta[d_x:]).reshape(-1, 1)
-                res[:d_z] = np.mean(Z * pred_fn, axis=0) - yz
-            res[d_z:] = - res[:d_z]
+                bridge_[0] = copy.deepcopy(model_q1).fit(A2, A1, 1/ps_hat_0)
+                bridge_[1] = copy.deepcopy(model_q1).fit(A2, A1, 1/ps_hat_1)
+           
+        return bridge_[1], bridge_[0]
 
-            # update theta
-            theta[:d_x] = np.exp(-1 - eta_theta * (cors + cors_t))
-            theta[d_x:] = np.exp(-1 - eta_theta * (- cors - cors_t))
-            normalization = np.sum(theta)
-            if normalization > B:
-                theta[:] = theta * B / normalization
 
-            # update w
-            w[:] = w * \
-                np.exp(2 * eta_w * res - eta_w * res_pre)
-            w[:] = w / np.sum(w)
+    def _process_fold(self, fold_idx, train_data, test_data):
+        """
+        Process a single fold for cross-validation.
 
-            theta_acc = theta_acc * (t - 1) / t + theta / t
-            w_acc = w_acc * (t - 1) / t + w / t
-            res_pre[:] = res
+        Parameters
+        ----------
+        fold_idx : int
+            Fold index.
+        train_data : tuple
+            Training data for the fold.
+        test_data : tuple
+            Testing data for the fold.
 
-            if t % 50 == 0:
-                self.coef_ = theta_acc[:d_x] - theta_acc[d_x:]
-                self.w_ = w_acc[:d_z] - w_acc[d_z:]
-                if self._check_duality_gap(Z, X, Y):
-                    break
-                self.duality_gaps.append(self.duality_gap_)
-                if np.isnan(self.duality_gap_):
-                    eta_theta /= 2
-                    eta_w /= 2
-                    t = 1
-                elif last_gap < self.duality_gap_:
-                    eta_theta /= 1.01
-                    eta_w /= 1.01
-                last_gap = self.duality_gap_
+        Returns
+        -------
+        array-like
+            Estimated moment functions for the test data.
+        """
+        train_Y, test_Y = train_data[0], test_data[0]
+        train_D, test_D = train_data[1], test_data[1]
+        train_W, test_W = train_data[2], test_data[2]
+        train_X, test_X = train_data[3], test_data[3]
+        train_Z, test_Z = train_data[4], test_data[4]
 
-        self.n_iters_ = t
-        self.rho_ = theta_acc
-        self.coef_ = theta_acc[:d_x] - theta_acc[d_x:]
-        self.w_ = w_acc[:d_z] - w_acc[d_z:]
+        if self.V is not None:
+            train_V, test_V = train_data[5], test_data[5]
 
-        self._post_process(Z, X, Y)
+        if self.estimator == 'MR' or self.estimator == 'OR':
+            gamma_1, gamma_0 = self._npivfit_outcome(train_Y, train_D, train_X, train_Z)
 
-        return self
+        if self.estimator == 'MR'  or self.estimator == 'IPW':
+            ps_hat_1, alfa = self._propensity_score(train_X, train_W, train_D)
+            q_1, q_0 = self._npivfit_action(ps_hat_1, train_W, train_X, train_Z, alfa=alfa)
+
+        # Evaluate the estimated moment functions using test_data
+        if self.estimator == 'MR' or self.estimator == 'OR':
+            if self.nn_1 == True:
+                test_X = torch.Tensor(test_X)
+                gamma_1_hat = gamma_1.predict(test_X.to(device),
+                                            model='avg', burn_in=_get(self.opts, 'burnin', 0)).reshape(-1, 1)
+                gamma_0_hat = gamma_0.predict(test_X.to(device),
+                                            model='avg', burn_in=_get(self.opts, 'burnin', 0)).reshape(-1, 1)
+            else:
+                gamma_1_hat = gamma_1.predict(_transform_poly(test_X, opts=self.opts)).reshape(-1, 1)
+                gamma_0_hat = gamma_0.predict(_transform_poly(test_X, opts=self.opts)).reshape(-1, 1)
+
+        if self.estimator == 'MR' or self.estimator == 'IPW':
+            if self.nn_q1 == True:
+                test_X, test_Z = tuple(map(lambda x: torch.Tensor(x), [test_X, test_Z]))
+                q_1_hat = q_1.predict(torch.cat((test_X, test_Z), 1).to(device),
+                                    model='avg', burn_in=_get(self.opts, 'burnin', 0)).reshape(-1, 1)
+                q_0_hat = q_0.predict(torch.cat((test_X, test_Z), 1).to(device),
+                                    model='avg', burn_in=_get(self.opts, 'burnin', 0)).reshape(-1, 1)
+            else:
+                q_1_hat = q_1.predict(_transform_poly(np.column_stack((test_X, test_Z)), opts=self.opts)).reshape(-1, 1)
+                q_0_hat = q_0.predict(_transform_poly(np.column_stack((test_X, test_Z)), opts=self.opts)).reshape(-1, 1)
+
+        # Calculate the score function depending on the estimator
+        if self.estimator == 'MR':
+            psi_hat = (gamma_1_hat-gamma_0_hat +
+                    test_D * q_1_hat * (test_Y - gamma_1_hat) - (1-test_D) * q_0_hat * (test_Y - gamma_0_hat))
+        if self.estimator == 'OR':
+            psi_hat = gamma_1_hat-gamma_0_hat 
+        if self.estimator == 'IPW':
+            psi_hat = test_D * q_1_hat * test_Y - (1 - test_D) * q_0_hat * test_Y
+
+        # Localization 
+        if self.V is not None:
+            if isinstance(self.bw_loc, str):
+                if self.bw_loc == 'silverman':
+                    IQR = np.percentile(train_V, 75, axis=0)-np.percentile(train_V, 25, axis=0)
+                    A = np.min([np.std(train_V, axis=0), IQR/1.349], axis=0)
+                    n = train_V.shape[0]
+                    bw = .9 * A * n ** (-0.2)
+                elif self.bw_loc == 'scott':
+                    IQR = np.percentile(train_V, 75, axis=0)-np.percentile(train_V, 25, axis=0)
+                    A = np.min([np.std(train_V, axis=0), IQR/1.349], axis=0)
+                    n = train_V.shape[0]
+                    bw = 1.059 * A * n ** (-0.2)
+            else:
+                if len(self.bw_loc)==1:
+                    bw = [train_V.shape[1]]*self.bw_loc
+            
+            ell = [self._localization(test_V, v, bw) for v in self.v_values]
+            ell = np.column_stack(ell)
+            psi_hat = ell * psi_hat
+
+        # Print progress bar using tqdm
+        if self.verbose==True:
+            self.progress_bar.update(1)
+   
+        return psi_hat
+
+
+    def _split_and_estimate(self):
+        """
+        Split the data and estimate the model for each fold.
+
+        Returns
+        -------
+        tuple
+            Estimated values, variances, and confidence intervals.
+        """
+        theta = []
+        theta_var = []
+
+        for rep in range(self.n_rep):
+            
+            if self.verbose==True:
+                print(f"Rep: {rep+1}")
+                self.progress_bar = tqdm(total=self.n_folds, position=0)
+            
+            kf = KFold(n_splits=self.n_folds, shuffle=True, random_state=self.random_seed+rep)
+            if self.V is None:
+                fold_results = Parallel(n_jobs=-1, backend='threading')(
+                    delayed(self._process_fold)(
+                        fold_idx, 
+                        (self.Y[train_index], self.D[train_index], self.W[train_index],
+                        self.X[train_index], self.Z[train_index]),
+                        (self.Y[test_index], self.D[test_index], self.W[test_index],
+                        self.X[test_index], self.Z[test_index])) 
+                        for fold_idx, (train_index, test_index) in enumerate(kf.split(self.Y))
+                )
+            else:   
+                fold_results = Parallel(n_jobs=-1, backend='threading')(
+                    delayed(self._process_fold)(
+                        fold_idx, 
+                        (self.Y[train_index], self.D[train_index], self.W[train_index],
+                        self.X[train_index], self.Z[train_index], self.V[train_index]),
+                        (self.Y[test_index], self.D[test_index], self.W[test_index],
+                        self.X[test_index], self.Z[test_index], self.V[test_index])) 
+                        for fold_idx, (train_index, test_index) in enumerate(kf.split(self.Y))
+                )                
+            if self.verbose==True:       
+                self.progress_bar.close()
+
+            # Calculate the average of psi_hat_array for each rep
+            psi_hat_array = np.concatenate(fold_results, axis=0)
+            theta_rep = np.mean(psi_hat_array, axis=0)
+            theta_var_rep = np.var(psi_hat_array, axis=0)
+
+            # Store results for each rep
+            theta.append(theta_rep)
+            theta_var.append(theta_var_rep)
+
+        # Calculate the overall average of theta and theta_var
+        theta_hat = np.mean(np.stack(theta, axis=0), axis=0)
+        theta_var_hat = np.mean(np.stack(theta_var, axis=0), axis=0)
+
+        # Calculate the confidence interval
+        confidence_interval = self._calculate_confidence_interval(theta_hat, theta_var_hat)
+
+        return theta_hat, theta_var_hat, confidence_interval
+    
+
+    def dml(self):
+        """
+        Perform Debiased Machine Learning for Nonparametric Instrumental Variables.
+
+        Returns
+        -------
+        tuple
+            Estimated values, variances, and confidence intervals.
+        """
+        theta, theta_var, confidence_interval = self._split_and_estimate()
+        if self.V is None:
+            return theta[0], theta_var[0], confidence_interval[0]
+        else:
+            return theta, theta_var, confidence_interval
+
