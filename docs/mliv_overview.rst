@@ -1,5 +1,5 @@
 
-Nonparametric
+Sparse Linear
 =============
 
 .. automodule:: mliv.linear.sparse_l1_l1
