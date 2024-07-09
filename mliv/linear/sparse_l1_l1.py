@@ -1,9 +1,8 @@
-# Copyright (c) Microsoft Corporation.
-# Licensed under the MIT License.
 """
 This module provides implementations of sparse linear NPIV estimators.
 """
-
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
 import numpy as np
 from sklearn.linear_model import Lasso, LassoCV, ElasticNet
 from sklearn.base import clone
