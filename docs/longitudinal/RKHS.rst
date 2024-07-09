@@ -26,6 +26,24 @@ We study the estimator
         \hat{\alpha} &= \left(K_A P_C' K_A + \mu K_A \right)^{\dagger} K_A P_C' Y \\
         P_{C'} &= \left(K_{C'} + \lambda \right)^{\dagger} K_{C'}
 
+.. autosummary::
+   :toctree: _autosummary
+   :template: class.rst
+
+   rkhsiv.RKHSIV
+   rkhsiv.RKHSIVCV
+
+**Remark (Nystrom approximation)**
+A low-rank approximation using Nystrom method is also implemented.
+
+.. autosummary::
+   :toctree: _autosummary
+   :template: class.rst
+
+   rkhsiv.ApproxRKHSIV
+   rkhsiv.ApproxRKHSIVCV
+
+   
 
 Closed form - Estimator 2
 -------------------------
@@ -47,7 +65,12 @@ We study the estimator
         \hat{\alpha} &= \left( K_A P_C' K_A + \mu K_A^2 \right)^{\dagger} K_A P_C' Y \\
         P_{C'} &= K_{C'}^{\dagger} K_{C'}
 
+.. autosummary::
+   :toctree: _autosummary
+   :template: class.rst
 
+   rkhsiv.RKHSIVL2
+   rkhsiv.RKHSIVL2CV
 
 Closed form - Estimator 3
 -------------------------
@@ -192,6 +215,13 @@ To lighten notation, let :math:`K_C^{\dagger} K_C = P_C`.
     
         \hat{\beta} = \left[ K_A \left\{ P_C + \left( P_{C'} + P_C + \mu' \right) K_A \left( K_B P_C K_A \right)^{\dagger} K_B \left( P_C + \mu \right) \right\} K_B \right]^{\dagger} K_A P_{C'} Y \\
         \hat{\alpha} = \left( K_B P_C K_A \right)^{\dagger} K_B \left( P_C + \mu \right) K_B \hat{\beta}
+
+.. autosummary::
+   :toctree: _autosummary
+   :template: class.rst
+
+   rkhs2iv.RKHS2IVL2
+   rkhs2iv.RKHS2IVL2CV
 
 **Proof**
 
@@ -369,6 +399,14 @@ We study the RKHS-norm regularized *joint* estimator:
     
         P_C &= \left(K_C+\lambda\right)^{\dagger}K_C \\
         P_{C'} &= \left(K_{C'}+\lambda'\right)^{\dagger}K_{C'}
+
+
+.. autosummary::
+   :toctree: _autosummary
+   :template: class.rst
+
+   rkhs2iv.RKHS2IV
+   rkhs2iv.RKHS2IVCV
 
 Remark: Subsetted estimator
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
