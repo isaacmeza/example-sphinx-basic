@@ -34,6 +34,13 @@ Whenever the function classes :math:`\mathcal{G}`, :math:`\mathcal{F'}` are alre
 
     Suppose that the set :math:`\mathcal{F'}_{C'}` is a convex set. Then the ensemble :math:`\bar{g}=\frac{1}{T} \sum_{t=1}^T g_t`, is a :math:`O\left(\frac{\log (T)+1}{T}\right)`-approximate solution to the minimax problem.
 
+.. autosummary::
+   :toctree: _autosummary
+   :template: class.rst
+
+   ensemble.EnsembleIV
+   ensemble.EnsembleIVStar
+
 Estimator 2
 -----------
 
@@ -58,6 +65,11 @@ For the estimator
 
     Suppose that the sets :math:`\mathcal{F'}_{C'}`, :math:`\mathcal{G}_{A}` are convex. Then the ensemble: :math:`\bar{g}=\frac{1}{T} \sum_{t=1}^T g_t`, is a :math:`O\left(\frac{\log (T)+1}{T}\right)`-approximate solution to the minimax problem.
 
+.. autosummary::
+   :toctree: _autosummary
+   :template: class.rst
+
+   ensemble.EnsembleIVL2
 
 Estimator 3
 -----------
@@ -89,6 +101,11 @@ For the joint estimator with ridge regularization
 
     Suppose that the sets :math:`\mathcal{F'}_{C'}`, :math:`\mathcal{F}_{C}`, :math:`\mathcal{G}_{A}`, :math:`\mathcal{H}_{B}` are all convex sets. Then the ensembles: :math:`\bar{g}=\frac{1}{T} \sum_{t=1}^T g_t`, :math:`\bar{h}=\frac{1}{T} \sum_{t=1}^T h_t`, are a :math:`O\left(\frac{\log (T)+1}{T}\right)`-approximate solution to the minimax problem.
 
+.. autosummary::
+   :toctree: _autosummary
+   :template: class.rst
+
+   ensemble2.Ensemble2IVL2
 
 **Proof**
 
@@ -279,6 +296,11 @@ For the joint estimator:
 
     Suppose that the sets :math:`\mathcal{F'}_{C'}`, :math:`\mathcal{F}_{C}` are convex sets. Then the ensembles: :math:`\bar{g} = \frac{1}{T} \sum_{t=1}^T g_t`, :math:`\bar{h} = \frac{1}{T} \sum_{t=1}^T h_t`, are a :math:`O \left( \frac{\log (T) + 1}{T} \right)`-approximate solution to the minimax problem.
 
+.. autosummary::
+   :toctree: _autosummary
+   :template: class.rst
+
+   ensemble2.Ensemble2IV
 
 **Proof**
 
