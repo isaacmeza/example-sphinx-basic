@@ -12,7 +12,7 @@ Longitudinal Analysis
    :toctree: _autosummary
    :template: class.rst
 
-   sparse_l1_l1.sparseL1vsL1
+   mliv.sparse_l1_l1.sparseL1vsL1
 
 Semiparametrics
 ---------------
