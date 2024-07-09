@@ -1,6 +1,11 @@
 API Documentation
 =================
 
+Longitudinal Analysis
+---------------------
+
+Semiparametrics
+---------------
 .. toctree::
    :maxdepth: 2
 
