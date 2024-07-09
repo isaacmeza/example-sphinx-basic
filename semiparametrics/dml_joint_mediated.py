@@ -287,7 +287,7 @@ class DML_joint_mediated:
         n = self.Y.shape[0]
         margin_of_error = z_alpha_half * np.sqrt(theta_var) * np.sqrt(1 / n)
         lower_bound = theta - margin_of_error
-        upper bound = theta + margin_of_error
+        upper_bound = theta + margin_of_error
         return np.column_stack((lower_bound, upper_bound))
 
     def _localization(self, V, v_val, bw):
