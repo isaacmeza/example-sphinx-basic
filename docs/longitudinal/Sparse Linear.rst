@@ -94,7 +94,7 @@ Moreover, :math:`v_1 = (a, -a)`, :math:`u_1 = (c', -c')`; and :math:`\theta_1 = 
    :toctree: _autosummary
    :template: class.rst
 
-   mliv.linear.sparse_l1_l1.sparseL1vsL1
+   sparse_l1_l1.sparse_l1vsl1
 
 **Proof**
 
@@ -218,6 +218,12 @@ Moreover, :math:`v_1 = (a, -a)`, :math:`u_1 = (c', -c')`; and :math:`\theta_1 = 
 
     Then, :math:`\bar{\rho} = \frac{1}{T} \sum_{t=1}^{T} \rho_t`, :math:`\bar{\alpha} = \bar{\rho}^{+} - \bar{\rho}^{-}` is a :math:`O(T^{-1})`-approximate solution for :eq:`minimax-sparse-est2`.
 
+.. autosummary::
+   :toctree: _autosummary
+   :template: class.rst
+
+   sparse_l1_l1.sparse_ridge_l1vsl1
+
 **Proof**
 
 The proof is analogous to :ref:`estimator-1`.
@@ -302,6 +308,12 @@ and :math:`v_1 = (a, -a)`, :math:`v_2 = (b, -b)`, :math:`u_1 = (c', -c')`, :math
         \bar{\rho_2} = \frac{1}{T} \sum_{t=1}^{T} \rho_{2,t}, \quad \bar\beta = \bar\rho_2^{+} - \bar\rho_2^{-}
 
     are a :math:`O(T^{-1})`-approximate solution for :eq:`minimax-sparse-est3`.
+
+.. autosummary::
+   :toctree: _autosummary
+   :template: class.rst
+
+   sparse2_l1_l1.sparse2_ridge_l1vsl1
 
 **Proof**
 
@@ -506,6 +518,11 @@ We state without proof, the algorithm for an approximate solution:
 
    are a :math:`O(T^{-1})`-approximate solution for :eq:`minimax-sparse_est3_l1`.
 
+.. autosummary::
+   :toctree: _autosummary
+   :template: class.rst
+
+   sparse2_l1_l1.sparse2_l1vsl1
 
 .. admonition:: Duality gap
     :class: remark
