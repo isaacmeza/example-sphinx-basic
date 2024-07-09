@@ -10,7 +10,10 @@ import os
 import sys
 sys.path.insert(0, os.path.abspath('..'))  # Include the project root directory
 sys.path.insert(0, os.path.abspath('../semiparametrics'))  # Include the semiparametrics directory
-sys.path.insert(0, os.path.abspath('../mliv'))  # Include the semiparametrics directory
+# Add the mliv directory and its subdirectories to sys.path
+mliv_dir = os.path.abspath('../mliv')
+for root, dirs, files in os.walk(mliv_dir):
+    sys.path.insert(0, root)
 
 # -- Project information -----------------------------------------------------
 
