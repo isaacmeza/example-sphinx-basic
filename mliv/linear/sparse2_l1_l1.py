@@ -21,7 +21,7 @@ class _SparseLinear2AdversarialGMM:
 
     This class implements common functionality for sparse linear models using adversarial GMM in a nested NPIV setting.
 
-    Attributes:
+    Parameters:
         mu (float): Regularization parameter.
         V1 (int): Budget parameter for the first stage.
         V2 (int): Budget parameter for the second stage.
@@ -33,15 +33,27 @@ class _SparseLinear2AdversarialGMM:
         tol (float): Tolerance for duality gap.
         sparsity (int or None): Sparsity level for the model.
         fit_intercept (bool): Whether to fit an intercept.
-
-    Methods:
-        fit(A, B, C, D, Y, W): Fit the model.
-        predict(B, *args): Predict using the fitted model.
     """
 
     def __init__(self, mu=0.01, V1=100, V2=100,
                  eta_alpha='auto', eta_w1='auto', eta_beta='auto', eta_w2='auto',
                  n_iter=2000, tol=1e-2, sparsity=None, fit_intercept=True):
+        """
+        Initialize the _SparseLinear2AdversarialGMM.
+
+        Parameters:
+            mu (float): Regularization parameter.
+            V1 (int): Budget parameter for the first stage.
+            V2 (int): Budget parameter for the second stage.
+            eta_alpha (str or float): Learning rate for alpha.
+            eta_w1 (str or float): Learning rate for w1.
+            eta_beta (str or float): Learning rate for beta.
+            eta_w2 (str or float): Learning rate for w2.
+            n_iter (int): Number of iterations.
+            tol (float): Tolerance for duality gap.
+            sparsity (int or None): Sparsity level for the model.
+            fit_intercept (bool): Whether to fit an intercept.
+        """
         self.V1 = V1
         self.V2 = V2
         self.mu = mu
@@ -55,49 +67,69 @@ class _SparseLinear2AdversarialGMM:
         self.fit_intercept = fit_intercept
 
     def weighted_mean(self, arr, weights, axis=0):
-        # Ensure weights is an array
-        weights = np.array(weights)
+        """
+        Compute the weighted mean of an array.
 
+        Parameters:
+            arr (array-like): Input array.
+            weights (array-like): Weights for computing the mean.
+            axis (int, optional): Axis along which the mean is computed.
+
+        Returns:
+            array: Weighted mean.
+        """
+        weights = np.array(weights)
         if arr.ndim == 1 or axis is None:
-            # For 1D arrays or when axis is None, no need to expand dimensions
             return np.sum(arr * weights) / np.sum(weights)
         else:
-            # For multi-dimensional arrays, expand weights along the specified axis
-            return np.sum(arr * weights[:, np.newaxis], axis=axis) / np.sum(weights)    
+            return np.sum(arr * weights[:, np.newaxis], axis=axis) / np.sum(weights)
 
     def _check_input(self, A, B, C, D, Y, W):
+        """
+        Check and preprocess input arrays.
+
+        Parameters:
+            A (array-like): Covariates for the first stage.
+            B (array-like): Covariates for the second stage.
+            C (array-like): Instrumental variables for the second stage.
+            D (array-like): Instrumental variables for the first stage.
+            Y (array-like): Outcomes.
+            W (array-like): Weights.
+
+        Returns:
+            tuple: Processed A, B, C, D, Y, W.
+        """
         if self.fit_intercept:
             A = np.hstack([np.ones((A.shape[0], 1)), A])
             B = np.hstack([np.ones((B.shape[0], 1)), B])
             C = np.hstack([np.ones((C.shape[0], 1)), C])
             D = np.hstack([np.ones((D.shape[0], 1)), D])
-        return A, B, C, D, Y.flatten(), W.reshape(-1,1)
+        return A, B, C, D, Y.flatten(), W.reshape(-1, 1)
 
     def predict(self, B, *args):
         """
         Predict using the fitted model.
 
-        Args:
+        Parameters:
             B (array-like): Covariates for the second stage.
-            *args: Additional arguments for the first stage.
+            args (array-like): Optional covariates for the first stage.
 
         Returns:
-            array: Predicted values for the second stage or both stages.
+            array: Predicted values for the second stage.
+            If args are provided, also returns predicted values for the first stage.
         """
         if len(args) == 0:
             if self.fit_intercept:
                 B = np.hstack([np.ones((B.shape[0], 1)), B])
             return np.dot(B, self.beta_)
         elif len(args) == 1:
-            # Two arguments provided, assume the second is A
             A = args[0]
             if self.fit_intercept:
                 B = np.hstack([np.ones((B.shape[0], 1)), B])
                 A = np.hstack([np.ones((A.shape[0], 1)), A])
-            return (np.dot(B, self.beta_) , np.dot(A, self.alpha_))
+            return np.dot(B, self.beta_), np.dot(A, self.alpha_)
         else:
-            # More than one additional argument provided, raise an error
-            raise ValueError("predict expects at most two arguments, B_test and optionally A_test")
+            raise ValueError("predict expects at most two parameters, B_test and optionally A_test")
 
     @property
     def coef(self):
@@ -114,17 +146,33 @@ class sparse2_l1vsl1(_SparseLinear2AdversarialGMM):
 
     This class solves the high-dimensional sparse linear problem using $\ell_1$ relaxations for the minimax optimization problem in a nested NPIV setting.
 
-    Attributes:
+    Parameters:
         Same as `_SparseLinear2AdversarialGMM`.
-
-    Methods:
-        fit(A, B, C, D, Y, W): Fit the model.
-        predict(B, *args): Predict using the fitted model.
     """
 
     def _check_duality_gap(self, A, B, C, D, Y, W):
+        """
+        Calculate the duality gap to certify convergence of the algorithm.
+
+        The ensembles $\bar{\alpha}$ and $\bar{\theta_1}$ can be thought of as primal and dual solutions, respectively. The duality gap is used as a certificate for convergence of the algorithm.
+
+        \begin{align*}
+        \text{Duality Gap} &:= \max_{\|\theta_1\|_1 \leq 1 } L(\bar{\alpha}, \theta_1) - \min_{\|\alpha\|_1 \leq V_1} L(\alpha, \bar{\theta_1})
+        \end{align*}
+
+        Parameters:
+            A (array-like): Covariates for the first stage.
+            B (array-like): Covariates for the second stage.
+            C (array-like): Instrumental variables for the second stage.
+            D (array-like): Instrumental variables for the first stage.
+            Y (array-like): Outcomes.
+            W (array-like): Weights.
+
+        Returns:
+            bool: True if the duality gap is below the tolerance level, indicating convergence.
+        """
         self.max_response_loss_ = np.linalg.norm(self.weighted_mean(D * (Y - np.dot(A, self.alpha_)).reshape(-1, 1), self.weights1, axis=0), ord=np.inf)\
-            + np.linalg.norm(self.weighted_mean(C * (np.dot(W * A, self.alpha_)  - np.dot(B, self.beta_)).reshape(-1, 1), self.weights2, axis=0), ord=np.inf)\
+            + np.linalg.norm(self.weighted_mean(C * (np.dot(W * A, self.alpha_) - np.dot(B, self.beta_)).reshape(-1, 1), self.weights2, axis=0), ord=np.inf)\
             + self.mu * np.linalg.norm(self.alpha_, ord=1) + self.mu * np.linalg.norm(self.beta_, ord=1)
               
         self.min_response_loss_ = self.weighted_mean(Y * np.dot(D, self.w1_), self.weights1)\
@@ -157,7 +205,7 @@ class sparse2_l1vsl1(_SparseLinear2AdversarialGMM):
         """
         Fit the model.
 
-        Args:
+        Parameters:
             A (array-like): Covariates for the first stage.
             B (array-like): Covariates for the second stage.
             C (array-like): Instrumental variables for the second stage.
@@ -344,15 +392,31 @@ class sparse2_ridge_l1vsl1(_SparseLinear2AdversarialGMM):
 
     This class solves the high-dimensional sparse ridge problem using $\ell_1$ relaxations for the minimax optimization problem in a nested NPIV setting.
 
-    Attributes:
+    Parameters:
         Same as `_SparseLinear2AdversarialGMM`.
-
-    Methods:
-        fit(A, B, C, D, Y, W): Fit the model.
-        predict(B, *args): Predict using the fitted model.
     """
 
     def _check_duality_gap(self, A, B, C, D, Y, W):
+        """
+        Calculate the duality gap to certify convergence of the algorithm.
+
+        The ensembles $\bar{\alpha}$ and $\bar{\theta_1}$ can be thought of as primal and dual solutions, respectively. The duality gap is used as a certificate for convergence of the algorithm.
+
+        \begin{align*}
+        \text{Duality Gap} &:= \max_{\|\theta_1\|_1 \leq 1 } L(\bar{\alpha}, \theta_1) - \min_{\|\alpha\|_1 \leq V_1} L(\alpha, \bar{\theta_1})
+        \end{align*}
+
+        Parameters:
+            A (array-like): Covariates for the first stage.
+            B (array-like): Covariates for the second stage.
+            C (array-like): Instrumental variables for the second stage.
+            D (array-like): Instrumental variables for the first stage.
+            Y (array-like): Outcomes.
+            W (array-like): Weights.
+
+        Returns:
+            bool: True if the duality gap is below the tolerance level, indicating convergence.
+        """
         self.max_response_loss_ = np.linalg.norm(self.weighted_mean(D * (Y - np.dot(A, self.alpha_)).reshape(-1, 1), self.weights1, axis=0), ord=np.inf)\
             + np.linalg.norm(self.weighted_mean(C * (np.dot(A * W, self.alpha_) - np.dot(B, self.beta_)).reshape(-1, 1), self.weights2, axis=0), ord=np.inf)\
             + self.mu * self.alpha_.T @ self.aa @ self.alpha_ + self.mu * self.beta_.T @ self.bb @ self.beta_
@@ -384,7 +448,7 @@ class sparse2_ridge_l1vsl1(_SparseLinear2AdversarialGMM):
         """
         Fit the model.
 
-        Args:
+        Parameters:
             A (array-like): Covariates for the first stage.
             B (array-like): Covariates for the second stage.
             C (array-like): Instrumental variables for the second stage.
