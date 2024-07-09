@@ -68,4 +68,5 @@ html_theme = "sphinx_rtd_theme"
 html_static_path = ["_static"]
 
 
-autodoc_mock_imports = ["numpy", "scipy", "sklearn", "statsmodels", "tqdm", "copy", "torch", "mliv", "joblib"]
+autodoc_mock_imports = ["numpy", "scipy", "sklearn", "statsmodels", "tqdm", "copy", 
+                        "torch", "mliv", "mliv.linear", "joblib"]
