@@ -38,9 +38,5 @@ Sequential longterm
    :show-inheritance:
    :private-members:
 
-.. automodule:: sparse
-   :members:
-   :undoc-members:
-   :show-inheritance:
-   :private-members:
+
 
