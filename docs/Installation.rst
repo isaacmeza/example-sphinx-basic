@@ -18,6 +18,6 @@ Notebook Examples
 .. toctree::
    :maxdepth: 2
 
-   notebooks/longitudinal_notebook_agmm
+   notebooks/longitudinal_notebook_agmm.rst
   
 
