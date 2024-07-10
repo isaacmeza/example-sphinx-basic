@@ -1,7 +1,7 @@
 Estimators for Sequential and Simultaneous Nested NPIV
 ======================================================
 
-In this document, we analyze the closed-form or approximate solutions under different function classes for the following estimators:
+In this section, we analyze the closed-form or approximate solutions under different function classes for the following estimators:
 
 **Sequential Nested NPIV:**
 
