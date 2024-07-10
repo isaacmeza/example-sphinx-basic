@@ -43,8 +43,8 @@ Our DML framework allows for various types of estimands. Here, we describe each 
    :toctree: _autosummary
    :template: class.rst
 
-   dml_mediation.DML_mediation
-   dml_joint_mediation.DML_joint_mediation
+   dml_mediated.DML_mediated
+   dml_joint_mediated.DML_joint_mediated
 
 **References**
 
