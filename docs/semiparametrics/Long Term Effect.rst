@@ -9,12 +9,12 @@ If the analyst has access to an additional observational sample that includes th
 
    Formally, define the long-term counterfactual :math:`\mathbb{E}\left[Y^{(d)}\right]` as the counterfactual mean outcome for the full population in the thought experiment in which everyone is assigned treatment value :math:`D=d`.
 
-The long-term effect defined for the experimental or observational subpopulation is similar, introducing the fixed local weighting :math:`\ell(G)=\mathds{1}_{G=0} / \mathbb{P}(G=0)` or :math:`\ell(G)=\mathds{1}_{G=1} / \mathbb{P}(G=1)`, respectively.
+The long-term effect defined for the experimental or observational subpopulation is similar, introducing the fixed local weighting :math:`\ell(G)=\mathbb{1}_{G=0} / \mathbb{P}(G=0)` or :math:`\ell(G)=\mathbb{1}_{G=1} / \mathbb{P}(G=1)`, respectively.
 
 Surrogacy Model
 ----------------
 
-**Surrogacy model** Define the regression and the conditional distribution
+Define the regression and the conditional distribution
 
 .. math::
    \begin{aligned}
@@ -22,62 +22,25 @@ Surrogacy Model
    \mathbb{P}(m \mid d, x, g) & = \mathbb{P}(M=m \mid D=d, X=x, G=g)
    \end{aligned}
 
-Then the long-term counterfactual is
-
-.. math::
-   \operatorname{LONG}(d) = \mathbb{E}\left\{\int \gamma_{0}(m, X, 1) \mathrm{d} \mathbb{P}(m \mid d, X, 0)\right\}
-
-In summary, :math:`W=(D, M, X, G)`, :math:`W_{1}=(D, X, G)`, and :math:`W_{2}=M`. Moreover,
-
-.. math::
-   m\left(W_{1}, w_{2}, \gamma_{0}\right) = \gamma_{0}(m, X, 1), \quad \mathbb{Q}\left(w_{2} \mid W_{1}\right) = \mathbb{P}(m \mid d, X, 0)
-
-
-.. math::
-   \begin{aligned}
-   \gamma_{0}(m, x, g) & = \mathbb{E}[Y \mid M=m, X=x, G=g] \\
-   \mathbb{P}(m \mid d, x, g) & = \mathbb{P}(M=m \mid D=d, X=x, G=g)
-   \end{aligned}
-
-and
-
-.. math::
-   m\left(W_{1}, w_{2}, \gamma_{0}\right) = \gamma_{0}(m, X, 1), \quad \mathbb{Q}\left(w_{2} \mid W_{1}\right) = \mathbb{P}(m \mid d, X, 0)
-
-Take
-
+the four nuisances associated to the model are
 .. math::
    \begin{aligned}
    \nu_{0}(W) & = \int \gamma_{0}(m, X, 1) \mathrm{d} \mathbb{P}(m \mid d, X, 0) \\
    \delta_{0}(W) & = \gamma_{0}(M, X, 1) \\
-   \alpha_{0}(W) & = \frac{\mathds{1}_{G=1}}{\mathbb{P}(G=1 \mid M, X)} \frac{\mathbb{P}(d \mid M, X, G=0) \mathbb{P}(G=0 \mid M, X)}{\mathbb{P}(d \mid X, G=0) \mathbb{P}(G=0 \mid X)} \\
-   \eta_{0}(W) & = \frac{\mathds{1}_{G=0} \mathds{1}_{D=d}}{\mathbb{P}(d \mid X, G=0) \mathbb{P}(G=0 \mid X)}
+   \alpha_{0}(W) & = \frac{\mathbb{1}_{G=1}}{\mathbb{P}(G=1 \mid M, X)} \frac{\mathbb{P}(d \mid M, X, G=0) \mathbb{P}(G=0 \mid M, X)}{\mathbb{P}(d \mid X, G=0) \mathbb{P}(G=0 \mid X)} \\
+   \eta_{0}(W) & = \frac{\mathbb{1}_{G=0} \mathbb{1}_{D=d}}{\mathbb{P}(d \mid X, G=0) \mathbb{P}(G=0 \mid X)}
    \end{aligned}
 
-Denote the treatment propensity scores
+and the long-term counterfactual is
 
 .. math::
-   \pi_{0}(d \mid X, G=0) = \mathbb{P}(D=d \mid X, G=0), \quad \rho_{0}(d \mid M, X, G=0) = \mathbb{P}(D=d \mid M, X, G=0)
+   \operatorname{LONG}(d) = \mathbb{E}\left\{\int \gamma_{0}(m, X, 1) \mathrm{d} \mathbb{P}(m \mid d, X, 0)\right\}
 
-and the selection propensity scores
-
-.. math::
-   \pi_{0}^{\prime}(g \mid X) = \mathbb{P}(G=g \mid X), \quad \rho_{0}^{\prime}(g \mid M, X) = \mathbb{P}(G=g \mid M, X)
 
 Latent Unconfounded Model
 -------------------------
 
-**Latent unconfounded model** When we observe :math:`D` in the observational sample, the regression becomes
-
-.. math::
-   \gamma_{0}(m, x, g, d)  = \mathbb{E}[Y \mid M=m, X=x, G=g, D=d]
-
-and the long-term counterfactual becomes
-
-.. math::
-   \operatorname{LONG}(d) = \mathbb{E}\left\{\int \gamma_{0}(m, X, 1, d) \mathrm{d} \mathbb{P}(m \mid d, X, 0)\right\}
-
-Under this model we have that
+When we observe :math:`D` in the observational sample, the regression becomes
 
 .. math::
    \begin{aligned}
@@ -85,27 +48,18 @@ Under this model we have that
    \mathbb{P}(m \mid d, x, g) & = \mathbb{P}(M=m \mid D=d, X=x, G=g)
    \end{aligned}
 
-and
-
-.. math::
-   m\left(W_{1}, w_{2}, \gamma_{0}\right) = \gamma_{0}(m, X, 1, d), \quad \mathbb{Q}\left(w_{2} \mid W_{1}\right) = \mathbb{P}(m \mid d, X, 0)
-
-Take
+and the nuisances under this model are given by
 
 .. math::
    \begin{aligned}
    \nu_{0}(W) & = \int \gamma_{0}(m, X, 1, d) \mathrm{d} \mathbb{P}(m \mid d, X, 0) \\
    \delta_{0}(W) & = \gamma_{0}(M, X, 1, d) \\
-   \alpha_{0}(W) & = \frac{\mathds{1}_{G=1}\mathds{1}_{D=d}}{\mathbb{P}(G=1 \mid M, X, D=d)} \frac{\mathbb{P}(G=0 \mid M, X, D=d)}{\mathbb{P}(D=d \mid X, G=0) \mathbb{P}(G=0 \mid X)} \\
-   \eta_{0}(W) & = \frac{\mathds{1}_{G=0} \mathds{1}_{D=d}}{\mathbb{P}(D=d \mid X, G=0) \mathbb{P}(G=0 \mid X)}
+   \alpha_{0}(W) & = \frac{\mathbb{1}_{G=1}\mathbb{1}_{D=d}}{\mathbb{P}(G=1 \mid M, X, D=d)} \frac{\mathbb{P}(G=0 \mid M, X, D=d)}{\mathbb{P}(D=d \mid X, G=0) \mathbb{P}(G=0 \mid X)} \\
+   \eta_{0}(W) & = \frac{\mathbb{1}_{G=0} \mathbb{1}_{D=d}}{\mathbb{P}(D=d \mid X, G=0) \mathbb{P}(G=0 \mid X)}
    \end{aligned}
 
-Denote the treatment propensity score
+The long-term counterfactual is
 
 .. math::
-   \pi_{0}(d \mid X, G=g) = \mathbb{P}(D=d \mid X, G=g)
+   \operatorname{LONG}(d) = \mathbb{E}\left\{\int \gamma_{0}(m, X, 1, d) \mathrm{d} \mathbb{P}(m \mid d, X, 0)\right\}
 
-and the selection propensity scores
-
-.. math::
-   \pi_{0}^{\prime}(g \mid X) = \mathbb{P}(G=g \mid X), \quad \rho^{\prime}_{0}(g \mid M, X, D=d) = \mathbb{P}(G=g \mid M, X, D=d)
