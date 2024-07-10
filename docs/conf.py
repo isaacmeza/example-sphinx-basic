@@ -10,6 +10,7 @@ import os
 import sys
 sys.path.insert(0, os.path.abspath('..'))  # Include the project root directory
 sys.path.insert(0, os.path.abspath('../semiparametrics'))  # Include the semiparametrics directory
+sys.path.insert(0, os.path.abspath('../longitudinal_causal'))
 
 # Add the mliv directory and its subdirectories to sys.path
 sys.path.insert(0, os.path.abspath('../mliv'))  
