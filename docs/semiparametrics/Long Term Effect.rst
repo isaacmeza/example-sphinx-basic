@@ -64,3 +64,9 @@ The long-term counterfactual is
 .. math::
    \operatorname{LONG}(d) = \mathbb{E}\left\{\int \gamma_{0}(m, X, 1, d) \mathrm{d} \mathbb{P}(m \mid d, X, 0)\right\}
 
+.. autosummary::
+   :toctree: _autosummary
+   :template: class.rst
+
+   dml_longterm.DML_longterm
+   dml_joint_longterm.DML_joint_longterm
