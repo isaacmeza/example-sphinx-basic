@@ -5,9 +5,9 @@ The estimand can be either for a model with a surrogacy assumption (Athey et al.
 The semiparametric efficiency is derived in Chen and Ritzwoller (2023. [Semiparametric estimation of long-term treatment effects](https://doi.org/10.1016/j.jeconom.2023.105545)).
 
 Classes:
-    DML_longterm: Main class for performing DML for long-term causal analysis with joint model fitting.
+    DML_joint_longterm: Main class for performing DML for long-term causal analysis with joint model fitting.
 
-DML_longterm Methods:
+DML_joint_longterm Methods:
     __init__: Initialize the DML_longterm instance with data and model configurations.
     
     _calculate_confidence_interval: Calculate confidence intervals for the estimates.
@@ -114,7 +114,7 @@ def _fun_threshold_alpha(alpha, g):
     return result
 
 
-class DML_longterm:
+class DML_joint_longterm:
     """
     Debiased Machine Learning for long-term causal analysis (DML-longterm) class with joint model fitting.
 
