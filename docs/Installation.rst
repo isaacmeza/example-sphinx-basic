@@ -20,7 +20,4 @@ Notebook Examples
 
    notebooks/longitudinal_notebook_agmm
   
-.. toctree::
-   :maxdepth: 2
 
-   semiparametrics/NPIV
