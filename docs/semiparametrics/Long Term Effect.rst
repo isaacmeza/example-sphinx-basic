@@ -1,15 +1,15 @@
 Long-term Effect Analysis
 ==========================
 
-Let $X \in \mathbb{R}^{p}$ be baseline covariates. Let $D \in \{0, 1\}$ indicate treatment assignment. Let $M \in \mathbb{R}$ be an intermediate/short-term outcome and $Y \in \mathbb{R}$ be a long-term outcome. An analyst may wish to measure the effect of $D$ on $Y$ (a long-term outcome), yet the experimental sample only includes $M$ (a short-term outcome).
+Let :math:`X \in \mathbb{R}^{p}` be baseline covariates. Let :math:`D \in \{0, 1\}` indicate treatment assignment. Let :math:`M \in \mathbb{R}` be an intermediate/short-term outcome and :math:`Y \in \mathbb{R}` be a long-term outcome. An analyst may wish to measure the effect of :math:`D` on :math:`Y` (a long-term outcome), yet the experimental sample only includes :math:`M` (a short-term outcome).
 
-If the analyst has access to an additional observational sample that includes the long-term outcome, then long-term causal inference is still possible. Specifically, assume the analyst has access to (i) an experimental sample, indicated by $G=0$, where $(D, M, X)$ are observed; and (ii) an observational sample, indicated by $G=1$, where $(M, X, Y)$ are observed, and $D$ is either observed or not. Depending on whether $D$ is also revealed in the observational sample will give rise to different assumptions that identify the long-term treatment effect. Specifically, the key identifying assumption when we do not observe $D$ is that the short-term outcome is a statistical surrogate for the long-term outcome, while the identifying assumption for the case when we observe $D$ is that unobserved confounding is mediated through the short-term outcome in the observational sample. Following [Athey et al., 2020b](https://arxiv.org/abs/1603.09326), we refer to these models as \emph{Surrogacy model} or \emph{Latent unconfounded model}, respectively ([Athey et al., 2020a](https://arxiv.org/abs/2006.09676)).
+If the analyst has access to an additional observational sample that includes the long-term outcome, then long-term causal inference is still possible. Specifically, assume the analyst has access to (i) an experimental sample, indicated by :math:`G=0`, where :math:`(D, M, X)` are observed; and (ii) an observational sample, indicated by :math:`G=1`, where :math:`(M, X, Y)` are observed, and :math:`D` is either observed or not. Depending on whether :math:`D` is also revealed in the observational sample will give rise to different assumptions that identify the long-term treatment effect. Specifically, the key identifying assumption when we do not observe :math:`D` is that the short-term outcome is a statistical surrogate for the long-term outcome, while the identifying assumption for the case when we observe :math:`D` is that unobserved confounding is mediated through the short-term outcome in the observational sample. Following `Athey et al., 2020b <https://arxiv.org/abs/1603.09326>`_, we refer to these models as *Surrogacy model* or *Latent unconfounded model*, respectively (`Athey et al., 2020a <https://arxiv.org/abs/2006.09676>`_).
 
 .. admonition:: Long-term effect
 
-   Formally, define the long-term counterfactual $\mathbb{E}\left[Y^{(d)}\right]$ as the counterfactual mean outcome for the full population in the thought experiment in which everyone is assigned treatment value $D=d$.
+   Formally, define the long-term counterfactual :math:`\mathbb{E}\left[Y^{(d)}\right]` as the counterfactual mean outcome for the full population in the thought experiment in which everyone is assigned treatment value :math:`D=d`.
 
-The long-term effect defined for the experimental or observational subpopulation is similar, introducing the fixed local weighting $\ell(G)=\mathds{1}_{G=0} / \mathbb{P}(G=0)$ or $\ell(G)=\mathds{1}_{G=1} / \mathbb{P}(G=1)$, respectively.
+The long-term effect defined for the experimental or observational subpopulation is similar, introducing the fixed local weighting :math:`\ell(G)=\mathds{1}_{G=0} / \mathbb{P}(G=0)` or :math:`\ell(G)=\mathds{1}_{G=1} / \mathbb{P}(G=1)`, respectively.
 
 Surrogacy Model
 ----------------
@@ -27,7 +27,7 @@ Then the long-term counterfactual is
 .. math::
    \operatorname{LONG}(d) = \mathbb{E}\left\{\int \gamma_{0}(m, X, 1) \mathrm{d} \mathbb{P}(m \mid d, X, 0)\right\}
 
-In summary, $W=(D, M, X, G)$, $W_{1}=(D, X, G)$, and $W_{2}=M$. Moreover,
+In summary, :math:`W=(D, M, X, G)`, :math:`W_{1}=(D, X, G)`, and :math:`W_{2}=M`. Moreover,
 
 .. math::
    m\left(W_{1}, w_{2}, \gamma_{0}\right) = \gamma_{0}(m, X, 1), \quad \mathbb{Q}\left(w_{2} \mid W_{1}\right) = \mathbb{P}(m \mid d, X, 0)
@@ -67,7 +67,7 @@ and the selection propensity scores
 Latent Unconfounded Model
 -------------------------
 
-**Latent unconfounded model** When we observe $D$ in the observational sample, the regression becomes
+**Latent unconfounded model** When we observe :math:`D` in the observational sample, the regression becomes
 
 .. math::
    \gamma_{0}(m, x, g, d)  = \mathbb{E}[Y \mid M=m, X=x, G=g, D=d]
@@ -76,9 +76,6 @@ and the long-term counterfactual becomes
 
 .. math::
    \operatorname{LONG}(d) = \mathbb{E}\left\{\int \gamma_{0}(m, X, 1, d) \mathrm{d} \mathbb{P}(m \mid d, X, 0)\right\}
-
-
-
 
 Under this model we have that
 
@@ -112,4 +109,3 @@ and the selection propensity scores
 
 .. math::
    \pi_{0}^{\prime}(g \mid X) = \mathbb{P}(G=g \mid X), \quad \rho^{\prime}_{0}(g \mid M, X, D=d) = \mathbb{P}(G=g \mid M, X, D=d)
-
