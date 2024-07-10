@@ -4,7 +4,8 @@ Mediation Analysis
 This module performs Debiased Machine Learning for mediation analysis, using joint estimation for longitudinal nonparametric parameters (in the Nested NPIV framework). It provides tools for estimating causal effects with mediation using a combination of machine learning models and instrumental variables techniques.
 
 
-**Different Estimands**
+Different Estimands
+-------------------
 
 Our DML framework allows for various types of estimands. Here, we describe each estimand in detail:
 
