@@ -1,3 +1,6 @@
+Semiparametrics Notebook AGMM
+=============================
+
 .. code:: ipython3
 
     import os
