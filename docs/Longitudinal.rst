@@ -1,46 +1,35 @@
 Estimators for Sequential and Simultaneous Nested NPIV
 ======================================================
 
-In this section, we analyze the closed-form or approximate solutions under different function classes for the following estimators:
+In this document, we analyze the closed-form or approximate solutions under different function classes for the following estimators:
 
-Sequential Nested NPIV
-----------------------
+**Sequential Nested NPIV:**
 
-.. estimator:: Sequential nested NPIV
-   :name: estimator:npiv_general
+Given observations :math:`(A_i, B_i, C_i)` in \tr, an initial estimator :math:`\hat{g}` which may be estimated in \tr, and hyperparameter values :math:`(\lambda, \mu)`, estimate 
 
-   Given observations :math:`(A_i, B_i, C_i)` in \tr, an initial estimator :math:`\hat{g}` which may be estimated in \tr, and hyperparameter values :math:`(\lambda, \mu)`, estimate 
+.. math::
+   \hat{h} = \arg\min_{h \in \mathcal{H}} \left[ \sup_{f \in \mathcal{F}} \left\{ 2 \cdot \textsc{loss}(f, \hat{g}, h) - \textsc{penalty}(f, \lambda) \right\} + \textsc{penalty}(h, \mu) \right]
 
-   .. math::
-      \hat{h} = \arg\min_{h \in \mathcal{H}} \left[ \sup_{f \in \mathcal{F}} \left\{ 2 \cdot \textsc{loss}(f, \hat{g}, h) - \textsc{penalty}(f, \lambda) \right\} + \textsc{penalty}(h, \mu) \right]
+where :math:`\textsc{penalty}(f, \lambda) = \mathbb{E}_m\{f(C)^2\} + \lambda \cdot \|f\|^2_{\mathcal{F}}` and :math:`\textsc{penalty}(h, \mu) = \mu \cdot \|h\|^2_{\mathcal{H}}`.
 
-   where :math:`\textsc{penalty}(f, \lambda) = \mathbb{E}_m\{f(C)^2\} + \lambda \cdot \|f\|^2_{\mathcal{F}}` and :math:`\textsc{penalty}(h, \mu) = \mu \cdot \|h\|^2_{\mathcal{H}}`.
+**Sequential Nested NPIV: Ridge:**
 
-Sequential Nested NPIV: Ridge
------------------------------
+Given observations :math:`(A_i, B_i, C_i)` in \tr, an initial estimator :math:`\hat{g}` which may be estimated in \tr, and a hyperparameter :math:`\mu`, estimate 
 
-.. estimator:: Sequential nested NPIV: Ridge
-   :name: estimator:npiv_ridge
+.. math::
+   \hat{h} = \arg\min_{h \in \mathcal{H}} \left[ \sup_{f \in \mathcal{F}} \left\{ 2 \cdot \textsc{loss}(f, \hat{g}, h) - \textsc{penalty}(f) \right\} + \textsc{penalty}(h, \mu) \right]
 
-   Given observations :math:`(A_i, B_i, C_i)` in \tr, an initial estimator :math:`\hat{g}` which may be estimated in \tr, and a hyperparameter :math:`\mu`, estimate 
+where :math:`\textsc{penalty}(f) = \mathbb{E}_m\{f(C)^2\}` and :math:`\textsc{penalty}(h, \mu) = \mu \cdot \mathbb{E}_m\{h(B)^2\}`.
 
-   .. math::
-      \hat{h} = \arg\min_{h \in \mathcal{H}} \left[ \sup_{f \in \mathcal{F}} \left\{ 2 \cdot \textsc{loss}(f, \hat{g}, h) - \textsc{penalty}(f) \right\} + \textsc{penalty}(h, \mu) \right]
+**Simultaneous Nested NPIV:**
 
-   where :math:`\textsc{penalty}(f) = \mathbb{E}_m\{f(C)^2\}` and :math:`\textsc{penalty}(h, \mu) = \mu \cdot \mathbb{E}_m\{h(B)^2\}`.
+Given observations :math:`(A_i, B_i, C_i, C_i')` in \tr\, and hyperparameter values :math:`(\mu', \mu)`, estimate 
 
-Simultaneous Nested NPIV
-------------------------
+.. math::
+   (\hat{g}, \hat{h}) = \arg\min_{g \in \mathcal{G}, h \in \mathcal{H}} \left[ \sup_{f' \in \mathcal{F}} \left\{ 2 \cdot \textsc{loss}(f', Y, g) - \textsc{penalty}(f') \right\} + \textsc{penalty}(g, \mu') + \sup_{f \in \mathcal{F}} \left\{ 2 \cdot \textsc{loss}(f, g, h) - \textsc{penalty}(f) \right\} + \textsc{penalty}(h, \mu) \right]
 
-.. estimator:: Simultaneous nested NPIV
-   :name: estimator:npiv_joint
+using analogous :math:`\textsc{penalty}` notation to the Sequential estimators.
 
-   Given observations :math:`(A_i, B_i, C_i, C_i')` in \tr\, and hyperparameter values :math:`(\mu', \mu)`, estimate 
-
-   .. math::
-      (\hat{g}, \hat{h}) = \arg\min_{g \in \mathcal{G}, h \in \mathcal{H}} \left[ \sup_{f' \in \mathcal{F}} \left\{ 2 \cdot \textsc{loss}(f', Y, g) - \textsc{penalty}(f') \right\} + \textsc{penalty}(g, \mu') + \sup_{f \in \mathcal{F}} \left\{ 2 \cdot \textsc{loss}(f, g, h) - \textsc{penalty}(f) \right\} + \textsc{penalty}(h, \mu) \right]
-
-   using analogous :math:`\textsc{penalty}` notation to Estimator~:ref:`estimator:npiv_ridge`.
 
 .. toctree::
    :maxdepth: 2
