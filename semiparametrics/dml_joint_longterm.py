@@ -1,32 +1,7 @@
 """
 Debiased Machine Learning for long-term causal analysis with a joint estimator (DML-joint-longterm) class.
-
 The estimand can be either for a model with a surrogacy assumption (Athey et al., 2020b. [Estimating treatment effects using multiple surrogates: the role of the surrogate score and the surrogate index](https://arxiv.org/abs/1603.09326)) or with a latent unconfounded model (Athey et al., 2020a. [Combining experimental and observational data to estimate treatment effects on long-term outcomes](https://arxiv.org/abs/2006.09676)). 
 The semiparametric efficiency is derived in Chen and Ritzwoller (2023. [Semiparametric estimation of long-term treatment effects](https://doi.org/10.1016/j.jeconom.2023.105545)).
-
-Classes:
-    DML_joint_longterm: Main class for performing DML for long-term causal analysis with joint model fitting.
-
-DML_joint_longterm Methods:
-    __init__: Initialize the DML_longterm instance with data and model configurations.
-    
-    _calculate_confidence_interval: Calculate confidence intervals for the estimates.
-    
-    _localization: Perform localization using kernel density estimation.
-    
-    _nnpivfit_outcome_latent: Fit the outcome model using nonparametric instrumental variables for the latent unconfounded model.
-    
-    _nnpivfit_outcome_surrogacy: Fit the outcome model using nonparametric instrumental variables for the surrogacy model.
-    
-    _propensity_score_latent: Estimate the propensity score for the latent unconfounded model.
-    
-    _propensity_score_surrogacy: Estimate the propensity score for the surrogacy model.
-    
-    _process_fold: Process a single fold for cross-validation.
-    
-    _split_and_estimate: Split the data and estimate the model for each fold.
-    
-    dml: Perform Debiased Machine Learning for Nonparametric Instrumental Variables.
 """
 
 import numpy as np
