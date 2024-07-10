@@ -1,3 +1,8 @@
+.. _longitudinal_notebook_agmm:
+
+Longitudinal Notebook AGMM
+==========================
+
 .. code:: ipython3
 
     import os
@@ -73,10 +78,6 @@
     
         return y_pred.reshape(B1_test.shape[:1] + Y.shape[1:]), m1.predict(A1_test.to(device)).reshape(A1_test.shape[:1] + Y.shape[1:])
     
-    
-    
-    
-
 .. code:: ipython3
 
     def _get_learner(n_t):
@@ -87,8 +88,6 @@
     def _get_adversary(n_z):
         return nn.Sequential(nn.Dropout(p=p), nn.Linear(n_z, n_hidden), nn.LeakyReLU(),
                              nn.Dropout(p=p), nn.Linear(n_hidden, 1))
-    
-    
 
 .. code:: ipython3
 
@@ -97,9 +96,7 @@
 
 .. code:: ipython3
 
-    
     agmm_pred, agmm_pred_g = nested_npivfit(A, B, C, D, Y, B_test, A_test, model1=agmm_1, model2=agmm_2)
-     
 
 .. code:: ipython3
 
@@ -142,18 +139,12 @@
     plt.plot(B_test[:, 0], agmm2_pred, label='AGMM2')
     plt.plot(B_test[:, 0], agmm2l2_pred, label='AGMM2L2')
     plt.legend()
-    
-
-
-
 
 .. parsed-literal::
 
     <matplotlib.legend.Legend at 0x272deb991f0>
 
-
-
-
+.. image:: longitudinal_notebook_agmm_10_1.png
 
 .. code:: ipython3
 
@@ -163,14 +154,8 @@
     plt.plot(A_test[:, 0], agmm2l2_pred_g, label='AGMM2L2')
     plt.legend()
 
-
-
-
 .. parsed-literal::
 
     <matplotlib.legend.Legend at 0x272df73a4c0>
 
-
-
-
-
+.. image:: longitudinal_notebook_agmm_11_1.png
