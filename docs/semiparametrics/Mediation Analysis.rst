@@ -39,6 +39,12 @@ Our DML framework allows for various types of estimands. Here, we describe each 
   .. math::
      E[Y(1, M(0))]
 
+.. autosummary::
+   :toctree: _autosummary
+   :template: class.rst
+
+   dml_mediation.DML_mediation
+   dml_joint_mediation.DML_joint_mediation
 
 **References**
 
