@@ -10,4 +10,5 @@ The package supports Debiased Machine Learning (DML) for the semiparametric mode
    dml_npiv.DML_npiv
 
 **References**
+
 - V Chernozhukov, W K Newey, R Singh (2023). `"A simple and general debiased machine learning theorem with finite-sample guarantees." <https://doi.org/10.1093/biomet/asac033>`_ 
