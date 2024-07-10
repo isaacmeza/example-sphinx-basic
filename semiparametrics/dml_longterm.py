@@ -1,7 +1,7 @@
 """
 This module implements the Debiased Machine Learning for long-term causal analysis (DML-longterm) class.
-The estimand can be either for a model with a surrogacy assumption (Athey, S., Chetty, R., Imbens, G., Kang, H., 2020b. Estimating treatment effects using multiple surrogates: the role of the surrogate score and the surrogate index. arXiv preprint arXiv:1603.09326) or with a latent unconfounded model (Athey, S.; Chetty, R.; Imbens, G., Combining experimental and observational data to estimate treatment effects on long-term outcomes. arXiv preprint arXiv:2006.09676 (2020)). 
-The semiparametric efficiency is derived in Jiafeng Chen, David M. Ritzwoller, Semiparametric estimation of long-term treatment effects, Journal of Econometrics, Volume 237, Issue 2, Part A, 2023.
+The estimand can be either for a model with a surrogacy assumption (Athey et al., 2020b. [Estimating treatment effects using multiple surrogates: the role of the surrogate score and the surrogate index](https://arxiv.org/abs/1603.09326)) or with a latent unconfounded model (Athey et al., 2020a. [Combining experimental and observational data to estimate treatment effects on long-term outcomes](https://arxiv.org/abs/2006.09676)). 
+The semiparametric efficiency is derived in Chen and Ritzwoller (2023. [Semiparametric estimation of long-term treatment effects](https://doi.org/10.1016/j.jeconom.2023.105545)).
 """
 
 import numpy as np
