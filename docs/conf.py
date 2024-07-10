@@ -28,6 +28,7 @@ author = "Isaac Meza and Rahul Singh"
 # -- General configuration
 
 extensions = [
+    "nbsphinx",
     "sphinx.ext.duration",
     "sphinx.ext.mathjax",
     "sphinx.ext.doctest",
