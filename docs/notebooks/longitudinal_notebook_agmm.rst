@@ -154,8 +154,6 @@
 
 
 
-.. image:: longitudinal_notebook_agmm_10_1.png
-
 
 .. code:: ipython3
 
@@ -174,7 +172,5 @@
 
 
 
-
-.. image:: longitudinal_notebook_agmm_11_1.png
 
 
