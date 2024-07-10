@@ -513,6 +513,7 @@ class DML_joint_mediated:
         model_1 = copy.deepcopy(self.model1)
         model_q1 = copy.deepcopy(self.modelq1)
 
+        # Outcome model
         if self.estimator == 'MR' or self.estimator == 'OR' or self.estimator == 'hybrid':
             A_train = np.column_stack((train_M, train_X, train_W))
             E_train = np.column_stack((train_M, train_X, train_Z))
@@ -546,6 +547,7 @@ class DML_joint_mediated:
                 gamma_0_hat = gamma_0_hat.reshape(-1, 1)
                 gamma_1_hat = gamma_1_hat.reshape(-1, 1)
 
+        # Action model
         if self.estimator == 'MR' or self.estimator == 'IPW' or self.estimator == 'hybrid':
             A_train = np.column_stack((train_X, train_Z))
             E_train = np.column_stack((train_X, train_W))
@@ -590,7 +592,6 @@ class DML_joint_mediated:
                 q_1_hat, q_0_hat = model_q1.predict(B_test, A_test)
                 q_0_hat = q_0_hat.reshape(-1, 1)
                 q_1_hat = q_1_hat.reshape(-1, 1)
-
 
         # Calculate the score function depending on the estimator
         if self.estimator == 'MR':
