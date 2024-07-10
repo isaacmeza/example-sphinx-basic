@@ -42,6 +42,7 @@ Denote by :math:`I^c_\ell` the complement of :math:`I_\ell`.
 .. toctree::
    :maxdepth: 2
 
+   semiparametrics/NPIV
    semiparametrics/Mediation Analysis
    semiparametrics/Long Term Effect
 
