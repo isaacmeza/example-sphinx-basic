@@ -5,7 +5,7 @@ This module performs Debiased Machine Learning for mediation analysis, using joi
 
 
 Different Estimands
-===================
+-------------------
 
 Our DML framework allows for various types of estimands. Here, we describe each estimand in detail:
 
@@ -40,8 +40,12 @@ Our DML framework allows for various types of estimands. Here, we describe each 
      E[Y(1, M(0))]
 
 References
-==========
+----------
 
-- [Tchetgen Tchetgen, E. J., Ying, A., Cui, Y., 2020](https://doi.org/10.48550/arXiv.2009.10982). Nonparametric identification of the mediation functional.
-- [Cui, Y., VanderWeele, T. J., Tchetgen Tchetgen, E. J., 2020](https://doi.org/10.48550/arXiv.2011.08411). Proximal causal learning for mediation analysis.
-- [Oliver Dukes, Ilya Shpitser, Eric J Tchetgen Tchetgen, 2023](https://doi.org/10.1093/biomet/asad015). Proximal mediation analysis, Biometrika, Volume 110, Issue 4.
+- Tchetgen Tchetgen, E. J., Ying, A., Cui, Y., 2020. Nonparametric identification of the mediation functional. https://doi.org/10.48550/arXiv.2009.10982_
+- Cui, Y., VanderWeele, T. J., Tchetgen Tchetgen, E. J., 2020. Proximal causal learning for mediation analysis. https://doi.org/10.48550/arXiv.2011.08411_
+- Oliver Dukes, Ilya Shpitser, Eric J Tchetgen Tchetgen, 2023. Proximal mediation analysis, Biometrika, Volume 110, Issue 4. https://doi.org/10.1093/biomet/asad015_
+
+.. _Tchetgen Tchetgen et al., 2020: https://doi.org/10.48550/arXiv.2009.10982
+.. _Cui et al., 2020: https://doi.org/10.48550/arXiv.2011.08411
+.. _Dukes et al., 2023: https://doi.org/10.1093/biomet/asad015
