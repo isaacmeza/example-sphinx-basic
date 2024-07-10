@@ -14,3 +14,9 @@ To use NNPIV, first install it using setup:
 
 Notebook Examples
 -----------------
+
+.. toctree::
+   :maxdepth: 2
+
+   notebooks/longitudinal_notebook_agmm
+  
