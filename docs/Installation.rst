@@ -19,5 +19,6 @@ Notebook Examples
    :maxdepth: 2
 
    notebooks/longitudinal_notebook_agmm.rst
+   notebooks/semiparametrics_notebook_agmm.rst
   
 
