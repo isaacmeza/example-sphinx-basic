@@ -27,7 +27,7 @@ Given observations :math:`(A_i, B_i, C_i, C_i')` in \tr\, and hyperparameter val
 
 .. math::
    (\hat{g}, \hat{h}) = \arg\min_{g \in \mathcal{G}, h \in \mathcal{H}} \left[ \sup_{f' \in \mathcal{F}} \left( 2 \cdot \text{loss}(f', Y, g) - \text{penalty}(f') \right) + \text{penalty}(g, \mu') \right. \\
-\left. + \sup_{f \in \mathcal{F}} \left( 2 \cdot \text{loss}(f, g, h) - \text{penalty}(f) \right) + \text{penalty}(h, \mu) \right]
+    \left. + \sup_{f \in \mathcal{F}} \left( 2 \cdot \text{loss}(f, g, h) - \text{penalty}(f) \right) + \text{penalty}(h, \mu) \right]
 
 using analogous :math:`\text{penalty}` notation to the Sequential estimators.
 
