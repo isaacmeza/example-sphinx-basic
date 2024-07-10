@@ -23,6 +23,7 @@ Define the regression and the conditional distribution
    \end{aligned}
 
 the four nuisances associated to the model are
+
 .. math::
    \begin{aligned}
    \nu_{0}(W) & = \int \gamma_{0}(m, X, 1) \mathrm{d} \mathbb{P}(m \mid d, X, 0) \\
