@@ -38,5 +38,13 @@ Sequential longterm
    :show-inheritance:
    :private-members:
 
+Joint longterm
+---------------
+.. automodule:: dml_joint_longterm
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   :private-members:
+
 
 
