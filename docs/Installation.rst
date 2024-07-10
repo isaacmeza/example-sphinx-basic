@@ -18,4 +18,4 @@ Notebook Examples
 .. toctree::
    :maxdepth: 1
 
-.. nbinclude:: longitudinal_notebook_agmm.ipynb
+.. nbinclude:: longitudinal_causal/longitudinal_notebook_agmm.ipynb
