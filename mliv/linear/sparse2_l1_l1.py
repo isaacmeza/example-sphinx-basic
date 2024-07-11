@@ -151,7 +151,7 @@ class sparse2_l1vsl1(_SparseLinear2AdversarialGMM):
     """
 
     def _check_duality_gap(self, A, B, C, D, Y, W):
-        """
+        r"""
         Calculate the duality gap to certify convergence of the algorithm.
 
         The ensembles \(\bar{\alpha}, \bar{\theta_1}\) can be thought of as primal and dual solutions, and the duality gap can be used as a certificate for convergence of the algorithm.
