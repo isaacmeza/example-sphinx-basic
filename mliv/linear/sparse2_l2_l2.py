@@ -119,11 +119,7 @@ class sparse2_l2vsl2(_SparseLinear2AdversarialGMM):
         """
         Calculate the duality gap to certify convergence of the algorithm.
 
-        The ensembles $\bar{\alpha}$ and $\bar{\theta_1}$ can be thought of as primal and dual solutions, respectively. The duality gap is used as a certificate for convergence of the algorithm.
-
-        \begin{align*}
-        \text{Duality Gap} &:= \max_{\|\theta_1\|_1 \leq 1 } L(\bar{\alpha}, \theta_1) - \min_{\|\alpha\|_1 \leq V_1} L(\alpha, \bar{\theta_1})
-        \end{align*}
+        The ensembles can be thought of as primal and dual solutions, and the duality gap can be used as a certificate for convergence of the algorithm.
 
         Parameters:
             A (array-like): Covariates for the first stage.
@@ -354,11 +350,7 @@ class sparse2_ridge_l2vsl2(_SparseLinear2AdversarialGMM):
         """
         Calculate the duality gap to certify convergence of the algorithm.
 
-        The ensembles $\bar{\alpha}$ and $\bar{\theta_1}$ can be thought of as primal and dual solutions, respectively. The duality gap is used as a certificate for convergence of the algorithm.
-
-        \begin{align*}
-        \text{Duality Gap} &:= \max_{\|\theta_1\|_1 \leq 1 } L(\bar{\alpha}, \theta_1) - \min_{\|\alpha\|_1 \leq V_1} L(\alpha, \bar{\theta_1})
-        \end{align*}
+        The ensembles can be thought of as primal and dual solutions, and the duality gap can be used as a certificate for convergence of the algorithm.
 
         Parameters:
             A (array-like): Covariates for the first stage.
