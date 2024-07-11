@@ -29,6 +29,8 @@ author = "Isaac Meza and Rahul Singh"
 # -- General configuration
 
 extensions = [
+    "sphinx_rtd_theme",
+    "sphinx_rtd_dark_mode",
     "nbsphinx",
     "sphinx.ext.duration",
     "sphinx.ext.mathjax",
