@@ -77,13 +77,7 @@ class sparse_l1vsl1(_SparseLinearAdversarialGMM):
         """
         Check the duality gap to monitor convergence.
 
-        The ensembles $\bar{\alpha}, \bar{\theta_1}$ can be thought of as primal and dual solutions,
-        and the duality gap can be used as a certificate for convergence of the algorithm.
-
-        Duality Gap:
-        \[
-        \text { Duality Gap } := \max _{\|\theta_1\|_1 \leq 1 } L(\bar{\alpha}, \theta_1) - \min _{\|\alpha\|_1 \leq V_1} L(\alpha, \bar{\theta_1})
-        \]
+        The ensembles can be thought of as primal and dual solutions, and the duality gap can be used as a certificate for convergence of the algorithm.
 
         Parameters:
             Z (array-like): Instrumental variables.
@@ -231,13 +225,7 @@ class sparse_ridge_l1vsl1(_SparseLinearAdversarialGMM):
         """
         Check the duality gap to monitor convergence.
 
-        The ensembles $\bar{\alpha}, \bar{\theta_1}$ can be thought of as primal and dual solutions,
-        and the duality gap can be used as a certificate for convergence of the algorithm.
-
-        Duality Gap:
-        \[
-        \text { Duality Gap } := \max _{\|\theta_1\|_1 \leq 1 } L(\bar{\alpha}, \theta_1) - \min _{\|\alpha\|_1 \leq V_1} L(\alpha, \bar{\theta_1})
-        \]
+        The ensembles can be thought of as primal and dual solutions, and the duality gap can be used as a certificate for convergence of the algorithm.
 
         Parameters:
             Z (array-like): Instrumental variables.
