@@ -100,6 +100,19 @@ class sparse_l2vsl2(_SparseLinearAdversarialGMM):
     """
 
     def _check_duality_gap(self, Z, X, Y):
+        """
+        Check the duality gap to monitor convergence.
+
+        The ensembles can be thought of as primal and dual solutions, and the duality gap can be used as a certificate for convergence of the algorithm.
+
+        Parameters:
+            Z (array-like): Instrumental variables.
+            X (array-like): Covariates.
+            Y (array-like): Outcomes.
+
+        Returns:
+            bool: True if the duality gap is less than the tolerance, otherwise False.
+        """
         self.max_response_loss_ = np.linalg.norm(
             np.mean(Z * (np.dot(X, self.coef_) - Y).reshape(-1, 1), axis=0), ord=2)\
             + self.lambda_theta * np.linalg.norm(self.coef_, ord=2)**2
@@ -230,6 +243,19 @@ class sparse_ridge_l2vsl2(_SparseLinearAdversarialGMM):
     """
 
     def _check_duality_gap(self, Z, X, Y):
+        """
+        Check the duality gap to monitor convergence.
+
+        The ensembles can be thought of as primal and dual solutions, and the duality gap can be used as a certificate for convergence of the algorithm.
+
+        Parameters:
+            Z (array-like): Instrumental variables.
+            X (array-like): Covariates.
+            Y (array-like): Outcomes.
+
+        Returns:
+            bool: True if the duality gap is less than the tolerance, otherwise False.
+        """
         self.max_response_loss_ = np.linalg.norm(
             np.mean(Z * (Y - np.dot(X, self.coef_)).reshape(-1, 1), axis=0), ord=2)\
             + self.lambda_theta * self.coef_.T @ self.xx @ self.coef_
