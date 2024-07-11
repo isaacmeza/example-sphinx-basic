@@ -23,7 +23,7 @@ for root, dirs, files in os.walk(mliv_dir):
 project = "Nested Nonparametric Instrumental Variable Regression"
 copyright = '2024, Meza, I. and Singh, R.'
 author = "Isaac Meza and Rahul Singh"
-
+release = '0.1.0'
 
 # -- General configuration ---------------------------------------------------
 # -- General configuration
