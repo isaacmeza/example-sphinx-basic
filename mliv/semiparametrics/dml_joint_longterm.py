@@ -15,7 +15,7 @@ import warnings
 from tqdm import tqdm  # Import tqdm
 import copy
 import torch
-from mliv.rkhs import ApproxRKHSIVCV
+from mliv.rkhs import RKHS2IVCV
 from joblib import Parallel, delayed
 from scipy.optimize import minimize_scalar
 
@@ -153,13 +153,11 @@ class DML_joint_longterm:
                  bw_loc='silverman',
                  estimator='MR',
                  longterm_model='surrogacy',
-                 model1=ApproxRKHSIVCV(kernel_approx='nystrom', n_components=100,
-                           kernel='rbf', gamma=.1, delta_scale='auto',
-                           delta_exp=.4, alpha_scales=np.geomspace(1, 10000, 10), cv=5), 
+                 model1=RKHS2IVCV(kernel='rbf', gamma=.1, delta_scale='auto', 
+                                  delta_exp=.4, alpha_scales=np.geomspace(1, 10000, 10), cv=5), 
                  nn_1=False,
-                 model2=ApproxRKHSIVCV(kernel_approx='nystrom', n_components=100,
-                           kernel='rbf', gamma=.1, delta_scale='auto',
-                           delta_exp=.4, alpha_scales=np.geomspace(1, 10000, 10), cv=5), 
+                 model2=RKHS2IVCV(kernel='rbf', gamma=.1, delta_scale='auto', 
+                                  delta_exp=.4, alpha_scales=np.geomspace(1, 10000, 10), cv=5), 
                  nn_2=False,
                  alpha=0.05,
                  n_folds=5,
