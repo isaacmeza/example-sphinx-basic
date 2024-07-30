@@ -213,7 +213,7 @@ To lighten notation, let :math:`K_C^{\dagger} K_C = P_C`.
     
     .. math::
     
-        \hat{\beta} = \left[ K_A \left\{ P_C + \left( P_{C'} + P_C + \mu' \right) K_A \left( K_B P_C K_A \right)^{\dagger} K_B \left( P_C + \mu \right) \right\} K_B \right]^{\dagger} K_A P_{C'} Y \\
+        \hat{\beta} = \left[ K_A \left\{ - P_C + \left( P_{C'} + P_C + \mu' \right) K_A \left( K_B P_C K_A \right)^{\dagger} K_B \left( P_C + \mu \right) \right\} K_B \right]^{\dagger} K_A P_{C'} Y \\
         \hat{\alpha} = \left( K_B P_C K_A \right)^{\dagger} K_B \left( P_C + \mu \right) K_B \hat{\beta}
 
 .. autosummary::
@@ -310,7 +310,7 @@ and solving for :math:`\hat{\beta}`,
 
 .. math::
 
-    \hat{\beta} = \left[ K_A \left\{ P_C + \left( P_{C'} + P_C + \mu' \right) K_A \left( K_B P_C K_A \right)^{\dagger} K_B \left( P_C + \mu \right) \right\} K_B \right]^{\dagger} K_A P_{C'} Y
+    \hat{\beta} = \left[ K_A \left\{ - P_C + \left( P_{C'} + P_C + \mu' \right) K_A \left( K_B P_C K_A \right)^{\dagger} K_B \left( P_C + \mu \right) \right\} K_B \right]^{\dagger} K_A P_{C'} Y
 
 Remark (Subsetted estimator)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -321,7 +321,7 @@ Remark (Subsetted estimator)
     
     .. math::
     
-        \hat{\beta} = \left[ K_A \left\{ \tilde{P}_C + \left( \tilde{P}_{C'} + \tilde{P}_C + \mu' \right) K_A \left( K_B \tilde{P}_C K_A \right)^{\dagger} K_B \left( \tilde{P}_C + \mu \right) \right\} K_B \right]^{\dagger} K_A \tilde{P}_{C'} Y \\
+        \hat{\beta} = \left[ K_A \left\{ - \tilde{P}_C + \left( \tilde{P}_{C'} + \tilde{P}_C + \mu' \right) K_A \left( K_B \tilde{P}_C K_A \right)^{\dagger} K_B \left( \tilde{P}_C + \mu \right) \right\} K_B \right]^{\dagger} K_A \tilde{P}_{C'} Y \\
         \hat{\alpha} = \left( K_B \tilde{P}_C K_A \right)^{\dagger} K_B \left( \tilde{P}_C + \mu \right) K_B \hat{\beta}
     
     where :math:`\tilde{P}_{C'} = \frac{n}{p} I_{[p]}^{\top} P_{C';[p,p]} I_{[p]}` and :math:`\tilde{P}_C = \frac{n}{q} I_{[q]}^{\top} P_{C;[q,q]} I_{[q]}`. Note that :math:`P_{C';[p,p]} = (K_{C';[p,p]})^- K_{C';[p,p]}` and :math:`K_{C';[p,p]} = I_{[p]} K_{C'} I_{[p]}^{\top}`.
@@ -490,7 +490,7 @@ We study the RKHS-norm regularized *joint* estimator:
     
     .. math::
     
-        \hat{\beta} &= \left[ K_A \left\{ P_C + \left(P_{C'} K_A + P_C K_A + \mu'\right) \left( K_B P_C K_A \right)^{\dagger} \left( K_B P_C + \mu  \right)\right\} K_B \right]^{\dagger} K_A P_{C'} Y \\
+        \hat{\beta} &= \left[ K_A \left\{ - P_C + \left(P_{C'} K_A + P_C K_A + \mu'\right) \left( K_B P_C K_A \right)^{\dagger} \left( K_B P_C + \mu  \right)\right\} K_B \right]^{\dagger} K_A P_{C'} Y \\
         \hat{\alpha} &= \left( K_B P_C K_A \right)^{\dagger} \left( K_B P_C + \mu \right) K_B \hat{\beta}
     
     and
@@ -517,7 +517,7 @@ Remark: Subsetted estimator
     
     .. math::
     
-        \hat{\beta} &= \left[ K_A \left\{ \tilde{P}_C + \left(\tilde{P}_{C'} K_A + \tilde{P}_C K_A + \mu'\right) \left( K_B \tilde{P}_C K_A \right)^{\dagger} \left( K_B \tilde{P}_C + \mu  \right)\right\} K_B \right]^{\dagger} K_A \tilde{P}_{C'} Y \\
+        \hat{\beta} &= \left[ K_A \left\{ - \tilde{P}_C + \left(\tilde{P}_{C'} K_A + \tilde{P}_C K_A + \mu'\right) \left( K_B \tilde{P}_C K_A \right)^{\dagger} \left( K_B \tilde{P}_C + \mu  \right)\right\} K_B \right]^{\dagger} K_A \tilde{P}_{C'} Y \\
         \hat{\alpha} &= \left( K_B \tilde{P}_C K_A \right)^{\dagger} \left( K_B \tilde{P}_C + \mu \right) K_B \hat{\beta}
     
     with :math:`\tilde{P}_{C'}=\frac{n}{p}I_{[p]}^{\top}P_{C';[p,p]}I_{[p]}` and :math:`\tilde{P}_{C}=\frac{n}{q}I_{[q]}^{\top}P_{C;[q,q]}I_{[q]}`. And
