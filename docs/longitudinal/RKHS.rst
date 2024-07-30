@@ -406,9 +406,10 @@ We proceed in steps.
         0 &= -2 \Phi_B^* P_C \Phi_A \hat{g} + 2 \Phi_B^* (P_C + \mu) \Phi_B \hat{h}.
     \end{align*}
 
-    
+
 See `De Vito and Caponnetto (2005) <https://apps.dtic.mil/sti/tr/pdf/ADA466779.pdf>`_ (Proof of Proposition 2) for the formal way of deriving the first order condition, which incurs additional notation.
-    Rearranging and taking pseudo-inverses, we arrive at two equations:
+
+Rearranging and taking pseudo-inverses, we arrive at two equations:
     
     .. math::
         \Phi_A^* (P_{C'} + P_C + \mu') \Phi_A \hat{g} = \Phi_A^* (P_{C'} Y + P_C \Phi_B \hat{h}),
@@ -428,8 +429,8 @@ See `De Vito and Caponnetto (2005) <https://apps.dtic.mil/sti/tr/pdf/ADA466779.p
         \hat{h} = \left[ \Phi_A^* \left\{ -P_C + \left( P_{C'} + P_C + \mu' \right) \Phi_A \left( \Phi_B^* P_C \Phi_A \right)^{\dagger} \Phi_B^* \left( P_C + \mu \right) \right\} \Phi_B \right]^{\dagger} \Phi_A^* P_{C'} Y. 
 
 
-Remark (Subsetted estimator)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Remark (Nyström subsetted estimator)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. admonition:: Formula of minimizers (Subsetted estimator)
 
@@ -449,7 +450,7 @@ The argument is analogous to the Remark of the properties of pseudo-inverse abov
 
     Continuing the notation of the (Properties of pseudo-inverse), if :math:`\Phi = U \Sigma^{1/2} V^{\top}` and 
     :math:`K = \Phi \Phi^*`, then :math:`P = UU^{\top} = K^{\dagger} K = \Phi \Phi^{\dagger}`. 
-    Remark~\ref{remark:min} relates :math:`\tilde{P}` to :math:`P`.
+   
 
 Combining (Minimizer sufficient statistics) and (Properties of pseudo-inverse), we conclude that sufficient statistics for 
 :math:`(\hat{g}, \hat{h})` are feature operators. Within the feature operator :math:`\Phi`, the :math:`i` th row 
