@@ -167,7 +167,7 @@ Since :math:`K_C = \Phi_C \Phi_C^*`, the first order condition yields :math:`K_C
 Minimizers
 ^^^^^^^^^^
 
-Let :math:`\Phi_A : \mathcal{H} \rightarrow \mathbb{R}^n` be an operator with :math:`i`th row :math:`\langle \phi(A_i), \cdot \rangle_{\mathcal{H}}`. Define :math:`\Phi_B` analogously, replacing :math:`A_i` with :math:`B_i`. Let :math:`K_A` and :math:`K_B` be the corresponding kernel matrices.
+Let :math:`\Phi_A : \mathcal{H} \rightarrow \mathbb{R}^n` be an operator with :math:`i` th row :math:`\langle \phi(A_i), \cdot \rangle_{\mathcal{H}}`. Define :math:`\Phi_B` analogously, replacing :math:`A_i` with :math:`B_i`. Let :math:`K_A` and :math:`K_B` be the corresponding kernel matrices.
 
 **Existence of minimizers**
 
