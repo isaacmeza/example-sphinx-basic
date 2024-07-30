@@ -369,6 +369,98 @@ and the covariance operators are defined analogously to the subsetted estimator.
 Hereafter we use the same argument as in the formula of minimizers.
 
 
+Nyström approximation
+^^^^^^^^^^^^^^^^^^^^^^
+
+Computation of kernel methods may be demanding due to the inversions of matrices  that scale with :math:`n` such as :math:`K_B \in \mathbb{R}^{n \times n}`. One solution is Nyström approximation. We now provide alternative expressions for the minimizers :math:`(\hat{g}, \hat{h})` that lend themselves to Nyström approximation, then describe the procedure.
+
+.. admonition:: Minimizer sufficient statistics
+
+    The minimizers may be expressed as
+    
+    .. math::
+        \hat{g} = \left(\Phi_B^* P_C \Phi_A\right)^{\dagger} \Phi_B^* (P_C + \mu) \Phi_B \hat{h},
+    
+    .. math::
+        \hat{h} = \left[ \Phi_A^* \left\{ -P_C + \left( P_{C'} + P_C + \mu' \right) \Phi_A \left( \Phi_B^* P_C \Phi_A \right)^{\dagger} \Phi_B^* \left( P_C + \mu \right) \right\} \Phi_B \right]^{\dagger} \Phi_A^* P_{C'} Y.
+
+**Proof**
+
+We proceed in steps.
+
+1. By the proof of Proposition~\ref{prop:min}, with :math:`G = \Phi_A g` and :math:`H = \Phi_B h`,
+
+    .. math::
+        n \mathcal{E}(g, h) = Y^{\top} P_{C'} Y - 2 G^{\top} (P_{C'} Y + P_C H) \\
+        & \quad + G^{\top} (P_{C'} + P_C + \mu') G + H^{\top} (P_C + \mu) H, \\
+        &= Y^{\top} P_{C'} Y - 2 g^* \Phi_A^* (P_{C'} Y + P_C \Phi_B h) \\
+        & \quad + g^* \Phi_A^* (P_{C'} + P_C + \mu') \Phi_A g + h^* \Phi_B^* (P_C + \mu) \Phi_B h.
+
+2. Informally, the first order conditions yield
+
+    .. math::
+        0 = -2 \Phi_A^* (P_{C'} Y + P_C \Phi_B \hat{h}) + 2 \Phi_A^* (P_{C'} + P_C + \mu') \Phi_A \hat{g}, \\
+        0 = -2 \Phi_B^* P_C \Phi_A \hat{g} + 2 \Phi_B^* (P_C + \mu) \Phi_B \hat{h}.
+    
+    See [Devito and Caponetto](https://apps.dtic.mil/sti/tr/pdf/ADA466779.pdf) for the formal way of deriving the first order condition, which incurs additional notation. 
+    Rearranging and taking pseudo-inverses, we arrive at two equations:
+    
+    .. math::
+        \Phi_A^* (P_{C'} + P_C + \mu') \Phi_A \hat{g} = \Phi_A^* (P_{C'} Y + P_C \Phi_B \hat{h}),
+    
+    .. math::
+        \Phi_B^* P_C \Phi_A \hat{g} = \Phi_B^* (P_C + \mu) \Phi_B \hat{h} 
+        \Longrightarrow \hat{g} = \left(\Phi_B^* P_C \Phi_A \right)^{\dagger} \Phi_B^* (P_C + \mu) \Phi_B \hat{h}.
+
+3. Substituting the latter into the former,
+
+    .. math::
+        \Phi_A^* P_{C'} Y + \Phi_A^* P_C \Phi_B \hat{h} = \Phi_A^* (P_{C'} + P_C + \mu') \Phi_A \left(\Phi_B^* P_C \Phi_A \right)^{\dagger} \Phi_B^* (P_C + \mu) \Phi_B \hat{h},
+    
+    and solving for :math:`\hat{h}`,
+
+    .. math::
+        \hat{h} = \left[ \Phi_A^* \left\{ -P_C + \left( P_{C'} + P_C + \mu' \right) \Phi_A \left( \Phi_B^* P_C \Phi_A \right)^{\dagger} \Phi_B^* \left( P_C + \mu \right) \right\} \Phi_B \right]^{\dagger} \Phi_A^* P_{C'} Y. \qedhere
+
+
+Remark (Subsetted estimator)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The subsetted minimizers may be expressed as
+    
+.. math::
+    \hat{g} = \left(\Phi_B^* \tilde{P}_C \Phi_A \right)^{\dagger} \Phi_B^* (\tilde{P}_C + \mu) \Phi_B \hat{h},
+    
+.. math::
+    \hat{h} = \left[ \Phi_A^* \left\{ -\tilde{P}_C + \left( \tilde{P}_{C'} + \tilde{P}_C + \mu' \right) \Phi_A \left( \Phi_B^* \tilde{P}_C \Phi_A \right)^{\dagger} \Phi_B^* \left( \tilde{P}_C + \mu \right) \right\} \Phi_B \right]^{\dagger} \Phi_A^* \tilde{P}_{C'} Y.
+
+**Proof**
+
+The argument is analogous to Remark~\ref{remark:min}.
+
+.. admonition:: Properties of pseudo-inverse
+
+    Continuing the notation of Lemma~\ref{lemma:pseudo1}, if :math:`\Phi = U \Sigma^{1/2} V^{\top}` and 
+    :math:`K = \Phi \Phi^*`, then :math:`P = UU^{\top} = K^{\dagger} K = \Phi \Phi^{\dagger}`. 
+    Remark~\ref{remark:min} relates :math:`\tilde{P}` to :math:`P`.
+
+Combining (Minimizer sufficient statistics) and (Properties of pseudo-inverse), we conclude that sufficient statistics for 
+:math:`(\hat{g}, \hat{h})` are feature operators. Within the feature operator :math:`\Phi`, the :math:`i`th row 
+:math:`\langle \phi(X_i), \cdot \rangle` may be viewed as an infinite dimensional vector.
+
+Nyström approximation is a way to approximate infinite dimensional vectors with finite dimensional ones. It uses the substitution
+:math:`\phi(x) \mapsto \check{\phi}(x) = (K_{\mathcal{S} \mathcal{S}})^{-\frac{1}{2}} K_{\mathcal{S} x}`, where
+:math:`\mathcal{S}` is a subset of :math:`s = |\mathcal{S}| \ll n` observations called landmarks. 
+:math:`K_{\mathcal{S} \mathcal{S}} \in \mathbb{R}^{s \times s}` is defined such that 
+:math:`(K_{\mathcal{S} \mathcal{S}})_{ij} = k(X_i, X_j)` for :math:`i, j \in \mathcal{S}`. Similarly, 
+:math:`K_{\mathcal{S} x} \in \mathbb{R}^s` is defined such that :math:`(K_{\mathcal{S} x})_i = k(X_i, x)` 
+for :math:`i \in \mathcal{S}`.
+
+In summary, the approximate sufficient statistics are of the form :math:`\check{\Phi} \in \mathbb{R}^{n \times s}`, 
+i.e. a matrix whose :math:`i`th row :math:`\langle \check{\phi}(X_i), \cdot \rangle` may be viewed as a vector 
+in :math:`\mathbb{R}^s`.
+
+
 Closed form - Estimator 3 (RKHS norm)
 -------------------------------------
 
