@@ -7,7 +7,7 @@ name = "nnpiv"
 version = "0.0.1"
 description = "NESTED NONPARAMETRIC INSTRUMENTAL VARIABLE REGRESSION"
 authors = [
-    { name = "", email = "" }
+    { name = "isaac", email = "i.mezal.12@gmail.com" }
 ]
 readme = "README.rst"
 license = { text = "MIT" }
