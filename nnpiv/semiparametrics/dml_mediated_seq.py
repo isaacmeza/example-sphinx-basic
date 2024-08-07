@@ -6,10 +6,10 @@ techniques. The module supports different types of mediated estimands, cross-val
 for localization, and confidence interval computation.
 
 Classes:
-    DML_mediated: Main class for performing DML for mediation analysis with various configuration options.
+    DML_mediated_seq: Main class for performing DML for mediation analysis with various configuration options.
 
-DML_mediated Methods:
-    __init__: Initialize the DML_mediated instance with data and model configurations.
+DML_mediated_seq Methods:
+    __init__: Initialize the DML_mediated_seq instance with data and model configurations.
     
     _calculate_confidence_interval: Calculate confidence intervals for the estimates.
     
@@ -47,7 +47,7 @@ import warnings
 from tqdm import tqdm 
 import copy
 import torch
-from mliv.rkhs import ApproxRKHSIVCV
+from nnpiv.rkhs import ApproxRKHSIVCV
 from joblib import Parallel, delayed
 from scipy.optimize import minimize_scalar
 
@@ -121,9 +121,14 @@ def _fun_threshold_alpha(alpha, g):
     return result
 
 
-class DML_mediated:
+class DML_mediated_seq:
     """
-    Debiased Machine Learning for mediation analysis (DML-mediation) class.
+    This class is deprecated and will be removed in a future version.
+    
+    .. deprecated:: 1.0
+        Use `DML_mediated` instead.
+    
+    Debiased Machine Learning for mediation analysis (DML-mediation) class using sequential estimation.
 
     Parameters
     ----------
@@ -143,6 +148,8 @@ class DML_mediated:
         Localization covariates.
     v_values : array-like, optional
         Values for localization.
+    ci_type : str, optional
+        Type of confidence interval ('pointwise', 'uniform').
     loc_kernel : str, optional
         Kernel for localization. Options are ['gau', 'epa', 'uni'].
     bw_loc : str, optional
@@ -167,6 +174,14 @@ class DML_mediated:
         Model for the q2 stage.
     nn_q2 : bool, optional
         Use neural network for the q2 stage.
+    model_y : estimator, optional
+        Model for the outcome - for use with 'E[Y1]', 'E[Y0]', 'Direct', 'Indirect', and 'ATE' estimands.
+    nn_y : bool, optional
+        Use neural network for the outcome model.
+    model_a : estimator, optional
+        Model for the action - for use with 'E[Y1]', 'E[Y0]', 'Direct', 'Indirect', and 'ATE' estimands.
+    nn_a : bool, optional
+        Use neural network for the action model.        
     alpha : float, optional
         Significance level for confidence intervals.
     n_folds : int, optional
@@ -190,6 +205,10 @@ class DML_mediated:
         Arguments for fitting the q1 stage model.
     fitargsq2 : dict, optional
         Arguments for fitting the q2 stage model.
+    fitargsy : dict, optional
+        Arguments for fitting the one stage outcome model.
+    fitargsa : dict, optional
+        Arguments for fitting the one stage action model.
     opts : dict, optional
         Additional options.
     """
@@ -197,6 +216,7 @@ class DML_mediated:
     def __init__(self, Y, D, M, W, Z, X1=None,
                  V=None, 
                  v_values=None,
+                 ci_type='pointwise',
                  loc_kernel='gau',
                  bw_loc='silverman',
                  estimator='MR',
@@ -217,6 +237,14 @@ class DML_mediated:
                            kernel='rbf', gamma=.1, delta_scale='auto',
                            delta_exp=.4, alpha_scales=np.geomspace(1, 10000, 10), cv=5), 
                  nn_q2=False,
+                 model_y=ApproxRKHSIVCV(kernel_approx='nystrom', n_components=100,
+                            kernel='rbf', gamma=.1, delta_scale='auto',
+                            delta_exp=.4, alpha_scales=np.geomspace(1, 10000, 10), cv=5),
+                 nn_y=False,
+                 model_a=ApproxRKHSIVCV(kernel_approx='nystrom', n_components=100,
+                            kernel='rbf', gamma=.1, delta_scale='auto',
+                            delta_exp=.4, alpha_scales=np.geomspace(1, 10000, 10), cv=5),
+                 nn_a=False,
                  alpha=0.05,
                  n_folds=5,
                  n_rep=1,
@@ -228,10 +256,12 @@ class DML_mediated:
                  fitargs2=None,
                  fitargsq1=None,
                  fitargsq2=None,
+                 fitargsy=None,
+                 fitargsa=None,
                  opts=None
                  ):
         """
-        Initialize the DML_npiv instance with data and model configurations.
+        Initialize the DML_mediated_seq instance with data and model configurations.
         
         Parameters
         ----------
@@ -251,6 +281,8 @@ class DML_mediated:
             Localization covariates.
         v_values : array-like, optional
             Values for localization.
+        ci_type : str, optional
+            Type of confidence interval ('pointwise', 'uniform').
         loc_kernel : str, optional
             Kernel for localization. Options are ['gau', 'epa', 'uni'].
         bw_loc : str, optional
@@ -275,6 +307,14 @@ class DML_mediated:
             Model for the q2 stage.
         nn_q2 : bool, optional
             Use neural network for the q2 stage.
+        model_y : estimator, optional
+            Model for the outcome - for use with 'E[Y1]', 'E[Y0]', 'Direct', 'Indirect', and 'ATE' estimands.
+        nn_y : bool, optional
+            Use neural network for the outcome model.
+        model_a : estimator, optional
+            Model for the action - for use with 'E[Y1]', 'E[Y0]', 'Direct', 'Indirect', and 'ATE' estimands.
+        nn_a : bool, optional
+            Use neural network for the action model.
         alpha : float, optional
             Significance level for confidence intervals.
         n_folds : int, optional
@@ -298,9 +338,20 @@ class DML_mediated:
             Arguments for fitting the q1 stage model.
         fitargsq2 : dict, optional
             Arguments for fitting the q2 stage model.
+        fitargsy : dict, optional
+            Arguments for fitting the one stage outcome model.
+        fitargsa : dict, optional
+            Arguments for fitting the one stage action model.            
         opts : dict, optional
             Additional options.
         """
+        warnings.warn(
+            "DML_mediated_seq is deprecated and will be removed in a future version. "
+            "Use DML_mediated instead.",
+            DeprecationWarning,
+            stacklevel=2
+        )
+
         self.Y = Y
         self.D = D
         self.M = M
@@ -309,6 +360,7 @@ class DML_mediated:
         self.X1 = X1
         self.V = V
         self.v_values = v_values
+        self.ci_type = ci_type
         self.loc_kernel = loc_kernel
         self.bw_loc = bw_loc
         self.estimator = estimator
@@ -317,10 +369,14 @@ class DML_mediated:
         self.model2 = copy.deepcopy(model2)
         self.modelq1 = copy.deepcopy(modelq1)
         self.modelq2 = copy.deepcopy(modelq2)
+        self.model_y = copy.deepcopy(model_y)
+        self.model_a = copy.deepcopy(model_a)
         self.nn_1 = nn_1
         self.nn_2 = nn_2
         self.nn_q1 = nn_q1
         self.nn_q2 = nn_q2
+        self.nn_y = nn_y
+        self.nn_a = nn_a
         self.prop_score = prop_score
         self.CHIM = CHIM
         self.alpha = alpha
@@ -332,6 +388,8 @@ class DML_mediated:
         self.fitargs2 = fitargs2
         self.fitargsq1 = fitargsq1
         self.fitargsq2 = fitargsq2
+        self.fitargsy = fitargsy
+        self.fitargsa = fitargsa
         self.opts = opts
 
         if self.X1 is None:
@@ -361,6 +419,10 @@ class DML_mediated:
             warnings.warn(f"Invalid estimator: {estimator}. Estimator must be one of ['MR', 'OR', 'IPW'] when estimand is {estimand}. Using MR instead.", UserWarning)
             self.estimator = 'MR'                
 
+        if self.ci_type not in ['pointwise', 'uniform']:
+            warnings.warn(f"Invalid confidence interval type: {ci_type}. Confidence interval type must be one of ['pointwise', 'uniform']. Using pointwise instead.", UserWarning)
+            self.ci_type = 'pointwise'
+
         if self.loc_kernel not in list(kernel_switch.keys()):
             warnings.warn(f"Invalid kernel: {loc_kernel}. Kernel must be one of {list(kernel_switch.keys())}. Using gau instead.", UserWarning)
             self.loc_kernel = 'gau' 
@@ -375,7 +437,7 @@ class DML_mediated:
                 warnings.warn(f"v_values is None. Computing localization around mean(V).", UserWarning)
                 self.v_values = np.mean(self.V, axis=0)    
             
-    def _calculate_confidence_interval(self, theta, theta_var):
+    def _calculate_confidence_interval(self, theta, theta_var, theta_cov):
         """
         Calculate the confidence interval for the given estimates.
 
@@ -385,15 +447,33 @@ class DML_mediated:
             Estimated values.
         theta_var : array-like
             Variance of the estimates.
+        theta_cov : array-like
+            Covariance matrix of the estimates.
 
         Returns
         -------
         array-like
             Lower and upper bounds of the confidence intervals.
         """
-        z_alpha_half = norm.ppf(1 - self.alpha / 2)
         n = self.Y.shape[0]
-        margin_of_error = z_alpha_half * np.sqrt(theta_var) * np.sqrt(1 / n)
+
+        if self.ci_type == 'pointwise':
+            z_alpha_half = norm.ppf(1 - self.alpha / 2)
+            margin_of_error = z_alpha_half * np.sqrt(theta_var / n) 
+        else:
+            S = np.diag(np.diag(theta_cov))
+            S_inv_sqrt = np.diag(1.0 / np.sqrt(np.diag(S)))
+            
+            Sigma_hat = S_inv_sqrt @ theta_cov @ S_inv_sqrt
+            
+            # Sample Q from N(0, Sigma_hat)
+            Q_samples = np.random.multivariate_normal(np.zeros(theta.shape[0]), Sigma_hat, 5000)
+            
+            # Compute the (1 - alpha) quantile of the sampled |Q|_infty
+            Q_infinity_norms = np.max(np.abs(Q_samples), axis=1)
+            c_alpha = np.quantile(Q_infinity_norms, 1 - self.alpha)
+            margin_of_error = c_alpha * np.sqrt(np.diag(theta_cov) / n)
+
         lower_bound = theta - margin_of_error
         upper_bound = theta + margin_of_error
         return np.column_stack((lower_bound, upper_bound))
@@ -543,10 +623,10 @@ class DML_mediated:
         object
             Fitted model.
         """
-        model_1 = copy.deepcopy(self.model1)
+        model_y1 = copy.deepcopy(self.model_y)
 
         # First stage
-        if self.nn_1==True:
+        if self.nn_y==True:
             Y, X, Z = tuple(map(lambda x: torch.Tensor(x), [Y, X, Z]))
         else:
             X = _transform_poly(X, self.opts)
@@ -557,10 +637,10 @@ class DML_mediated:
         X1 = X[ind, :]
         Z1 = Z[ind]
 
-        if self.fitargs1 is not None:
-            bridge_1 = model_1.fit(Z1, X1, Y1, **self.fitargs1)
+        if self.fitargsy is not None:
+            bridge_1 = model_y1.fit(Z1, X1, Y1, **self.fitargsy)
         else:
-            bridge_1 = model_1.fit(Z1, X1, Y1)
+            bridge_1 = model_y1.fit(Z1, X1, Y1)
         
         return bridge_1
     
@@ -769,10 +849,10 @@ class DML_mediated:
         X = X[mask, :]
         Z = Z[mask]
 
-        model_q1 = copy.deepcopy(self.modelq1)
+        model_a1 = copy.deepcopy(self.model_a)
 
         # First stage
-        if self.nn_q1==True:
+        if self.nn_a==True:
             ps_hat_1, W, X, Z = tuple(map(lambda x: torch.Tensor(x), [ps_hat_1, W, X, Z]))
             A2 = torch.cat((X, W), 1)
             A1 = torch.cat((X, Z), 1)
@@ -780,10 +860,10 @@ class DML_mediated:
             A2 = _transform_poly(np.column_stack((X, W)), self.opts)
             A1 = _transform_poly(np.column_stack((X, Z)), self.opts)
 
-        if self.fitargsq1 is not None:
-            bridge_1 = model_q1.fit(A2, A1, 1 / ps_hat_1, **self.fitargsq1)
+        if self.fitargsa is not None:
+            bridge_1 = model_a1.fit(A2, A1, 1 / ps_hat_1, **self.fitargsa)
         else:
-            bridge_1 = model_q1.fit(A2, A1, 1 / ps_hat_1)
+            bridge_1 = model_a1.fit(A2, A1, 1 / ps_hat_1)
 
         return bridge_1
 
@@ -918,7 +998,7 @@ class DML_mediated:
 
         # Evaluate the estimated moment functions using test_data
         if self.estimator == 'MR' or self.estimator == 'OR':
-            if self.nn_1 == True:
+            if self.nn_y == True:
                 test_X = torch.Tensor(test_X)
                 gamma_1_hat = gamma_1.predict(test_X.to(device),
                                             model='avg', burn_in=_get(self.opts, 'burnin', 0)).reshape(-1, 1)
@@ -926,7 +1006,7 @@ class DML_mediated:
                 gamma_1_hat = gamma_1.predict(_transform_poly(test_X, opts=self.opts)).reshape(-1, 1)
 
         if self.estimator == 'MR' or self.estimator == 'IPW' or self.estimator == 'hybrid':
-            if self.nn_q1 == True:
+            if self.nn_a == True:
                 test_X, test_Z = tuple(map(lambda x: torch.Tensor(x), [test_X, test_Z]))
                 q_1_hat = q_1.predict(torch.cat((test_X, test_Z), 1).to(device),
                                     model='avg', burn_in=_get(self.opts, 'burnin', 0)).reshape(-1, 1)
@@ -1037,6 +1117,7 @@ class DML_mediated:
         """
         theta = []
         theta_var = []
+        theta_cov = []
 
         for rep in range(self.n_rep):
             
@@ -1071,20 +1152,23 @@ class DML_mediated:
             # Calculate the average of psi_hat_array for each rep
             psi_hat_array = np.concatenate(fold_results, axis=0)
             theta_rep = np.mean(psi_hat_array, axis=0)
-            theta_var_rep = np.var(psi_hat_array, axis=0)
+            theta_var_rep = np.var(psi_hat_array, axis=0, ddof=1)
+            theta_cov_rep = np.cov(psi_hat_array, rowvar=False)
 
             # Store results for each rep
             theta.append(theta_rep)
             theta_var.append(theta_var_rep)
+            theta_cov.append(theta_cov_rep)
 
         # Calculate the overall average of theta and theta_var
         theta_hat = np.mean(np.stack(theta, axis=0), axis=0)
         theta_var_hat = np.mean(np.stack(theta_var, axis=0), axis=0)
+        theta_cov_hat = np.mean(np.stack(theta_cov, axis=0), axis=0)
 
         # Calculate the confidence interval
-        confidence_interval = self._calculate_confidence_interval(theta_hat, theta_var_hat)
+        confidence_interval = self._calculate_confidence_interval(theta_hat, theta_var_hat, theta_cov_hat) 
 
-        return theta_hat, theta_var_hat, confidence_interval
+        return theta_hat, theta_var_hat, confidence_interval, theta_cov_hat
     
 
     def dml(self):
@@ -1096,8 +1180,8 @@ class DML_mediated:
         tuple
             Estimated values, variances, and confidence intervals.
         """
-        theta, theta_var, confidence_interval = self._split_and_estimate()
+        theta, theta_var, confidence_interval, theta_cov_hat = self._split_and_estimate()
         if self.V is None:
             return theta[0], theta_var[0], confidence_interval[0]
         else:
-            return theta, theta_var, confidence_interval
+            return theta, theta_cov_hat, confidence_interval

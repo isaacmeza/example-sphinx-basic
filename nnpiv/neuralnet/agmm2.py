@@ -19,8 +19,8 @@ import torch.nn as nn
 from torch.utils.data import DataLoader, TensorDataset
 from torch import optim
 from torch.utils.tensorboard import SummaryWriter
-from mliv.neuralnet.oadam import OAdam
-from mliv.neuralnet.rbflayer import RBF
+from nnpiv.neuralnet.oadam import OAdam
+from nnpiv.neuralnet.rbflayer import RBF
 
 # TODO. This epsilon is used only because pytorch 1.5 has an instability in torch.cdist
 # when the input distance is close to zero, due to instability of the square root in

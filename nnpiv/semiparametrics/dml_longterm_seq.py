@@ -2,7 +2,33 @@
 This module implements the Debiased Machine Learning for long-term causal analysis (DML-longterm) class.
 The estimand can be either for a model with a surrogacy assumption (Athey et al., 2020b. [Estimating treatment effects using multiple surrogates: the role of the surrogate score and the surrogate index](https://arxiv.org/abs/1603.09326)) or with a latent unconfounded model (Athey et al., 2020a. [Combining experimental and observational data to estimate treatment effects on long-term outcomes](https://arxiv.org/abs/2006.09676)). 
 The semiparametric efficiency is derived in Chen and Ritzwoller (2023. [Semiparametric estimation of long-term treatment effects](https://doi.org/10.1016/j.jeconom.2023.105545)).
-"""
+The module supports different types of longterm models, cross-validation, kernel density estimation 
+for localization, and confidence interval computation with pointwise or uniform guarantees.
+
+Classes:
+    DML_longterm: Main class for performing DML for long-term causal analysis with sequential model fitting.
+
+DML_longterm_seq Methods:
+    __init__: Initialize the DML_longterm instance with data and model configurations.
+    
+    _calculate_confidence_interval: Calculate confidence intervals for the estimates.
+    
+    _localization: Perform localization using kernel density estimation.
+    
+    _nnpivfit_outcome_latent: Fit the outcome model using nonparametric instrumental variables for the latent unconfounded model sequentially.
+
+    _nnpivfit_outcome_surrogacy: Fit the outcome model using nonparametric instrumental variables for the surrogacy model sequentially.
+    
+    _propensity_score_latent: Estimate the propensity score for the latent unconfounded model.
+
+    _propensity_score_surrogacy: Estimate the propensity score for the surrogacy model.
+    
+    _process_fold: Process a single fold for cross-validation.
+    
+    _split_and_estimate: Split the data and estimate the model for each fold.
+    
+    dml: Perform Debiased Machine Learning for Nonparametric Instrumental Variables.
+    """
 
 import numpy as np
 from scipy.stats import norm 
@@ -14,7 +40,7 @@ import warnings
 from tqdm import tqdm
 import copy
 import torch
-from mliv.rkhs import ApproxRKHSIVCV
+from nnpiv.rkhs import ApproxRKHSIVCV
 from joblib import Parallel, delayed
 from scipy.optimize import minimize_scalar
 
@@ -87,8 +113,13 @@ def _fun_threshold_alpha(alpha, g):
     result = (2 * sum(num) / den - lambda_val) ** 2
     return result
 
-class DML_longterm:
+class DML_longterm_seq:
     """
+    This class is deprecated and will be removed in a future version.
+    
+    .. deprecated:: 1.0
+        Use `DML_mediated` instead.
+
     Debiased Machine Learning for long-term causal analysis (DML-longterm) class.
 
     The estimand can be either for a model with a surrogacy assumption (Athey, S., Chetty, R., Imbens, G., Kang, H., 2020b. Estimating treatment effects using multiple surrogates: the role of the surrogate score and the surrogate index. arXiv preprint arXiv:1603.09326) or with a latent unconfounded model (Athey, S.; Chetty, R.; Imbens, G., Combining experimental and observational data to estimate treatment effects on long-term outcomes. arXiv preprint arXiv:2006.09676 (2020)). 
@@ -110,6 +141,8 @@ class DML_longterm:
         Localization covariates.
     v_values : array-like, optional
         Values for localization.
+    ci_type : str, optional
+        Type of confidence interval ('pointwise', 'uniform').
     loc_kernel : str, optional
         Kernel for localization. Options are ['gau', 'epa', 'uni'].
     bw_loc : str, optional
@@ -150,6 +183,7 @@ class DML_longterm:
     def __init__(self, Y, D, S, G, X1=None, 
                  V=None, 
                  v_values=None,
+                 ci_type='pointwise',
                  loc_kernel='gau',
                  bw_loc='silverman',
                  estimator='MR',
@@ -171,7 +205,14 @@ class DML_longterm:
                  verbose=True,
                  fitargs1=None,
                  fitargs2=None,
-                 opts=None):
+                 opts=None):        
+        warnings.warn(
+            "DML_longterm_seq is deprecated and will be removed in a future version. "
+            "Use DML_longterm instead.",
+            DeprecationWarning,
+            stacklevel=2
+        )
+                
         self.Y = Y
         self.D = D
         self.S = S
@@ -179,6 +220,7 @@ class DML_longterm:
         self.X1 = X1
         self.V = V
         self.v_values = v_values
+        self.ci_type = ci_type
         self.loc_kernel = loc_kernel
         self.bw_loc = bw_loc
         self.estimator = estimator
@@ -228,6 +270,10 @@ class DML_longterm:
                 warnings.warn(f"{nnan} missing values in treatment variable in the observational sample. Using surrogacy instead.", UserWarning)
                 self.longterm_model = 'surrogacy'   
 
+        if self.ci_type not in ['pointwise', 'uniform']:
+            warnings.warn(f"Invalid confidence interval type: {ci_type}. Confidence interval type must be one of ['pointwise', 'uniform']. Using pointwise instead.", UserWarning)
+            self.ci_type = 'pointwise'
+
         if self.loc_kernel not in list(kernel_switch.keys()):
             warnings.warn(f"Invalid kernel: {loc_kernel}. Kernel must be one of {list(kernel_switch.keys())}. Using gau instead.", UserWarning)
             self.loc_kernel = 'gau' 
@@ -242,7 +288,7 @@ class DML_longterm:
                 warnings.warn(f"v_values is None. Computing localization around mean(V).", UserWarning)
                 self.v_values = np.mean(self.V, axis=0)    
 
-    def _calculate_confidence_interval(self, theta, theta_var):
+    def _calculate_confidence_interval(self, theta, theta_var, theta_cov):
         """
         Calculate the confidence interval for the given estimates.
 
@@ -252,15 +298,33 @@ class DML_longterm:
             Estimated values.
         theta_var : array-like
             Variance of the estimates.
+        theta_cov : array-like
+            Covariance matrix of the estimates.
 
         Returns
         -------
         array-like
             Lower and upper bounds of the confidence intervals.
         """
-        z_alpha_half = norm.ppf(1 - self.alpha / 2)
         n = self.Y.shape[0]
-        margin_of_error = z_alpha_half * np.sqrt(theta_var) * np.sqrt(1 / n)
+
+        if self.ci_type == 'pointwise':
+            z_alpha_half = norm.ppf(1 - self.alpha / 2)
+            margin_of_error = z_alpha_half * np.sqrt(theta_var / n) 
+        else:
+            S = np.diag(np.diag(theta_cov))
+            S_inv_sqrt = np.diag(1.0 / np.sqrt(np.diag(S)))
+            
+            Sigma_hat = S_inv_sqrt @ theta_cov @ S_inv_sqrt
+            
+            # Sample Q from N(0, Sigma_hat)
+            Q_samples = np.random.multivariate_normal(np.zeros(theta.shape[0]), Sigma_hat, 5000)
+            
+            # Compute the (1 - alpha) quantile of the sampled |Q|_infty
+            Q_infinity_norms = np.max(np.abs(Q_samples), axis=1)
+            c_alpha = np.quantile(Q_infinity_norms, 1 - self.alpha)
+            margin_of_error = c_alpha * np.sqrt(np.diag(theta_cov) / n)
+
         lower_bound = theta - margin_of_error
         upper_bound = theta + margin_of_error
         return np.column_stack((lower_bound, upper_bound))
@@ -821,6 +885,7 @@ class DML_longterm:
         """
         theta = []
         theta_var = []
+        theta_cov = []
 
         for rep in range(self.n_rep):
             
@@ -851,20 +916,23 @@ class DML_longterm:
             # Calculate the average of psi_hat_array for each rep
             psi_hat_array = np.concatenate(fold_results, axis=0)
             theta_rep = np.mean(psi_hat_array, axis=0)
-            theta_var_rep = np.var(psi_hat_array, axis=0)
+            theta_var_rep = np.var(psi_hat_array, axis=0, ddof=1)
+            theta_cov_rep = np.cov(psi_hat_array, rowvar=False)
 
             # Store results for each rep
             theta.append(theta_rep)
             theta_var.append(theta_var_rep)
+            theta_cov.append(theta_cov_rep)
 
         # Calculate the overall average of theta and theta_var
         theta_hat = np.mean(np.stack(theta, axis=0), axis=0)
         theta_var_hat = np.mean(np.stack(theta_var, axis=0), axis=0)
+        theta_cov_hat = np.mean(np.stack(theta_cov, axis=0), axis=0)
         
         # Calculate the confidence interval
-        confidence_interval = self._calculate_confidence_interval(theta_hat, theta_var_hat)
+        confidence_interval = self._calculate_confidence_interval(theta_hat, theta_var_hat, theta_cov_hat) 
 
-        return theta_hat, theta_var_hat, confidence_interval
+        return theta_hat, theta_var_hat, confidence_interval, theta_cov_hat
 
     def dml(self):
         """
@@ -875,8 +943,8 @@ class DML_longterm:
         tuple
             Estimated treatment effect, variance, and confidence interval.
         """
-        theta, theta_var, confidence_interval = self._split_and_estimate()
+        theta, theta_var, confidence_interval, theta_cov_hat = self._split_and_estimate()
         if self.V is None:
             return theta[0], theta_var[0], confidence_interval[0]
         else:
-            return theta, theta_var, confidence_interval
+            return theta, theta_cov_hat, confidence_interval

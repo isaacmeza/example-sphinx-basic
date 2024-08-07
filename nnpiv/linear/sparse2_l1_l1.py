@@ -12,7 +12,7 @@ Classes:
 import numpy as np
 from sklearn.linear_model import Lasso, LassoCV, ElasticNet
 from sklearn.base import clone
-from mliv.linear.utilities import cross_product
+from nnpiv.linear.utilities import cross_product
 
 
 class _SparseLinear2AdversarialGMM:
