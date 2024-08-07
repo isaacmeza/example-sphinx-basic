@@ -6,3 +6,4 @@ build-backend = "flit_core.buildapi"
 name = "nnpiv"
 authors = [{name = "isaac", email = "isaac@harvrad"}]
 dynamic = ["version", "description"]
+S
