@@ -19,8 +19,3 @@ classifiers = [
     "Operating System :: OS Independent"
 ]
 
-[project.urls]
-homepage = ""
-documentation = ""
-repository = ""
-bug_tracker = ""
