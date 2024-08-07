@@ -1,11 +1,12 @@
 """
-This module performs Debiased Machine Learning for mediation analysis, using joint or sequential estimation for longitudinal
-nonparametric parameters (in the Nested NPIV framework). It provides tools for estimating causal effects with 
-mediation using a combination of machine learning models and instrumental variables techniques. The module supports different types of mediated estimands, cross-validation, kernel density estimation 
-for localization, and confidence interval computation with pointwise or uniform guarantees.
+This module performs Debiased Machine Learning for mediation analysis, using the sequential estimators
+for the longitudinal nonparametric parameters (in the Nested NPIV framework). It provides tools for estimating
+causal effects with mediation using a combination of machine learning models and instrumental variables 
+techniques. The module supports different types of mediated estimands, cross-validation, kernel density estimation 
+for localization, and confidence interval computation.
 
 Classes:
-    DML_mediated: Main class for performing DML for mediation analysis with joint/sequential model fitting.
+    DML_mediated: Main class for performing DML for mediation analysis with various configuration options.
 
 DML_mediated Methods:
     __init__: Initialize the DML_mediated instance with data and model configurations.
@@ -14,16 +15,16 @@ DML_mediated Methods:
     
     _localization: Perform localization using kernel density estimation.
     
+    _nnpivfit_outcome_m: Fit the mediated outcome model using nonparametric instrumental variables.
+    
     _npivfit_outcome: Fit the outcome model using nonparametric instrumental variables.
-
-    _nnpivfit_outcome_m: Fit the mediated outcome model sequentially using nonparametric instrumental variables.
-
+    
     _propensity_score: Estimate the propensity score.
     
+    _nnpivfit_action_m: Fit the mediated action model using nonparametric instrumental variables.
+    
     _npivfit_action: Fit the action model using nonparametric instrumental variables.
-
-    _nnpivfit_action_m: Fit the mediated action model sequentially using nonparametric instrumental variables.
-
+    
     _scores_mediated: Calculate the scores for the mediated effects.
     
     _scores_Y1: Calculate the scores for the Y1 estimand.
@@ -43,10 +44,10 @@ from sklearn.cluster import KMeans
 from sklearn.preprocessing import PolynomialFeatures
 from statsmodels.nonparametric.kde import kernel_switch
 import warnings
-from tqdm import tqdm  # Import tqdm
+from tqdm import tqdm 
 import copy
 import torch
-from nnpiv.rkhs import RKHS2IVCV, ApproxRKHSIVCV
+from nnpiv.rkhs import ApproxRKHSIVCV
 from joblib import Parallel, delayed
 from scipy.optimize import minimize_scalar
 
@@ -122,7 +123,7 @@ def _fun_threshold_alpha(alpha, g):
 
 class DML_mediated:
     """
-    Debiased Machine Learning for mediation analysis (DML-mediation) class with joint/sequential model fitting.
+    Debiased Machine Learning for mediation analysis (DML-mediation) class.
 
     Parameters
     ----------
@@ -142,8 +143,6 @@ class DML_mediated:
         Localization covariates.
     v_values : array-like, optional
         Values for localization.
-    ci_type : str, optional
-        Type of confidence interval ('pointwise', 'uniform').
     loc_kernel : str, optional
         Kernel for localization. Options are ['gau', 'epa', 'uni'].
     bw_loc : str, optional
@@ -152,22 +151,22 @@ class DML_mediated:
         Estimator type ('MR', 'OR', 'hybrid', 'IPW').
     estimand : str, optional
         Type of estimand ('ATE', 'Indirect', 'Direct', 'E[Y1]', 'E[Y0]', 'E[Y(1,M(0))]').
-    model1 : estimator /(list), optional
-        Model for the outcome stage - Can be a joint or sequential estimator; if the latter a list must be given
-    nn_1 : bool /(list), optional
-        Use neural network for the outcome stage.
-    modelq1 : estimator /(list), optional
-        Model for the q1 stage - Can be a joint or sequential estimator; if the latter a list must be given
-    nn_q1 : bool /(list), optional
+    model1 : estimator, optional
+        Model for the first stage.
+    nn_1 : bool, optional
+        Use neural network for the first stage.
+    model2 : estimator, optional
+        Model for the second stage.
+    nn_2 : bool, optional
+        Use neural network for the second stage.
+    modelq1 : estimator, optional
+        Model for the q1 stage.
+    nn_q1 : bool, optional
         Use neural network for the q1 stage.
-    model_y : estimator, optional
-        Model for the outcome - for use with 'E[Y1]', 'E[Y0]', 'Direct', 'Indirect', and 'ATE' estimands.
-    nn_y : bool, optional
-        Use neural network for the outcome model.
-    model_a : estimator, optional
-        Model for the action - for use with 'E[Y1]', 'E[Y0]', 'Direct', 'Indirect', and 'ATE' estimands.
-    nn_a : bool, optional
-        Use neural network for the action model.          
+    modelq2 : estimator, optional
+        Model for the q2 stage.
+    nn_q2 : bool, optional
+        Use neural network for the q2 stage.
     alpha : float, optional
         Significance level for confidence intervals.
     n_folds : int, optional
@@ -184,38 +183,40 @@ class DML_mediated:
     verbose : bool, optional
         Print progress information.
     fitargs1 : dict, optional
-        Arguments for fitting the outcome stage model.
+        Arguments for fitting the first stage model.
+    fitargs2 : dict, optional
+        Arguments for fitting the second stage model.
     fitargsq1 : dict, optional
         Arguments for fitting the q1 stage model.
-    fitargsy : dict, optional
-        Arguments for fitting the one stage outcome model.
-    fitargsa : dict, optional
-        Arguments for fitting the one stage action model.        
+    fitargsq2 : dict, optional
+        Arguments for fitting the q2 stage model.
     opts : dict, optional
         Additional options.
     """
+    
     def __init__(self, Y, D, M, W, Z, X1=None,
                  V=None, 
                  v_values=None,
-                 ci_type='pointwise',
                  loc_kernel='gau',
                  bw_loc='silverman',
                  estimator='MR',
                  estimand='ATE',
-                 model1=RKHS2IVCV(kernel='rbf', gamma=.1, delta_scale='auto', 
-                                  delta_exp=.4, alpha_scales=np.geomspace(1, 10000, 10), cv=5), 
+                 model1=ApproxRKHSIVCV(kernel_approx='nystrom', n_components=100,
+                           kernel='rbf', gamma=.1, delta_scale='auto',
+                           delta_exp=.4, alpha_scales=np.geomspace(1, 10000, 10), cv=5), 
                  nn_1=False,
-                 modelq1=RKHS2IVCV(kernel='rbf', gamma=.1, delta_scale='auto', 
-                                  delta_exp=.4, alpha_scales=np.geomspace(1, 10000, 10), cv=5), 
+                 model2=ApproxRKHSIVCV(kernel_approx='nystrom', n_components=100,
+                           kernel='rbf', gamma=.1, delta_scale='auto',
+                           delta_exp=.4, alpha_scales=np.geomspace(1, 10000, 10), cv=5), 
+                 nn_2=False,
+                 modelq1=ApproxRKHSIVCV(kernel_approx='nystrom', n_components=100,
+                           kernel='rbf', gamma=.1, delta_scale='auto',
+                           delta_exp=.4, alpha_scales=np.geomspace(1, 10000, 10), cv=5), 
                  nn_q1=False,
-                 model_y=ApproxRKHSIVCV(kernel_approx='nystrom', n_components=100,
-                            kernel='rbf', gamma=.1, delta_scale='auto',
-                            delta_exp=.4, alpha_scales=np.geomspace(1, 10000, 10), cv=5),
-                 nn_y=False,
-                 model_a=ApproxRKHSIVCV(kernel_approx='nystrom', n_components=100,
-                            kernel='rbf', gamma=.1, delta_scale='auto',
-                            delta_exp=.4, alpha_scales=np.geomspace(1, 10000, 10), cv=5),
-                 nn_a=False,
+                 modelq2=ApproxRKHSIVCV(kernel_approx='nystrom', n_components=100,
+                           kernel='rbf', gamma=.1, delta_scale='auto',
+                           delta_exp=.4, alpha_scales=np.geomspace(1, 10000, 10), cv=5), 
+                 nn_q2=False,
                  alpha=0.05,
                  n_folds=5,
                  n_rep=1,
@@ -224,11 +225,82 @@ class DML_mediated:
                  CHIM=False,
                  verbose=True,
                  fitargs1=None,
+                 fitargs2=None,
                  fitargsq1=None,
-                 fitargsy=None,
-                 fitargsa=None,
+                 fitargsq2=None,
                  opts=None
                  ):
+        """
+        Initialize the DML_npiv instance with data and model configurations.
+        
+        Parameters
+        ----------
+        Y : array-like
+            Outcome variable.
+        D : array-like
+            Treatment variable.
+        M : array-like
+            Mediator variable.
+        W : array-like
+            Negative control outcome.
+        Z : array-like
+            Instrumental variable.
+        X1 : array-like, optional
+            Additional covariates.
+        V : array-like, optional
+            Localization covariates.
+        v_values : array-like, optional
+            Values for localization.
+        loc_kernel : str, optional
+            Kernel for localization. Options are ['gau', 'epa', 'uni'].
+        bw_loc : str, optional
+            Bandwidth for localization.
+        estimator : str, optional
+            Estimator type ('MR', 'OR', 'hybrid', 'IPW').
+        estimand : str, optional
+            Type of estimand ('ATE', 'Indirect', 'Direct', 'E[Y1]', 'E[Y0]', 'E[Y(1,M(0))]').
+        model1 : estimator, optional
+            Model for the first stage.
+        nn_1 : bool, optional
+            Use neural network for the first stage.
+        model2 : estimator, optional
+            Model for the second stage.
+        nn_2 : bool, optional
+            Use neural network for the second stage.
+        modelq1 : estimator, optional
+            Model for the q1 stage.
+        nn_q1 : bool, optional
+            Use neural network for the q1 stage.
+        modelq2 : estimator, optional
+            Model for the q2 stage.
+        nn_q2 : bool, optional
+            Use neural network for the q2 stage.
+        alpha : float, optional
+            Significance level for confidence intervals.
+        n_folds : int, optional
+            Number of folds for estimation.
+        n_rep : int, optional
+            Number of repetitions for estimation.
+        random_seed : int, optional
+            Seed for random number generator.
+        prop_score : estimator, optional
+            Model for propensity score.
+        CHIM : bool, optional
+            Use CHIM method:
+            Dropping observations with extreme values of the propensity score - CHIM (2009)
+        verbose : bool, optional
+            Print progress information.
+        fitargs1 : dict, optional
+            Arguments for fitting the first stage model.
+        fitargs2 : dict, optional
+            Arguments for fitting the second stage model.
+        fitargsq1 : dict, optional
+            Arguments for fitting the q1 stage model.
+        fitargsq2 : dict, optional
+            Arguments for fitting the q2 stage model.
+        opts : dict, optional
+            Additional options.
+        """
         self.Y = Y
         self.D = D
         self.M = M
@@ -237,15 +309,18 @@ class DML_mediated:
         self.X1 = X1
         self.V = V
         self.v_values = v_values
-        self.ci_type = ci_type
         self.loc_kernel = loc_kernel
         self.bw_loc = bw_loc
         self.estimator = estimator
         self.estimand = estimand
-        self.model_y = copy.deepcopy(model_y)
-        self.model_a = copy.deepcopy(model_a)
-        self.nn_y = nn_y
-        self.nn_a = nn_a
+        self.model1 = copy.deepcopy(model1)
+        self.model2 = copy.deepcopy(model2)
+        self.modelq1 = copy.deepcopy(modelq1)
+        self.modelq2 = copy.deepcopy(modelq2)
+        self.nn_1 = nn_1
+        self.nn_2 = nn_2
+        self.nn_q1 = nn_q1
+        self.nn_q2 = nn_q2
         self.prop_score = prop_score
         self.CHIM = CHIM
         self.alpha = alpha
@@ -254,37 +329,11 @@ class DML_mediated:
         self.random_seed = random_seed
         self.verbose = verbose
         self.fitargs1 = fitargs1
+        self.fitargs2 = fitargs2
         self.fitargsq1 = fitargsq1
-        self.fitargsy = fitargsy
-        self.fitargsa = fitargsa
+        self.fitargsq2 = fitargsq2
         self.opts = opts
 
-        if isinstance(model1, list):
-            self.model1 = copy.deepcopy(model1[0])
-            self.model2 = copy.deepcopy(model1[1])
-            self.sequential_o = True
-            if not isinstance(nn_1, list):
-                raise ValueError("Sequential outcome model fitting requires nn_1 to be a list.")
-            else:
-                self.nn_1 = nn_1[0]
-                self.nn_2 = nn_1[1]
-        else:
-            self.model1 = copy.deepcopy(model1)
-            self.sequential_o = False
-
-        if isinstance(modelq1, list):
-            self.modelq1 = copy.deepcopy(modelq1[0])
-            self.modelq2 = copy.deepcopy(modelq1[1])
-            self.sequential_a = True
-            if not isinstance(nn_q1, list):
-                raise ValueError("Sequential action model fitting requires nn_q1 to be a list.")
-            else:
-                self.nn_q1 = nn_q1[0]
-                self.nn_q2 = nn_q1[1]
-        else:
-            self.modelq1 = copy.deepcopy(modelq1)  
-            self.sequential_a = False          
-        
         if self.X1 is None:
             if self.V is None:
                 self.X = np.ones((self.Y.shape[0], 1))
@@ -305,16 +354,12 @@ class DML_mediated:
             self.estimator = 'MR'
 
         if self.estimand not in ['ATE', 'Indirect', 'Direct', 'E[Y1]', 'E[Y0]', 'E[Y(1,M(0))]']:
-            warnings.warn(f"Invalid estimator: {estimator}. Estimator must be one of ['ATE', 'Indirect', 'Direct', 'E[Y1]', 'E[Y0]', 'E[Y(1,M(0))]']. Using ATE instead.", UserWarning)
+            warnings.warn(f"Invalid estimator: {estimand}. Estimator must be one of ['ATE', 'Indirect', 'Direct', 'E[Y1]', 'E[Y0]', 'E[Y(1,M(0))]']. Using ATE instead.", UserWarning)
             self.estimand = 'ATE'
 
         if self.estimand in ['ATE', 'E[Y1]', 'E[Y0]'] and self.estimator=='hybrid':
             warnings.warn(f"Invalid estimator: {estimator}. Estimator must be one of ['MR', 'OR', 'IPW'] when estimand is {estimand}. Using MR instead.", UserWarning)
             self.estimator = 'MR'                
-
-        if self.ci_type not in ['pointwise', 'uniform']:
-            warnings.warn(f"Invalid confidence interval type: {ci_type}. Confidence interval type must be one of ['pointwise', 'uniform']. Using pointwise instead.", UserWarning)
-            self.ci_type = 'pointwise'
 
         if self.loc_kernel not in list(kernel_switch.keys()):
             warnings.warn(f"Invalid kernel: {loc_kernel}. Kernel must be one of {list(kernel_switch.keys())}. Using gau instead.", UserWarning)
@@ -330,7 +375,7 @@ class DML_mediated:
                 warnings.warn(f"v_values is None. Computing localization around mean(V).", UserWarning)
                 self.v_values = np.mean(self.V, axis=0)    
             
-    def _calculate_confidence_interval(self, theta, theta_var, theta_cov):
+    def _calculate_confidence_interval(self, theta, theta_var):
         """
         Calculate the confidence interval for the given estimates.
 
@@ -340,33 +385,15 @@ class DML_mediated:
             Estimated values.
         theta_var : array-like
             Variance of the estimates.
-        theta_cov : array-like
-            Covariance matrix of the estimates.
 
         Returns
         -------
         array-like
             Lower and upper bounds of the confidence intervals.
         """
+        z_alpha_half = norm.ppf(1 - self.alpha / 2)
         n = self.Y.shape[0]
-
-        if self.ci_type == 'pointwise':
-            z_alpha_half = norm.ppf(1 - self.alpha / 2)
-            margin_of_error = z_alpha_half * np.sqrt(theta_var / n) 
-        else:
-            S = np.diag(np.diag(theta_cov))
-            S_inv_sqrt = np.diag(1.0 / np.sqrt(np.diag(S)))
-            
-            Sigma_hat = S_inv_sqrt @ theta_cov @ S_inv_sqrt
-            
-            # Sample Q from N(0, Sigma_hat)
-            Q_samples = np.random.multivariate_normal(np.zeros(theta.shape[0]), Sigma_hat, 5000)
-            
-            # Compute the (1 - alpha) quantile of the sampled |Q|_infty
-            Q_infinity_norms = np.max(np.abs(Q_samples), axis=1)
-            c_alpha = np.quantile(Q_infinity_norms, 1 - self.alpha)
-            margin_of_error = c_alpha * np.sqrt(np.diag(theta_cov) / n)
-
+        margin_of_error = z_alpha_half * np.sqrt(theta_var) * np.sqrt(1 / n)
         lower_bound = theta - margin_of_error
         upper_bound = theta + margin_of_error
         return np.column_stack((lower_bound, upper_bound))
@@ -402,8 +429,7 @@ class DML_mediated:
         omega = np.mean(KK,axis=0)   
         ell = KK/omega
         return ell.reshape(-1,1)
-
-
+    
     def _nnpivfit_outcome_m(self, Y, D, M, W, X, Z):
         """
         Fit the mediated outcome model using nonparametric instrumental variables.
@@ -495,7 +521,7 @@ class DML_mediated:
             bridge_2 = None
         
         return bridge_1, bridge_2
-    
+
 
     def _npivfit_outcome(self, Y, D, X, Z):
         """
@@ -517,10 +543,10 @@ class DML_mediated:
         object
             Fitted model.
         """
-        model_y1 = copy.deepcopy(self.model_y)
+        model_1 = copy.deepcopy(self.model1)
 
         # First stage
-        if self.nn_y==True:
+        if self.nn_1==True:
             Y, X, Z = tuple(map(lambda x: torch.Tensor(x), [Y, X, Z]))
         else:
             X = _transform_poly(X, self.opts)
@@ -531,12 +557,13 @@ class DML_mediated:
         X1 = X[ind, :]
         Z1 = Z[ind]
 
-        if self.fitargsy is not None:
-            bridge_1 = model_y1.fit(Z1, X1, Y1, **self.fitargsy)
+        if self.fitargs1 is not None:
+            bridge_1 = model_1.fit(Z1, X1, Y1, **self.fitargs1)
         else:
-            bridge_1 = model_y1.fit(Z1, X1, Y1)
+            bridge_1 = model_1.fit(Z1, X1, Y1)
         
         return bridge_1
+    
 
     def _propensity_score(self, M, X, W, D):
         """
@@ -742,10 +769,10 @@ class DML_mediated:
         X = X[mask, :]
         Z = Z[mask]
 
-        model_a1 = copy.deepcopy(self.model_a)
+        model_q1 = copy.deepcopy(self.modelq1)
 
         # First stage
-        if self.nn_a==True:
+        if self.nn_q1==True:
             ps_hat_1, W, X, Z = tuple(map(lambda x: torch.Tensor(x), [ps_hat_1, W, X, Z]))
             A2 = torch.cat((X, W), 1)
             A1 = torch.cat((X, Z), 1)
@@ -753,10 +780,10 @@ class DML_mediated:
             A2 = _transform_poly(np.column_stack((X, W)), self.opts)
             A1 = _transform_poly(np.column_stack((X, Z)), self.opts)
 
-        if self.fitargsa is not None:
-            bridge_1 = model_a1.fit(A2, A1, 1 / ps_hat_1, **self.fitargsa)
+        if self.fitargsq1 is not None:
+            bridge_1 = model_q1.fit(A2, A1, 1 / ps_hat_1, **self.fitargsq1)
         else:
-            bridge_1 = model_a1.fit(A2, A1, 1 / ps_hat_1)
+            bridge_1 = model_q1.fit(A2, A1, 1 / ps_hat_1)
 
         return bridge_1
 
@@ -797,131 +824,44 @@ class DML_mediated:
         array-like
             Estimated moment functions for the test data.
         """
-        model_1 = copy.deepcopy(self.model1)
-        model_q1 = copy.deepcopy(self.modelq1)
-
-        # Outcome model
         if self.estimator == 'MR' or self.estimator == 'OR' or self.estimator == 'hybrid':
+            gamma_1, gamma_0 = self._nnpivfit_outcome_m(train_Y, train_D, train_M, train_W, train_X, train_Z)
+        if self.estimator == 'MR' or self.estimator == 'hybrid' or self.estimator == 'IPW':
+            ps_hat_0, ps_hat_00, alfa = self._propensity_score(train_M, train_X, train_W, train_D)
+            q_0, q_1 = self._nnpivfit_action_m(ps_hat_0, ps_hat_00, train_D, train_M, train_W, train_X, train_Z, alfa=alfa)
 
-            if self.sequential_o==True:
-                gamma_1, gamma_0 = self._nnpivfit_outcome_m(train_Y, train_D, train_M, train_W, train_X, train_Z)
-                # Evaluate the estimated moment functions using test_data
-                if self.estimator == 'MR' or self.estimator == 'hybrid':
-                    if self.nn_1 == True:
-                        test_M, test_X, test_W = tuple(map(lambda x: torch.Tensor(x), [test_M, test_X, test_W]))
-                        gamma_1_hat = gamma_1.predict(torch.cat((test_M, test_X, test_W), 1).to(device),
-                                                    model='avg', burn_in=_get(self.opts, 'burnin', 0)).reshape(-1, 1)
-                    else:
-                        gamma_1_hat = gamma_1.predict(_transform_poly(np.column_stack((test_M, test_X, test_W)), opts=self.opts)).reshape(-1, 1)
-
-                if self.estimator == 'MR' or self.estimator == 'OR':
-                    if self.nn_2 == True:
-                        test_X, test_W = tuple(map(lambda x: torch.Tensor(x), [test_X, test_W]))
-                        gamma_0_hat = gamma_0.predict(torch.cat((test_X, test_W), 1).to(device),
-                                                    model='avg', burn_in=_get(self.opts, 'burnin', 0)).reshape(-1, 1)
-                    else:
-                        gamma_0_hat = gamma_0.predict(_transform_poly(np.column_stack((test_X, test_W)), opts=self.opts)).reshape(-1, 1)
-
-            else:
-                A_train = np.column_stack((train_M, train_X, train_W))
-                E_train = np.column_stack((train_M, train_X, train_Z))
-                B_train = np.column_stack((train_X, train_W))
-                C_train = np.column_stack((train_X, train_Z))
-                B_test = np.column_stack((test_X, test_W))
-                A_test = np.column_stack((test_M, test_X, test_W))
-
-                if self.nn_1 == True:
-                    A_train, E_train, B_train, C_train, B_test, A_test, train_Y, train_D = map(lambda x: torch.Tensor(x), 
-                                                                                            [A_train, E_train, B_train, C_train, B_test, A_test, train_Y, train_D])
-                else:
-                    A_train = _transform_poly(A_train, self.opts)
-                    E_train = _transform_poly(E_train, self.opts)
-                    B_train = _transform_poly(B_train, self.opts)
-                    C_train = _transform_poly(C_train, self.opts)
-                    B_test = _transform_poly(B_test, self.opts)
-                    A_test = _transform_poly(A_test, self.opts)
-
-                if self.fitargs1 is not None:
-                    model_1.fit(A_train, B_train, C_train, E_train, train_Y, subsetted=True, subset_ind1=train_D, **self.fitargs1)
-                else:
-                    model_1.fit(A_train, B_train, C_train, E_train, train_Y, subsetted=True, subset_ind1=train_D)
-
-                if self.nn_1 == True:
-                    gamma_0_hat, gamma_1_hat = model_1.predict(B_test.to(device), A_test.to(device), model='avg', burn_in=_get(self.opts, 'burnin', 0))
-                    gamma_0_hat = gamma_0_hat.reshape(-1, 1)
-                    gamma_1_hat = gamma_1_hat.reshape(-1, 1)
-                else:
-                    gamma_0_hat, gamma_1_hat = model_1.predict(B_test, A_test)
-                    gamma_0_hat = gamma_0_hat.reshape(-1, 1)
-                    gamma_1_hat = gamma_1_hat.reshape(-1, 1)
-
-        # Action model
-        if self.estimator == 'MR' or self.estimator == 'IPW' or self.estimator == 'hybrid':
-
-            if self.sequential_a==True:
-                ps_hat_0, ps_hat_00, alfa = self._propensity_score(train_M, train_X, train_W, train_D)
-                q_0, q_1 = self._nnpivfit_action_m(ps_hat_0, ps_hat_00, train_D, train_M, train_W, train_X, train_Z, alfa=alfa)
-                # Evaluate the estimated moment functions using test_data
-                if self.estimator == 'MR' or self.estimator == 'hybrid':
-                    if self.nn_q1 == True:
-                        test_X, test_Z = tuple(map(lambda x: torch.Tensor(x), [test_X, test_Z]))
-                        q_0_hat = q_0.predict(torch.cat((test_X, test_Z), 1).to(device),
+        # Evaluate the estimated moment functions using test_data
+        if self.estimator == 'MR' or self.estimator == 'hybrid':
+            if self.nn_1 == True:
+                test_M, test_X, test_W = tuple(map(lambda x: torch.Tensor(x), [test_M, test_X, test_W]))
+                gamma_1_hat = gamma_1.predict(torch.cat((test_M, test_X, test_W), 1).to(device),
                                             model='avg', burn_in=_get(self.opts, 'burnin', 0)).reshape(-1, 1)
-                    else:
-                        q_0_hat = q_0.predict(_transform_poly(np.column_stack((test_X, test_Z)), opts=self.opts)).reshape(-1, 1)
-
-                if self.estimator == 'MR' or self.estimator == 'IPW':
-                    if self.nn_q2 == True:
-                        test_M, test_X, test_Z = tuple(map(lambda x: torch.Tensor(x), [test_M, test_X, test_Z]))
-                        q_1_hat = q_1.predict(torch.cat((test_M, test_X, test_Z), 1).to(device),
-                                            model='avg', burn_in=_get(self.opts, 'burnin', 0)).reshape(-1, 1)
-                    else:
-                        q_1_hat = q_1.predict(_transform_poly(np.column_stack((test_M, test_X, test_Z)), opts=self.opts)).reshape(-1, 1)
-
             else:
-                A_train = np.column_stack((train_X, train_Z))
-                E_train = np.column_stack((train_X, train_W))
-                B_train = np.column_stack((train_M, train_X, train_Z))
-                C_train = np.column_stack((train_M, train_X, train_W))
-                B_test = np.column_stack((test_M, test_X, test_Z))
-                A_test = np.column_stack((test_X, test_Z))
+                gamma_1_hat = gamma_1.predict(_transform_poly(np.column_stack((test_M, test_X, test_W)), opts=self.opts)).reshape(-1, 1)
 
-                ps_hat_0, ps_hat_00, alfa = self._propensity_score(train_M, train_X, train_W, train_D)
-                mask = np.where((ps_hat_0 >= alfa) & (ps_hat_0 <= 1 - alfa) &
-                                (ps_hat_00 >= alfa) & (ps_hat_00 <= 1 - alfa))[0]
-                ps_hat_0 = ps_hat_0[mask]
-                ps_hat_00 = ps_hat_00[mask]
-                ps_hat_01 = 1 - ps_hat_00
+        if self.estimator == 'MR' or self.estimator == 'OR':
+            if self.nn_2 == True:
+                test_X, test_W = tuple(map(lambda x: torch.Tensor(x), [test_X, test_W]))
+                gamma_0_hat = gamma_0.predict(torch.cat((test_X, test_W), 1).to(device),
+                                            model='avg', burn_in=_get(self.opts, 'burnin', 0)).reshape(-1, 1)
+            else:
+                gamma_0_hat = gamma_0.predict(_transform_poly(np.column_stack((test_X, test_W)), opts=self.opts)).reshape(-1, 1)
 
-                A_train, E_train, B_train, C_train, train_D = map(lambda x: x[mask], 
-                                                    [A_train, E_train, B_train, C_train, train_D])
-                
-                if self.nn_1 == True:
-                    A_train, E_train, B_train, C_train, train_D, ps_hat_0, ps_hat_00, ps_hat_01, B_test, A_test = map(lambda x: torch.Tensor(x), 
-                                [A_train, E_train, B_train, C_train, train_D, ps_hat_0, ps_hat_00, ps_hat_01, B_test, A_test])
-                    
-                else:
-                    A_train = _transform_poly(A_train, self.opts)
-                    E_train = _transform_poly(E_train, self.opts)
-                    B_train = _transform_poly(B_train, self.opts)
-                    C_train = _transform_poly(C_train, self.opts)
-                    B_test = _transform_poly(B_test, self.opts)
-                    A_test = _transform_poly(A_test, self.opts)
+        if self.estimator == 'MR' or self.estimator == 'hybrid':
+            if self.nn_q1 == True:
+                test_X, test_Z = tuple(map(lambda x: torch.Tensor(x), [test_X, test_Z]))
+                q_0_hat = q_0.predict(torch.cat((test_X, test_Z), 1).to(device),
+                                    model='avg', burn_in=_get(self.opts, 'burnin', 0)).reshape(-1, 1)
+            else:
+                q_0_hat = q_0.predict(_transform_poly(np.column_stack((test_X, test_Z)), opts=self.opts)).reshape(-1, 1)
 
-                if self.fitargs1 is not None:
-                    #Using weights in the action stage
-                    model_q1.fit(A_train, B_train, C_train, E_train, 1/ps_hat_0, W=(ps_hat_00/ps_hat_01), subsetted=True, subset_ind1=1-train_D, **self.fitargs1)
-                else:
-                    model_q1.fit(A_train, B_train, C_train, E_train, 1/ps_hat_0, W=(ps_hat_00/ps_hat_01), subsetted=True, subset_ind1=1-train_D)
-
-                if self.nn_1 == True:
-                    q_1_hat, q_0_hat = model_q1.predict(B_test.to(device), A_test.to(device), model='avg', burn_in=_get(self.opts, 'burnin', 0))
-                    q_0_hat = q_0_hat.reshape(-1, 1)
-                    q_1_hat = q_1_hat.reshape(-1, 1)
-                else:
-                    q_1_hat, q_0_hat = model_q1.predict(B_test, A_test)
-                    q_0_hat = q_0_hat.reshape(-1, 1)
-                    q_1_hat = q_1_hat.reshape(-1, 1)
+        if self.estimator == 'MR' or self.estimator == 'IPW':
+            if self.nn_q2 == True:
+                test_M, test_X, test_Z = tuple(map(lambda x: torch.Tensor(x), [test_M, test_X, test_Z]))
+                q_1_hat = q_1.predict(torch.cat((test_M, test_X, test_Z), 1).to(device),
+                                    model='avg', burn_in=_get(self.opts, 'burnin', 0)).reshape(-1, 1)
+            else:
+                q_1_hat = q_1.predict(_transform_poly(np.column_stack((test_M, test_X, test_Z)), opts=self.opts)).reshape(-1, 1)
 
         # Calculate the score function depending on the estimator
         if self.estimator == 'MR':
@@ -978,7 +918,7 @@ class DML_mediated:
 
         # Evaluate the estimated moment functions using test_data
         if self.estimator == 'MR' or self.estimator == 'OR':
-            if self.nn_y == True:
+            if self.nn_1 == True:
                 test_X = torch.Tensor(test_X)
                 gamma_1_hat = gamma_1.predict(test_X.to(device),
                                             model='avg', burn_in=_get(self.opts, 'burnin', 0)).reshape(-1, 1)
@@ -986,7 +926,7 @@ class DML_mediated:
                 gamma_1_hat = gamma_1.predict(_transform_poly(test_X, opts=self.opts)).reshape(-1, 1)
 
         if self.estimator == 'MR' or self.estimator == 'IPW' or self.estimator == 'hybrid':
-            if self.nn_a == True:
+            if self.nn_q1 == True:
                 test_X, test_Z = tuple(map(lambda x: torch.Tensor(x), [test_X, test_Z]))
                 q_1_hat = q_1.predict(torch.cat((test_X, test_Z), 1).to(device),
                                     model='avg', burn_in=_get(self.opts, 'burnin', 0)).reshape(-1, 1)
@@ -1097,7 +1037,6 @@ class DML_mediated:
         """
         theta = []
         theta_var = []
-        theta_cov = []
 
         for rep in range(self.n_rep):
             
@@ -1132,23 +1071,20 @@ class DML_mediated:
             # Calculate the average of psi_hat_array for each rep
             psi_hat_array = np.concatenate(fold_results, axis=0)
             theta_rep = np.mean(psi_hat_array, axis=0)
-            theta_var_rep = np.var(psi_hat_array, axis=0, ddof=1)
-            theta_cov_rep = np.cov(psi_hat_array, rowvar=False)
+            theta_var_rep = np.var(psi_hat_array, axis=0)
 
             # Store results for each rep
             theta.append(theta_rep)
             theta_var.append(theta_var_rep)
-            theta_cov.append(theta_cov_rep)
 
         # Calculate the overall average of theta and theta_var
         theta_hat = np.mean(np.stack(theta, axis=0), axis=0)
         theta_var_hat = np.mean(np.stack(theta_var, axis=0), axis=0)
-        theta_cov_hat = np.mean(np.stack(theta_cov, axis=0), axis=0)
 
         # Calculate the confidence interval
-        confidence_interval = self._calculate_confidence_interval(theta_hat, theta_var_hat, theta_cov_hat) 
+        confidence_interval = self._calculate_confidence_interval(theta_hat, theta_var_hat)
 
-        return theta_hat, theta_var_hat, confidence_interval, theta_cov_hat
+        return theta_hat, theta_var_hat, confidence_interval
     
 
     def dml(self):
@@ -1160,8 +1096,8 @@ class DML_mediated:
         tuple
             Estimated values, variances, and confidence intervals.
         """
-        theta, theta_var, confidence_interval, theta_cov_hat = self._split_and_estimate()
+        theta, theta_var, confidence_interval = self._split_and_estimate()
         if self.V is None:
             return theta[0], theta_var[0], confidence_interval[0]
         else:
-            return theta, theta_cov_hat, confidence_interval
+            return theta, theta_var, confidence_interval

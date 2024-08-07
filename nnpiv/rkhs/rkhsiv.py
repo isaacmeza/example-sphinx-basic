@@ -13,7 +13,7 @@ Classes:
 # Copyright (c) Microsoft Corporation.
 # Licensed under the MIT License.
 
-from sklearn.metrics.pairwise import pairwise_kernels, euclidean_distances
+from sklearn.metrics.pairwise import pairwise_kernels
 from sklearn.model_selection import KFold
 from sklearn.kernel_approximation import Nystroem, RBFSampler
 import numpy as np
@@ -32,7 +32,7 @@ class _BaseRKHSIV:
 
     Parameters:
         kernel (str or callable): Kernel function or string identifier.
-        gamma (str or float): Length scale for the kernel.
+        gamma (float): Gamma parameter for the kernel.
         degree (int): Degree for polynomial kernels.
         coef0 (float): Zero coefficient for polynomial kernels.
         delta_scale (str or float): Scale of the critical radius.
@@ -72,13 +72,7 @@ class _BaseRKHSIV:
         if callable(self.kernel):
             params = self.kernel_params or {}
         else:
-            if _check_auto(self.gamma):
-                pairwise_dists = euclidean_distances(X, X)
-                median_dist = np.median(pairwise_dists)
-                gamma = 1.0 / (2 * median_dist)
-            else:
-                gamma = self.gamma
-            params = {"gamma": gamma,
+            params = {"gamma": self.gamma,
                       "degree": self.degree,
                       "coef0": self.coef0}
         return pairwise_kernels(X, Y, metric=self.kernel,
@@ -93,7 +87,7 @@ class RKHSIV(_BaseRKHSIV):
 
     Parameters:
         kernel (str or callable): Kernel function or string identifier.
-        gamma (str or float): Length scale for the kernel.
+        gamma (float): Gamma parameter for the kernel.
         degree (int): Degree for polynomial kernels.
         coef0 (float): Zero coefficient for polynomial kernels.
         delta_scale (str or float): Scale of the critical radius.
@@ -183,7 +177,7 @@ class RKHSIVCV(RKHSIV):
 
     Parameters:
         kernel (str or callable): Kernel function or string identifier.
-        gamma (str or float): Length scale for the kernel.
+        gamma (float): Gamma parameter for the kernel.
         degree (int): Degree for polynomial kernels.
         coef0 (float): Zero coefficient for polynomial kernels.
         delta_scale (str or float): Scale of the critical radius.
@@ -273,7 +267,7 @@ class RKHSIVL2(_BaseRKHSIV):
 
     Parameters:
         kernel (str or callable): Kernel function or string identifier.
-        gamma (str or float): Length scale for the kernel.
+        gamma (float): Gamma parameter for the kernel.
         degree (int): Degree for polynomial kernels.
         coef0 (float): Zero coefficient for polynomial kernels.
         delta_scale (str or float): Scale of the critical radius.
@@ -336,7 +330,7 @@ class RKHSIVL2CV(RKHSIVL2):
 
     Parameters:
         kernel (str or callable): Kernel function or string identifier.
-        gamma (str or float): Length scale for the kernel.
+        gamma (float): Gamma parameter for the kernel.
         degree (int): Degree for polynomial kernels.
         coef0 (float): Zero coefficient for polynomial kernels.
         delta_scale (str or float): Scale of the critical radius.
@@ -422,7 +416,7 @@ class ApproxRKHSIV(_BaseRKHSIV):
         kernel_approx (str): Kernel approximation method ('nystrom' or 'rbfsampler').
         n_components (int): Number of approximation components.
         kernel (str or callable): Kernel function or string identifier.
-        gamma (str or float): Length scale for the kernel.
+        gamma (float): Gamma parameter for the kernel.
         degree (int): Degree for polynomial kernels.
         coef0 (float): Zero coefficient for polynomial kernels.
         delta_scale (str or float): Scale of the critical radius.
@@ -535,7 +529,7 @@ class ApproxRKHSIVCV(ApproxRKHSIV):
         kernel_approx (str): Kernel approximation method ('nystrom' or 'rbfsampler').
         n_components (int): Number of approximation components.
         kernel (str or callable): Kernel function or string identifier.
-        gamma (str or float): Length scale for the kernel.
+        gamma (float): Gamma parameter for the kernel.
         degree (int): Degree for polynomial kernels.
         coef0 (float): Zero coefficient for polynomial kernels.
         delta_scale (str or float): Scale of the critical radius.

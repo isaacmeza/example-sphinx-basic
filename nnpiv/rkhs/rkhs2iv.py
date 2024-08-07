@@ -11,7 +11,7 @@ Classes:
 # Copyright (c) Microsoft Corporation.
 # Licensed under the MIT License.
 
-from sklearn.metrics.pairwise import pairwise_kernels, euclidean_distances
+from sklearn.metrics.pairwise import pairwise_kernels
 from sklearn.model_selection import KFold
 from sklearn.kernel_approximation import Nystroem, RBFSampler
 import numpy as np
@@ -30,7 +30,7 @@ class _BaseRKHS2IV:
 
     Parameters:
         kernel (str or callable): Kernel function or string identifier.
-        gamma (str or float): Length scale for the kernel.
+        gamma (float): Gamma parameter for the kernel.
         degree (int): Degree for polynomial kernels.
         coef0 (float): Zero coefficient for polynomial kernels.
         delta_scale (str or float): Scale of the critical radius.
@@ -70,13 +70,7 @@ class _BaseRKHS2IV:
         if callable(self.kernel):
             params = self.kernel_params or {}
         else:
-            if _check_auto(self.gamma):
-                pairwise_dists = euclidean_distances(X, X)
-                median_dist = np.median(pairwise_dists)
-                gamma = 1.0 / (2 * median_dist)
-            else:
-                gamma = self.gamma
-            params = {"gamma": gamma,
+            params = {"gamma": self.gamma,
                       "degree": self.degree,
                       "coef0": self.coef0}
         return pairwise_kernels(X, Y, metric=self.kernel,
@@ -91,7 +85,7 @@ class RKHS2IV(_BaseRKHS2IV):
 
     Parameters:
         kernel (str or callable): Kernel function or string identifier.
-        gamma (str or float): Length scale for the kernel.
+        gamma (float): Gamma parameter for the kernel.
         degree (int): Degree for polynomial kernels.
         coef0 (float): Zero coefficient for polynomial kernels.
         delta_scale (str or float): Scale of the critical radius.
@@ -135,7 +129,7 @@ class RKHS2IV(_BaseRKHS2IV):
 
         n = Y.shape[0]
         Id = np.eye(n)
-        Iw = Id if W is None else np.diag(W.flatten())
+        Iw = Id if W is None else np.diag(W)
 
         if subsetted:
             ind1 = np.where(subset_ind1 == 1)[0]
@@ -158,7 +152,7 @@ class RKHS2IV(_BaseRKHS2IV):
 
         KbPcKa_inv = np.linalg.pinv(Kb @ Pc @ Iw @ Ka)
 
-        M = Ka @ ( - Iw @ Pc + (Pd @ Ka + Iw @ Pc @ Iw @ Ka + alpha * Id) @ KbPcKa_inv @ (Kb @ Pc + alpha * Id)) @ Kb
+        M = Ka @ (Iw @ Pc + (Pd @ Ka + Iw @ Pc @ Iw @ Ka + alpha * Id) @ KbPcKa_inv @ (Kb @ Pc + alpha * Id)) @ Kb
         
         self.b = np.linalg.pinv(M) @ Ka @ Pd @ Y
         self.a = KbPcKa_inv @ (Kb @ Pc + alpha * Id) @ Kb @ self.b
@@ -195,7 +189,7 @@ class RKHS2IVCV(RKHS2IV):
 
     Parameters:
         kernel (str or callable): Kernel function or string identifier.
-        gamma (str or float): Length scale for the kernel.
+        gamma (float): Gamma parameter for the kernel.
         degree (int): Degree for polynomial kernels.
         coef0 (float): Zero coefficient for polynomial kernels.
         delta_scale (str or float): Scale of the critical radius.
@@ -242,20 +236,26 @@ class RKHS2IVCV(RKHS2IV):
                 raise ValueError("subset_ind1 must be provided when subsetted is True")
             if len(subset_ind1) != len(Y):
                 raise ValueError("subset_ind1 must have the same length as Y")
-            ind1 = np.where(subset_ind1 == 1)[0]
-            ind2 = np.where(subset_ind2 == 1)[0] if subset_ind2 is not None else np.where(subset_ind1 == 0)[0]
 
         n = Y.shape[0]
         Id = np.eye(n)
-        Iw = Id if W is None else np.diag(W.flatten())
+        Iw = Id if W is None else np.diag(W)
+
+        if subsetted:
+            ind1 = np.where(subset_ind1 == 1)[0]
+            ind2 = np.where(subset_ind2 == 1)[0] if subset_ind2 is not None else np.where(subset_ind1 == 0)[0]
+            Ip = Id[ind1, :]
+            Iq = Id[ind2, :]
+            p = Ip.shape[0]
+            q = Iq.shape[0]
 
         Ka = self._get_kernel(A)
         Kb = self._get_kernel(B)
         Kc = self._get_kernel(C)
         Kd = self._get_kernel(D)
 
-        Pc = np.linalg.pinv(Kc + Id) @ Kc if not subsetted else (n / len(ind2)) * Id[ind2, :].T @ np.linalg.pinv(Id[ind2, :] @ Kc @ Id[ind2, :].T + Id[ind2, :]) @ Id[ind2, :] @ Kc @ Id[ind2, :].T @ Id[ind2, :]
-        Pd = np.linalg.pinv(Kd + Id) @ Kd if not subsetted else (n / len(ind1)) * Id[ind1, :].T @ np.linalg.pinv(Id[ind1, :] @ Kd @ Id[ind1, :].T + Id[ind1, :]) @ Id[ind1, :] @ Kd @ Id[ind1, :].T @ Id[ind1, :]
+        Pc = np.linalg.pinv(Kc + Id) @ Kc if not subsetted else (n/q) * Iq.T @ np.linalg.pinv(Iq @ Kc @ Iq.T + Iq @ Iq.T) @ Iq @ Kc @ Iq.T @ Iq
+        Pd = np.linalg.pinv(Kd + Id) @ Kd if not subsetted else (n/p) * Ip.T @ np.linalg.pinv(Ip @ Kd @ Ip.T + Ip @ Ip.T) @ Ip @ Kd @ Ip.T @ Ip
 
         alpha_scales = self._get_alpha_scales()
         n_train = n * (self.cv - 1) / self.cv
@@ -263,46 +263,33 @@ class RKHS2IVCV(RKHS2IV):
         delta_train = self._get_delta(n_train)
         delta = self._get_delta(n)
         scores = []
-
         for it, (train, test) in enumerate(KFold(n_splits=self.cv).split(Y)):
             Ka_train = Ka[np.ix_(train, train)]
             Kb_train = Kb[np.ix_(train, train)]
             Id_train = np.eye(len(train))
             Id_test = np.eye(len(test))
-
             if not subsetted:
                 Pc_train = np.linalg.pinv(Kc[np.ix_(train, train)] + Id_train) @ Kc[np.ix_(train, train)]
                 Pd_train = np.linalg.pinv(Kd[np.ix_(train, train)] + Id_train) @ Kd[np.ix_(train, train)]
                 Pc_test = np.linalg.pinv(Kc[np.ix_(test, test)] + Id_test) @ Kc[np.ix_(test, test)]
                 Pd_test = np.linalg.pinv(Kd[np.ix_(test, test)] + Id_test) @ Kd[np.ix_(test, test)]
             else:
-                train_ind1 = [i for i in train if i in ind1]
-                train_ind2 = [i for i in train if i in ind2]
-                test_ind1 = [i for i in test if i in ind1]
-                test_ind2 = [i for i in test if i in ind2]
-
-                if len(train_ind1) == 0 or len(train_ind2) == 0 or len(test_ind1) == 0 or len(test_ind2) == 0:
-                    continue
-
-                Iq_train = Id[ind2, :][train_ind2, :]
-                Ip_train = Id[ind1, :][train_ind1, :]
-                Iq_test = Id[ind2, :][test_ind2, :]
-                Ip_test = Id[ind1, :][test_ind1, :]
-
+                Iq_train = Iq[train, :]
+                Ip_train = Ip[train, :]
+                Iq_test = Iq[test, :]
+                Ip_test = Ip[test, :]
                 q_train = Iq_train.shape[0]
                 p_train = Ip_train.shape[0]
                 q_test = Iq_test.shape[0]
                 p_test = Ip_test.shape[0]
-
-                Kc_train = Iq_train @ Kc[np.ix_(train_ind2, train_ind2)] @ Iq_train.T
-                Kd_train = Ip_train @ Kd[np.ix_(train_ind1, train_ind1)] @ Ip_train.T
-                Kc_test = Iq_test @ Kc[np.ix_(test_ind2, test_ind2)] @ Iq_test.T  
-                Kd_test = Ip_test @ Kd[np.ix_(test_ind1, test_ind1)] @ Ip_test.T
-
-                Pc_train = (n_train / q_train) * Iq_train.T @ np.linalg.pinv(Kc_train + Iq_train @ Iq_train.T) @ Kc_train @ Iq_train
-                Pd_train = (n_train / p_train) * Ip_train.T @ np.linalg.pinv(Kd_train + Ip_train @ Ip_train.T) @ Kd_train @ Ip_train
-                Pc_test = (n_test / q_test) * Iq_test.T @ np.linalg.pinv(Kc_test + Iq_test @ Iq_test.T) @ Kc_test @ Iq_test
-                Pd_test = (n_test / p_test) * Ip_test.T @ np.linalg.pinv(Kd_test + Ip_test @ Ip_test.T) @ Kd_test @ Ip_test
+                Kc_train = Iq_train @ Kc[np.ix_(train, train)] @ Iq_train.T
+                Kd_train = Ip_train @ Kd[np.ix_(train, train)] @ Ip_train.T
+                Kc_test = Iq_test @ Kc[np.ix_(test, test)] @ Iq_test.T  
+                Kd_test = Ip_test @ Kd[np.ix_(test, test)] @ Ip_test.T
+                Pc_train = (n_train/q_train) * Iq_train.T @ np.linalg.pinv(Kc_train + Iq_train @ Iq_train.T) @ Kc_train @ Iq_train
+                Pd_train = (n_train/p_train) * Ip_train.T @ np.linalg.pinv(Kd_train + Ip_train @ Ip_train.T) @ Kd_train @ Ip_train
+                Pc_test = (n_test/q_test) * Iq_test.T @ np.linalg.pinv(Kc_test + Iq_test @ Iq_test.T) @ Kc_test @ Iq_test
+                Pd_test = (n_test/p_test) * Ip_test.T @ np.linalg.pinv(Kd_test + Ip_test @ Ip_test.T) @ Kd_test @ Ip_test
 
             Iw_train = Iw[np.ix_(train, train)]
             KbPcKa_inv = np.linalg.pinv(Kb_train @ Pc_train @ Iw_train @ Ka_train)
@@ -311,12 +298,15 @@ class RKHS2IVCV(RKHS2IV):
             scores.append([])
             for alpha_scale in alpha_scales:
                 alpha = alpha_scale * delta_train**4
-                M = Ka_train @ ( - Iw_train @ Pc_train + (Pd_train @ Ka_train + Iw_train @ Pc_train @ Iw_train @ Ka_train + alpha * Id_train) @ KbPcKa_inv @ (Kb_train @ Pc_train + alpha * Id_train)) @ Kb_train
+                M = Ka_train @ (Iw_train @ Pc_train + (Pd_train @ Ka_train + Iw_train @ Pc_train @ Iw_train @ Ka_train + alpha * Id_train) @ KbPcKa_inv @ (Kb_train @ Pc_train + alpha * Id_train)) @ Kb_train
                 b = np.linalg.pinv(M) @ B_train
                 a = KbPcKa_inv @ (Kb_train @ Pc_train + alpha * Id_train) @ Kb_train @ b
                 res1 = Y[test] - Ka[np.ix_(test, train)] @ a
                 res2 = Ka[np.ix_(test, train)] @ a - Kb[np.ix_(test, train)] @ b
-                scores[it].append((res1.T @ Pd_test @ res1)[0, 0] / (res1.shape[0]**2) + (res2.T @ Pc_test @ res2)[0, 0] / (res2.shape[0]**2))
+                scores[it].append((res1.T @ Pd_test @ res1)[
+                                  0, 0] / (res1.shape[0]**2) 
+                                  + (res2.T @ Pc_test @ res2)[
+                                  0, 0] / (res2.shape[0]**2) )
 
         self.alpha_scales = alpha_scales
         self.avg_scores = np.mean(np.array(scores), axis=0)
@@ -326,8 +316,8 @@ class RKHS2IVCV(RKHS2IV):
         self.best_alpha = self.best_alpha_scale * delta**4
 
         KbPcKa_inv = np.linalg.pinv(Kb @ Pc @ Iw @ Ka)
-        M = Ka @ ( - Iw @ Pc + (Pd @ Ka + Iw @ Pc @ Iw @ Ka + self.best_alpha * Id) @ KbPcKa_inv @ (Kb @ Pc + self.best_alpha * Id)) @ Kb
-
+        M = Ka @ (Iw @ Pc + (Pd @ Ka + Iw @ Pc @ Iw @ Ka + self.best_alpha * Id) @ KbPcKa_inv @ (Kb @ Pc + self.best_alpha * Id)) @ Kb
+        
         self.b = np.linalg.pinv(M) @ Ka @ Pd @ Y
         self.a = KbPcKa_inv @ (Kb @ Pc + self.best_alpha * Id) @ Kb @ self.b
 
@@ -335,8 +325,8 @@ class RKHS2IVCV(RKHS2IV):
         self.B = B.copy()
 
         return self
-
     
+
 class RKHS2IVL2(_BaseRKHS2IV):
     """
     Nested RKHS IV estimator with L2 regularization.
@@ -345,7 +335,7 @@ class RKHS2IVL2(_BaseRKHS2IV):
 
     Parameters:
         kernel (str or callable): Kernel function or string identifier.
-        gamma (str or float): Length scale for the kernel.
+        gamma (float): Gamma parameter for the kernel.
         degree (int): Degree for polynomial kernels.
         coef0 (float): Zero coefficient for polynomial kernels.
         delta_scale (str or float): Scale of the critical radius.
@@ -389,7 +379,7 @@ class RKHS2IVL2(_BaseRKHS2IV):
 
         n = Y.shape[0]
         Id = np.eye(n)
-        Iw = Id if W is None else np.diag(W.flatten())
+        Iw = Id if W is None else np.diag(W)
 
         if subsetted:
             ind1 = np.where(subset_ind1 == 1)[0]
@@ -412,7 +402,7 @@ class RKHS2IVL2(_BaseRKHS2IV):
 
         KbPcKa_inv = np.linalg.pinv(Kb @ Pc @ Iw @ Ka)
 
-        M = Ka @ ( - Iw @ Pc + (Pd + Iw @ Pc @ Iw + alpha * Id) @ Ka @ KbPcKa_inv @ Kb @ (Pc + alpha * Id)) @ Kb
+        M = Ka @ (Iw @ Pc + (Pd + Iw @ Pc @ Iw + alpha * Id) @ Ka @ KbPcKa_inv @ Kb @ (Pc + alpha * Id)) @ Kb
         
         self.b = np.linalg.pinv(M) @ Ka @ Pd @ Y
         self.a = KbPcKa_inv @ Kb @ (Pc + alpha * Id) @ Kb @ self.b
@@ -449,7 +439,7 @@ class RKHS2IVL2CV(RKHS2IVL2):
 
     Parameters:
         kernel (str or callable): Kernel function or string identifier.
-        gamma (str or float): Length scale for the kernel.
+        gamma (float): Gamma parameter for the kernel.
         degree (int): Degree for polynomial kernels.
         coef0 (float): Zero coefficient for polynomial kernels.
         delta_scale (str or float): Scale of the critical radius.
@@ -496,20 +486,26 @@ class RKHS2IVL2CV(RKHS2IVL2):
                 raise ValueError("subset_ind1 must be provided when subsetted is True")
             if len(subset_ind1) != len(Y):
                 raise ValueError("subset_ind1 must have the same length as Y")
-            ind1 = np.where(subset_ind1 == 1)[0]
-            ind2 = np.where(subset_ind2 == 1)[0] if subset_ind2 is not None else np.where(subset_ind1 == 0)[0]
 
         n = Y.shape[0]
         Id = np.eye(n)
-        Iw = Id if W is None else np.diag(W.flatten())
+        Iw = Id if W is None else np.diag(W)
+
+        if subsetted:
+            ind1 = np.where(subset_ind1 == 1)[0]
+            ind2 = np.where(subset_ind2 == 1)[0] if subset_ind2 is not None else np.where(subset_ind1 == 0)[0]
+            Ip = Id[ind1, :]
+            Iq = Id[ind2, :]
+            p = Ip.shape[0]
+            q = Iq.shape[0]
 
         Ka = self._get_kernel(A)
         Kb = self._get_kernel(B)
         Kc = self._get_kernel(C)
         Kd = self._get_kernel(D)
 
-        Pc = np.linalg.pinv(Kc) @ Kc if not subsetted else (n / len(ind2)) * Id[ind2, :].T @ np.linalg.pinv(Id[ind2, :] @ Kc @ Id[ind2, :].T) @ Id[ind2, :] @ Kc @ Id[ind2, :].T @ Id[ind2, :]
-        Pd = np.linalg.pinv(Kd) @ Kd if not subsetted else (n / len(ind1)) * Id[ind1, :].T @ np.linalg.pinv(Id[ind1, :] @ Kd @ Id[ind1, :].T) @ Id[ind1, :] @ Kd @ Id[ind1, :].T @ Id[ind1, :]
+        Pc = np.linalg.pinv(Kc) @ Kc if not subsetted else (n/q) * Iq.T @ np.linalg.pinv(Iq @ Kc @ Iq.T) @ Iq @ Kc @ Iq.T @ Iq
+        Pd = np.linalg.pinv(Kd) @ Kd if not subsetted else (n/p) * Ip.T @ np.linalg.pinv(Ip @ Kd @ Ip.T) @ Ip @ Kd @ Ip.T @ Ip
 
         alpha_scales = self._get_alpha_scales()
         n_train = n * (self.cv - 1) / self.cv
@@ -517,7 +513,6 @@ class RKHS2IVL2CV(RKHS2IVL2):
         delta_train = self._get_delta(n_train)
         delta = self._get_delta(n)
         scores = []
-
         for it, (train, test) in enumerate(KFold(n_splits=self.cv).split(Y)):
             Ka_train = Ka[np.ix_(train, train)]
             Kb_train = Kb[np.ix_(train, train)]
@@ -529,33 +524,22 @@ class RKHS2IVL2CV(RKHS2IVL2):
                 Pc_test = np.linalg.pinv(Kc[np.ix_(test, test)]) @ Kc[np.ix_(test, test)]
                 Pd_test = np.linalg.pinv(Kd[np.ix_(test, test)]) @ Kd[np.ix_(test, test)]
             else:
-                train_ind1 = [i for i in train if i in ind1]
-                train_ind2 = [i for i in train if i in ind2]
-                test_ind1 = [i for i in test if i in ind1]
-                test_ind2 = [i for i in test if i in ind2]
-
-                if len(train_ind1) == 0 or len(train_ind2) == 0 or len(test_ind1) == 0 or len(test_ind2) == 0:
-                    continue
-
-                Iq_train = Id[ind2, :][train_ind2, :]
-                Ip_train = Id[ind1, :][train_ind1, :]
-                Iq_test = Id[ind2, :][test_ind2, :]
-                Ip_test = Id[ind1, :][test_ind1, :]
-
+                Iq_train = Iq[train, :]
+                Ip_train = Ip[train, :]
+                Iq_test = Iq[test, :]
+                Ip_test = Ip[test, :]
                 q_train = Iq_train.shape[0]
                 p_train = Ip_train.shape[0]
                 q_test = Iq_test.shape[0]
                 p_test = Ip_test.shape[0]
-
-                Kc_train = Iq_train @ Kc[np.ix_(train_ind2, train_ind2)] @ Iq_train.T
-                Kd_train = Ip_train @ Kd[np.ix_(train_ind1, train_ind1)] @ Ip_train.T
-                Kc_test = Iq_test @ Kc[np.ix_(test_ind2, test_ind2)] @ Iq_test.T  
-                Kd_test = Ip_test @ Kd[np.ix_(test_ind1, test_ind1)] @ Ip_test.T
-
-                Pc_train = (n_train / q_train) * Iq_train.T @ np.linalg.pinv(Kc_train) @ Kc_train @ Iq_train
-                Pd_train = (n_train / p_train) * Ip_train.T @ np.linalg.pinv(Kd_train) @ Kd_train @ Ip_train
-                Pc_test = (n_test / q_test) * Iq_test.T @ np.linalg.pinv(Kc_test) @ Kc_test @ Iq_test
-                Pd_test = (n_test / p_test) * Ip_test.T @ np.linalg.pinv(Kd_test) @ Kd_test @ Ip_test
+                Kc_train = Iq_train @ Kc[np.ix_(train, train)] @ Iq_train.T
+                Kd_train = Ip_train @ Kd[np.ix_(train, train)] @ Ip_train.T
+                Kc_test = Iq_test @ Kc[np.ix_(test, test)] @ Iq_test.T  
+                Kd_test = Ip_test @ Kd[np.ix_(test, test)] @ Ip_test.T
+                Pc_train = (n_train/q_train) * Iq_train.T @ np.linalg.pinv(Kc_train) @ Kc_train @ Iq_train
+                Pd_train = (n_train/p_train) * Ip_train.T @ np.linalg.pinv(Kd_train) @ Kd_train @ Ip_train
+                Pc_test = (n_test/q_test) * Iq_test.T @ np.linalg.pinv(Kc_test) @ Kc_test @ Iq_test
+                Pd_test = (n_test/p_test) * Ip_test.T @ np.linalg.pinv(Kd_test) @ Kd_test @ Ip_test
 
             Iw_train = Iw[np.ix_(train, train)]
             KbPcKa_inv = np.linalg.pinv(Kb_train @ Pc_train @ Iw_train @ Ka_train)
@@ -566,12 +550,15 @@ class RKHS2IVL2CV(RKHS2IVL2):
             scores.append([])
             for alpha_scale in alpha_scales:
                 alpha = alpha_scale * delta_train**4
-                M = Ka_train @ ( - Iw_train @ Pc_train + (Pd_train + Iw_train @ Pc_train @ Iw_train + alpha * Id_train) @ W @ (Pc_train + alpha * Id_train)) @ Kb_train
+                M = Ka_train @ (Iw_train @ Pc_train + (Pd_train + Iw_train @ Pc_train @ Iw_train + alpha * Id_train) @ W @ (Pc_train + alpha * Id_train)) @ Kb_train
                 b = np.linalg.pinv(M) @ B_train
                 a = C_train @ (Pc_train + alpha * Id_train) @ Kb_train @ b
                 res1 = Y[test] - Ka[np.ix_(test, train)] @ a
                 res2 = Ka[np.ix_(test, train)] @ a - Kb[np.ix_(test, train)] @ b
-                scores[it].append((res1.T @ Pd_test @ res1)[0, 0] / (res1.shape[0]**2) + (res2.T @ Pc_test @ res2)[0, 0] / (res2.shape[0]**2))
+                scores[it].append((res1.T @ Pd_test @ res1)[
+                                  0, 0] / (res1.shape[0]**2) 
+                                  + (res2.T @ Pc_test @ res2)[
+                                  0, 0] / (res2.shape[0]**2) )
 
         self.alpha_scales = alpha_scales
         self.avg_scores = np.mean(np.array(scores), axis=0)
@@ -581,8 +568,8 @@ class RKHS2IVL2CV(RKHS2IVL2):
         self.best_alpha = self.best_alpha_scale * delta**4
 
         KbPcKa_inv = np.linalg.pinv(Kb @ Pc @ Iw @ Ka)
-        M = Ka @ ( - Iw @ Pc + (Pd + Iw @ Pc @ Iw + self.best_alpha * Id) @ Ka @ KbPcKa_inv @ Kb @ (Pc + self.best_alpha * Id)) @ Kb
-
+        M = Ka @ (Iw @ Pc + (Pd + Iw @ Pc @ Iw + self.best_alpha * Id) @ Ka @ KbPcKa_inv @ Kb @ (Pc + self.best_alpha * Id)) @ Kb
+        
         self.b = np.linalg.pinv(M) @ Ka @ Pd @ Y
         self.a = KbPcKa_inv @ Kb @ (Pc + self.best_alpha * Id) @ Kb @ self.b
 
