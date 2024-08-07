@@ -7,7 +7,8 @@ name = "nnpiv"
 version = "0.0.1"
 description = "NESTED NONPARAMETRIC INSTRUMENTAL VARIABLE REGRESSION"
 authors = [
-    { name = "isaac", email = "i.mezal.12@gmail.com" }
+    { name = "Isaac Meza", email = "isaacmezalopez@g.harvard.edu" },
+    { name = "Rahul Singh", email = "rahul_singh@fas.harvard.edu " }
 ]
 readme = "README.rst"
 license = { text = "MIT" }
@@ -18,4 +19,3 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent"
 ]
-
