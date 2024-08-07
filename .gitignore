@@ -11,6 +11,7 @@ __pycache__/
 
 # Distribution / packaging
 .Python
+env/
 build/
 develop-eggs/
 dist/
@@ -22,13 +23,12 @@ lib64/
 parts/
 sdist/
 var/
-wheels/
 pip-wheel-metadata/
 share/python-wheels/
+wheels/
 *.egg-info/
 .installed.cfg
 *.egg
-MANIFEST
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
@@ -43,16 +43,13 @@ pip-delete-this-directory.txt
 # Unit test / coverage reports
 htmlcov/
 .tox/
-.nox/
 .coverage
 .coverage.*
 .cache
 nosetests.xml
 coverage.xml
 *.cover
-*.py,cover
 .hypothesis/
-.pytest_cache/
 
 # Translations
 *.mo
@@ -80,10 +77,6 @@ target/
 # Jupyter Notebook
 .ipynb_checkpoints
 
-# IPython
-profile_default/
-ipython_config.py
-
 # pyenv
 .python-version
 
@@ -97,9 +90,8 @@ ipython_config.py
 # PEP 582; used by e.g. github.com/David-OConnor/pyflow
 __pypackages__/
 
-# Celery stuff
+# celery beat schedule file
 celerybeat-schedule
-celerybeat.pid
 
 # SageMath parsed files
 *.sage.py
@@ -130,3 +122,20 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# .DS_Store
+.DS_Store
+
+# Data files
+/Data/
+/Data/**
+/Data/*
+
+# Virtual Environment
+/nnpiv_venv/
+/nnpiv_venv/**
+/nnpiv_venv/*
+
+# Tempfile folders
+tmp*/
+temp/
